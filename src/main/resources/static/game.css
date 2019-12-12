@@ -1,0 +1,68 @@
+.cell {
+      height: 70px;
+      width: 70px;
+      position: absolute;
+      box-sizing: border-box;
+}
+
+.pcell {
+      height: 70px;
+      width: 70px;
+      position: absolute;
+      box-sizing: border-box;
+     /* background-color:yellow;*/
+}
+
+.field {
+    position: absolute;
+    box-sizing: border-box;
+    left: 0px;
+    top: 0px;
+    width: 910px; /* 910 = 13 * 70 */
+    height: 910px;
+}
+
+.panel {
+    position: absolute;
+    box-sizing: border-box;
+    left: 910px;
+    top: 0px;
+    width: 420px; /* 420 = 6 * 70 */
+    height: 910px;
+}
+
+
+/*.over {
+  opacity: 0.2;
+  filter: alpha(opacity=20); /* For IE8 and earlier * /
+}*/
+.over {
+    border: Purple solid 3px;
+}
+
+.fieldPirateSelected {
+    border: Magenta solid;
+}
+
+.fieldSelected {
+  -webkit-filter: sepia(100%);
+  filter: sepia(100%);
+}
+.frontSelected {
+  cursor: move;
+}
+.frontSelectedWithGold {
+  cursor: copy;
+}
+
+.frontSelectable {
+  cursor: pointer;
+}
+
+.pover {
+    border: Blue solid; /*Magenta solid;*/
+}
+
+.pselected {
+    background-color: MediumOrchid
+}
