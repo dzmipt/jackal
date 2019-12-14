@@ -11,10 +11,6 @@ apply plugin: 'java'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
-bootJar {
-    baseName = 'jackal'
-    version = '0.1'
-}
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -36,4 +32,20 @@ dependencies {
 task copyStatic(type:Copy) {
     from 'src/main/resources'
     into 'build/resources/main'
+}
+
+def tsSrcDir = "${projectDir}/src/main/ts"
+def tsBuildDir = "${buildDir}/resources/main/static/ts"
+
+task compileTs (type:Exec) {
+    inputs.dir file(tsSrcDir)
+    outputs.dir file(tsBuildDir)
+    executable "${projectDir}/bin/compilerTs.sh"
+    standardOutput System.out
+    args file(tsSrcDir).listFiles((FilenameFilter){dir,name ->  name.endsWith(".ts")})
+    args ("--outDir", tsBuildDir)
+}
+
+build {
+    dependsOn compileTs
 }
