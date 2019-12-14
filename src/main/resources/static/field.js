@@ -2,14 +2,12 @@ let maxGold = 40;
 let maxPirateText = 4*3+3;
 function initField() {
     let field = $('#field');
-    for (row=0; row<13; row++) {
-      for (col=0; col<13; col++) {
-        let cell = setCellLoc($("<img/>"),row,col)
-                        .attr("id","cell"+row+"_"+col)
+    LocAll.forEach(loc => {
+        let cell = setCellLoc($("<img/>"),loc)
+                        .attr("id","cell"+loc.index())
                         .addClass("cell");
          field.append(cell);
-      }
-    }
+    });
     let svg = $("<svg/>")
                     .attr("id","svg")
                     .addClass("field");
@@ -28,14 +26,12 @@ function initField() {
         );
     }
 
-    for(team=0;team<4;team++){
-        for(num=0;num<3;num++){
-            let pirate = pirateEl(team)
-                        .attr("id","pirate"+team+"_"+num)
-                        .hide();
-             svg.append(pirate);
-        }
-    }
+    PirateAll.forEach(pirate => {
+            svg.append( pirateEl(pirate.team)
+                        .attr("id","pirate"+pirate.index())
+                        .hide()
+                      );
+    });
 
     for(i=0;i<maxPirateText;i++){
         svg.append($("<text fill='black'/>")
@@ -45,77 +41,68 @@ function initField() {
     }
 
     field.html(field.html()); // workaround to fix svg element
-    for (row=0; row<13; row++) {
-      for (col=0; col<13; col++) {
-         let front = setCellLoc($("<div/>"),row,col)
-                        .attr("id","front"+row+"_"+col)
+    LocAll.forEach(loc => {
+         let front = setCellLoc($("<div/>"),loc)
+                        .attr("id","front"+loc.index())
                         .addClass("cell");
-         front = addEventListeners(front,"field",row,col);
+         front = addEventListeners(front,"field",loc);
          field.append(front);
-      }
-    }
+    });
 }
 
-function pirate(team,num) {return $("#pirate"+team+"_"+num)}
-function front(row,col) {return $("#front"+row+"_"+col)}
-function cell(row,col) {return $("#cell"+row+"_"+col)}
+function pirate(p) {return $("#pirate"+p.index())}
+function front(loc) {return $("#front"+loc.index())}
+function cell(loc) {return $("#cell"+loc.index())}
 function gold(index) {return $("#gold"+index)}
 function goldText(index) {return $("#goldtext"+index)}
 
 function refreshSelectableFieldCell() {
     $(".frontSelectable").removeClass("frontSelectable");
-    for(team=0;team<4;team++) {
-        for(num=0;num<3;num++) {
-            let p = pirates[team][num];
-            if (p.steps.length == 0 && p.stepsWithGold.length == 0) continue;
+    PirateAll.forEach(pirate => {
+            let p = pirates[pirate.team][pirate.num];
+            if (p.steps.length == 0 && p.stepsWithGold.length == 0) return;
             let loc = p.loc;
-            let f = front(loc.row,loc.col);
+            let f = front(loc);
             if (  !( f.hasClass("frontSelected") || f.hasClass("frontSelectedWithGold") )) {
                 f.addClass("frontSelectable");
             }
-        }
-    }
+    });
 }
 
-function selectCell(row,col,withGold) {
-    cell(row,col).addClass("fieldSelected");
-    front(row,col).addClass(withGold ? "frontSelectedWithGold":"frontSelected");
+function selectCell(loc,withGold) {
+    cell(loc).addClass("fieldSelected");
+    front(loc).addClass(withGold ? "frontSelectedWithGold":"frontSelected");
 }
-function unselectCell(row,col) {
-    cell(row,col).removeClass("fieldSelected");
-    front(row,col).removeClass("frontSelected");
-    front(row,col).removeClass("frontSelectedWithGold");
+function unselectCell(loc) {
+    cell(loc).removeClass("fieldSelected");
+    front(loc).removeClass("frontSelected");
+    front(loc).removeClass("frontSelectedWithGold");
 }
-function isSelected(row,col) {
-    return cell(row,col).hasClass("fieldSelected");
+function isSelected(loc) {
+    return cell(loc).hasClass("fieldSelected");
 }
-function isSelectable(row,col) {
-    return front(row,col).hasClass("frontSelectable");
+function isSelectable(loc) {
+    return front(loc).hasClass("frontSelectable");
 }
-function fieldOver(row,col) {
-    if(isSelected(row,col)) front(row,col).addClass("over");
+function fieldOver(loc) {
+    if(isSelected(loc)) front(loc).addClass("over");
 }
-function fieldLeave(row,col) {
-    front(row,col).removeClass("over");
+function fieldLeave(loc) {
+    front(loc).removeClass("over");
 }
-function fieldClick(row,col) {
-    if (isSelected(row,col)) {
-        go={id:id, pirate:selPirate, loc:{row:row,col:col},withGold:withGold};
+function fieldClick(loc) {
+    if (isSelected(loc)) {
+        go={id:id, pirate:selPirate, loc:loc, withGold:withGold};
         send("go",go);
-    } else if (isSelectable(row,col)) {
-        for(team=0;team<4;team++) {
-            for(num=0;num<3;num++) {
-                let loc = pirates[team][num].loc;
-                if(loc.row == row && loc.col == col) {
-                    selectPirate(team,num);
-                    break;
-                }
-            }
-        }
+    } else if (isSelectable(loc)) {
+        let p = PirateAll.find( p => {
+               return pirates[p.team][p.num].loc.equals(loc);
+        });
+        if (p != undefined) selectPirate(p);
     }
 }
-function hidePirate(team,num) {
-    pirate(team,num).hide();
+function hidePirate(p) {
+    pirate(p).hide();
 }
 
 
@@ -137,10 +124,10 @@ const moneyEllipseDelta = [-4,2];
 const moneyTextDelta = [-4,5];
 const moneyText10Delta = [-8,5];
 
-function setPirate(team,num,row,col,animate,count,index) {
-    let el = pirate(team,num);
-    let p = pirateDelta[count-1][index];
-    let attr={cy:row*LEN+p[1],cx:col*LEN+p[0]};
+function setPirate(p,loc,animate,count,index) {
+    let el = pirate(p);
+    let pd = pirateDelta[count-1][index];
+    let attr={cy:loc.row*LEN+pd[1],cx:loc.col*LEN+pd[0]};
     el = el.show();
 
     if (animate) el.animate(attr,500);
@@ -172,11 +159,11 @@ function resetGold() {
     }
     pirateTextIndex = 0;
 }
-function showGold(row,col,count,index,g) {
+function showGold(loc,count,index,g) {
     if (g==0) return;
     let p0 = count==1 ? moneyEllipseBottomDelta : pirateDelta[count-1][index];
-    let x=col*LEN + p0[0]+moneyEllipseDelta[0];
-    let y=row*LEN + p0[1]+moneyEllipseDelta[1];
+    let x=loc.col*LEN + p0[0]+moneyEllipseDelta[0];
+    let y=loc.row*LEN + p0[1]+moneyEllipseDelta[1];
     gold(goldIndex).attr({cx:x,cy:y}).show();
 
     let dp = g<10 ? moneyTextDelta : moneyText10Delta;

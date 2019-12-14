@@ -1,20 +1,39 @@
-/*const iconSEA = "SEA";
-const iconSHIP = "SHIP";
-const iconCLOSED = "CLOSED";
-*/
-//let iconSrc = {};
-let LEN = 70;
-
+const LEN = 70;
 const pirateColor = ["white","yellow","red","black"];
 
-function getCoordinate(row,col) {
-    return {left:col*LEN,top:row*LEN};
+class Loc {
+    constructor(row,col) {this.row = row;this.col = col}
+    equals(x) {return this.row == x.row && this.col == x.col}
+    index() {return ""+this.row+"_"+this.col}
 }
-function setCellLoc(el,row,col) {
-    return el.css(getCoordinate(row,col));
+let LocAll = [];
+for(row=0;row<13;row++) {
+    for(col=0;col<13;col++) {
+        LocAll.push(new Loc(row,col));
+    }
 }
-function addEventListeners(el,s,r,c) {
-         let data = {src:s,row:r,col:c};
+
+class Pirate {
+    constructor(team,num) {this.team = team; this.num = num}
+    equals(x) {return this.team == x.team; this.num == num}
+    index() {return ""+this.team+"_"+this.num}
+}
+let PirateAll = [];
+for(team=0;team<4;team++){
+    for(num=0;num<3;num++){
+        PirateAll.push(new Pirate(team,num));
+    }
+}
+
+
+function getCoordinate(loc) {
+    return {left:loc.col*LEN,top:loc.row*LEN};
+}
+function setCellLoc(el,loc) {
+    return el.css(getCoordinate(loc));
+}
+function addEventListeners(el,s,loc) {
+         let data = {src:s,loc:loc};
          return el
                 .on("mouseenter",data, (event) => {over(event.data); } )
                 .on("mouseleave",data, (event) => {leave(event.data); } )
@@ -37,8 +56,8 @@ function goldTextEl() {
 var overData = undefined;
 function leave(data) {
     if (overData != undefined) {
-        if (overData.src=="field") fieldLeave(overData.row,overData.col);
-        else if (overData.src=="panel") panelLeave(overData.row,overData.col);
+        if (overData.src=="field") fieldLeave(overData.loc);
+        else if (overData.src=="panel") panelLeave(overData.loc);
     }
 
     if (data != overData) return;
@@ -48,63 +67,61 @@ function over(data) {
     leave(overData);
     overData=data;
 
-    if (data.src=="field") fieldOver(data.row,data.col);
-    else if (data.src=="panel") panelOver(data.row,data.col);
+    if (data.src=="field") fieldOver(data.loc);
+    else if (data.src=="panel") panelOver(data.loc);
 }
 
 function click(data) {
-    if (data.src=="field") fieldClick(data.row,data.col);
-    else if (data.src=="panel") panelClick(data.row,data.col);
+    if (data.src=="field") fieldClick(data.loc);
+    else if (data.src=="panel") panelClick(data.loc);
 }
 
-function init(icons) {
+/*function init(icons) {
     icons.forEach(data=>iconSrc[data.value]="/img/"+data.location);
     console.log("iconSrc: "+iconSrc);
-}
+}*/
 
 let id="";
 let pirates = undefined;
 
-
-function setIcons(icons) {
+/*function setIcons(icons) {
     for(row=0;row<13;row++){
         for(col=0;col<13;col++){
             cell(row,col).attr("src", iconSrc[icons[row][col]]);
         }
     }
-}
+}*/
 
 function setView(view) {
     id = view.id;
     unselectPirate();
     resetGold();
     let animate = view.animateShip == null;
-    for(row=0;row<13;row++){
-        for(col=0;col<13;col++){
-            cell(row,col).attr("src", "/img/"+view.cells[row][col].icon+".png");
-            let count = view.cells[row][col].count;
+    LocAll.forEach(loc => {
+            cell(loc).attr("src", "/img/"+view.cells[loc.row][loc.col].icon+".png");
+            let count = view.cells[loc.row][loc.col].count;
             for(i=0;i<count; i++) {
-                showGold(row,col,count,i,view.cells[row][col].gold[i]);
+                showGold(loc,count,i,view.cells[loc.row][loc.col].gold[i]);
             }
-        }
-    }
+    });
     let selPirate = undefined;
     let numToMove = 0;
     pirates = view.pirates;
-    for(team=0;team<4;team++) {
-        for(num=0;num<3;num++) {
-            let p = pirates[team][num];
+    PirateAll.forEach(pirate => {
+            let p = pirates[pirate.team][pirate.num];
+            p.loc = new Loc(p.loc.row, p.loc.col);
             let loc = p.loc;
-            setPirate(team,num,loc.row,loc.col,animate,view.cells[loc.row][loc.col].count,p.index);
+            for(i=0;i<p.steps.length;i++) p.steps[i] = new Loc(p.steps[i].row, p.steps[i].col);
+            for(i=0;i<p.stepsWithGold.length;i++) p.stepsWithGold[i] = new Loc(p.stepsWithGold[i].row, p.stepsWithGold[i].col);
+            setPirate(pirate,loc,animate,view.cells[loc.row][loc.col].count,p.index);
             if (p.steps.length > 0 || p.stepsWithGold.length > 0) {
-                selPirate = {team:team,num:num};
+                selPirate = pirate;
                 numToMove++;
             }
-        }
-    }
+    });
     refreshSelectableFieldCell();
     if (numToMove == 1) {
-        selectPirate(selPirate.team, selPirate.num);
+        selectPirate(selPirate);
     }
 }
 

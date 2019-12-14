@@ -5,26 +5,23 @@ function initPanel() {
                     .addClass("panel")
                     .css("left","0px");
    var frontEls = [];
-   for(team=0;team<4;team++){
-       for(num=0;num<3;num++){
-           row = 2*team;
-           col = num;
-           let pcell = setCellLoc($("<div/>"),row,col)
-                            .attr("id","pcell"+team+"_"+num)
+   PirateAll.forEach(p => {
+           loc = new Loc(2*p.team, p.num);
+           let pcell = setCellLoc($("<div/>"),loc)
+                            .attr("id","pcell"+p.index())
                             .addClass("pcell");
            panel.append(pcell);
 
-           let pirate = pirateEl(team)
-                            .attr({cx:LEN*col+35,cy:LEN*row+35});
+           let pirate = pirateEl(p.team)
+                            .attr({cx:LEN*loc.col+35,cy:LEN*loc.row+35});
            svg.append(pirate);
 
-           let front = setCellLoc($("<div/>"),row,col)
-                            .attr("id","pfront"+team+"_"+num)
+           let front = setCellLoc($("<div/>"),loc)
+                            .attr("id","pfront"+p.index())
                             .addClass("cell");
-           front = addEventListeners(front,"panel",team,num);
+           front = addEventListeners(front,"panel",p);
            frontEls.push(front);
-       }
-   }
+   });
 
    panel.append(svg);
    panel.html(panel.html()); // workaround to fix svg element
@@ -32,22 +29,22 @@ function initPanel() {
    frontEls.forEach(front=>{panel.append(front)});
 }
 
-function pcell(team,num) {return $("#pcell"+team+"_"+num)}
-function selectPCell(team,num) {pcell(team,num).addClass("pselected")}
-function unselectPCell(team,num) {pcell(team,num).removeClass("pselected")}
+function pcell(p) {return $("#pcell"+p.index())}
+function selectPCell(p) {pcell(p).addClass("pselected")}
+function unselectPCell(p) {pcell(p).removeClass("pselected")}
 //function isSelectedPCell(team,num) {pcell(team,num).hasClass("pselected")}
 
-function panelOver(team,num) {
-    if(pirates[team][num].steps.length == 0) return;
-    pcell(team,num).addClass("pover");
+function panelOver(p) {
+    if(pirates[p.team][p.num].steps.length == 0) return;
+    pcell(p).addClass("pover");
 }
-function panelLeave(team,num) {
-    pcell(team,num).removeClass("pover");
+function panelLeave(p) {
+    pcell(p).removeClass("pover");
 }
-function panelClick(team,num) {
-    if (pirates[team][num].steps.length == 0) return;
-    if (selPirate!=undefined && selPirate.team == team && selPirate.num == num) unselectPirate();
-    else selectPirate(team,num);
+function panelClick(p) {
+    if (pirates[p.team][p.num].steps.length == 0) return;
+    if (selPirate!=undefined && selPirate.equals(p)) unselectPirate();
+    else selectPirate(p);
 }
 
 let selPirate = undefined;
@@ -60,33 +57,31 @@ function getSelectedPirate() {
 function unselectFieldCells() {
     let p = getSelectedPirate();
     if (p == undefined) return;
-    p.steps.forEach(step => {unselectCell(step.row,step.col)});
+    p.steps.forEach(step => {unselectCell(step)});
     refreshSelectableFieldCell();
 }
 function selectFieldCells() {
     let p = getSelectedPirate();
     if (p == undefined) return;
     let steps = withGold ? p.stepsWithGold : p.steps;
-    steps.forEach(step => {selectCell(step.row,step.col,withGold)});
+    steps.forEach(step => {selectCell(step,withGold)});
     refreshSelectableFieldCell();
 }
 
 function unselectPirate() {
     if (selPirate == undefined) return;
     let p = getSelectedPirate();
-    let team = selPirate.team;
-    let num = selPirate.num;
-    unselectPCell(team,num);
-    cell(p.loc.row,p.loc.col).removeClass("fieldPirateSelected");
+    unselectPCell(selPirate);
+    cell(p.loc).removeClass("fieldPirateSelected");
     unselectFieldCells();
     selPirate = undefined;
 }
-function selectPirate(team,num) {
+function selectPirate(p) {
     unselectPirate();
-    selPirate = {team:team,num:num};
-    let p = getSelectedPirate();
-    selectPCell(team,num);
-    cell(p.loc.row,p.loc.col).addClass("fieldPirateSelected");
+    selPirate = p;
+    let pirate = getSelectedPirate();
+    selectPCell(p);
+    cell(pirate.loc).addClass("fieldPirateSelected");
     selectFieldCells();
 }
 
