@@ -70,6 +70,7 @@ function selectFieldCells() {
 
 function unselectPirate() {
     if (selPirate == undefined) return;
+    unselectFieldPirate(selPirate);
     let p = getSelectedPirate();
     unselectPCell(selPirate);
     cell(p.loc).removeClass("fieldPirateSelected");
@@ -79,6 +80,7 @@ function unselectPirate() {
 function selectPirate(p:Pirate) {
     unselectPirate();
     selPirate = p;
+    selectFieldPirate(selPirate);
     let pirate = getSelectedPirate();
     selectPCell(p);
     cell(pirate.loc).addClass("fieldPirateSelected");

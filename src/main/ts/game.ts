@@ -1,5 +1,6 @@
 const LEN = 70;
 const pirateColor = ["white","yellow","red","black"];
+const selPirateBorderColor = ["blue","blue","blue","cornsilk"];
 
 class Loc {
     row:number;
@@ -19,7 +20,7 @@ class Pirate {
     team:number;
     num:number;
     constructor(team,num) {this.team = team; this.num = num}
-    equals(x:Pirate) {return this.team == x.team; this.num == x.num}
+    equals(x:Pirate) {return this.team == x.team && this.num == x.num}
     index() {return ""+this.team+"_"+this.num}
 }
 let PirateAll = [];
@@ -98,9 +99,17 @@ function setView(view:any) {
                 showGold(loc,count,i,view.cells[loc.row][loc.col].gold[i]);
             }
     });
-    let selPirate = undefined;
+    let selPirate:Pirate = undefined;
     let numToMove = 0;
     pirates = view.pirates;
+
+    PirateAll.forEach(pirate => {
+        let p = pirates[pirate.team][pirate.num];
+        if (p.steps.length > 0 || p.stepsWithGold.length > 0) {
+            showPirateOnTop(pirate);
+        }
+    });
+
     PirateAll.forEach(pirate => {
             let p = pirates[pirate.team][pirate.num];
             p.loc = new Loc(p.loc.row, p.loc.col);
@@ -108,6 +117,7 @@ function setView(view:any) {
             for(let i=0;i<p.steps.length;i++) p.steps[i] = new Loc(p.steps[i].row, p.steps[i].col);
             for(let i=0;i<p.stepsWithGold.length;i++) p.stepsWithGold[i] = new Loc(p.stepsWithGold[i].row, p.stepsWithGold[i].col);
             setPirate(pirate,loc,animate,view.cells[loc.row][loc.col].count,p.index);
+            if (p.dead) hidePirate(pirate);
             if (p.steps.length > 0 || p.stepsWithGold.length > 0) {
                 selPirate = pirate;
                 numToMove++;
@@ -123,6 +133,8 @@ function initGame() {
     $(window).keydown(e=>{
         if (e.keyCode == 27) { //esc
             unselectPirate();
+        } else if (e.keyCode == 32) { //space
+            switchSelectedPirate();
         }
         if (e.shiftKey) selectWithGold();
         else unselectWithGold();

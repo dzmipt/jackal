@@ -90,15 +90,47 @@ function fieldOver(loc:Loc) {
 function fieldLeave(loc:Loc) {
     front(loc).removeClass("over");
 }
+
+function switchSelectedPirate() {
+    if (selPirate == undefined) return;
+
+    let loc = pirates[selPirate.team][selPirate.num].loc;
+    let firstPirate:Pirate = undefined;
+    let foundPirate:Pirate = undefined;
+    let next = false;
+    for(let p of PirateAll) {
+        if (! loc.equals(pirates[p.team][p.num].loc)) continue;
+        if (p.equals(selPirate)) {
+            next = true;
+        } else if (next) {
+            foundPirate = p;
+            break;
+        } else if (firstPirate == undefined) {
+            firstPirate = p;
+        }
+    }
+
+    if (foundPirate != undefined) {
+        selectPirate(foundPirate);
+    } else if (firstPirate != undefined) {
+        selectPirate(firstPirate);
+    }
+}
+
 function fieldClick(loc:Loc) {
     if (isSelected(loc)) {
         let go={id:id, pirate:selPirate, loc:loc, withGold:withGold};
         send("go",go);
     } else if (isSelectable(loc)) {
-        let p = PirateAll.find( p => {
-               return pirates[p.team][p.num].loc.equals(loc);
-        });
-        if (p != undefined) selectPirate(p);
+        if (selPirate == undefined ||
+                ! pirates[selPirate.team][selPirate.num].loc.equals(loc) ) {
+            let p = PirateAll.find( p => {
+                   return pirates[p.team][p.num].loc.equals(loc);
+            });
+            if (p != undefined) selectPirate(p);
+        } else {
+            switchSelectedPirate();
+        }
     }
 }
 function hidePirate(p:Pirate) {
@@ -136,12 +168,52 @@ function setPirate(p:Pirate,loc:Loc,animate:boolean,count:number,index:number) {
     if (count>1) {
         txt = $("#piratetext"+pirateTextIndex)
                 .attr({x:attr.cx+pirateTextDelta[0], y:attr.cy+pirateTextDelta[1]})
-                .empty().append(""+index+1);
+                .empty().append(""+(index+1));
         if (animate) txt.show(1000);
         else txt.show();
         pirateTextIndex++;
     }
     return el;
+}
+
+const attrName = ["cx","cy","r","fill","stroke","stroke-width"];
+const cssName = ["cx","cy"];
+
+function showPirateOnTop(p:Pirate) {
+    let id = pirate(p).attr("id");
+    let lastId = $("#svg circle:last").attr("id");
+    let sid = "#" + id;
+    let slastId = "#" + lastId;
+
+    if (id == lastId) return;
+    for (let name of attrName) {
+        let value = $(sid).attr(name);
+        let valueLast = $(slastId).attr(name);
+
+        $(sid).attr(name, valueLast);
+        $(slastId).attr(name, value);
+    }
+
+    for (let name of cssName) {
+        let value = $(sid).css(name);
+        let valueLast = $(slastId).css(name);
+
+        $(sid).css(name, valueLast);
+        $(slastId).css(name, value);
+    }
+
+    $(sid).attr("id",lastId);
+    $("#svg circle:last").attr("id",id);
+}
+
+function selectFieldPirate(p:Pirate) {
+    pirate(p)
+        .attr({'stroke-width':'4',stroke:selPirateBorderColor[p.team]});
+    showPirateOnTop(p);
+}
+function unselectFieldPirate(p:Pirate) {
+    pirate(p)
+        .attr({'stroke-width':'2',stroke:'black'});
 }
 
 

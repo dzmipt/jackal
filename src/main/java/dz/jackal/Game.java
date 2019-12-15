@@ -36,7 +36,7 @@ public class Game {
                     ((col == 0 || col == 12) && row == 6)) icon = Icon.SHIP;
             else if ((row == 0 || row == 12 || col == 0 || col == 12) ||
                     ((row == 1 || row == 11) && (col == 1 || col == 11))) icon = Icon.SEA;
-            else if (random.nextInt(2)==0) icon = Icon.LAND;
+            else if (random.nextInt(2)==0) icon = Icon.MOUNTAIN; //Icon.LAND;
             else icon = Icon.MOVE; //icon = Icon.LAND; //Icon.MOUNTAIN;//Icon.LAND;
 
             Cell cell;
@@ -78,7 +78,8 @@ public class Game {
     public Pirate getPirate(PirateId pirateId) {return pirates.get(pirateId);}
 
     public boolean enemy(int team1, int team2) {
-        return team1!=team2;
+        return (team1+team2) % 2 == 1;
+        //return team1!=team2;
     }
 
     public boolean enemy(Pirate p1, Pirate p2) {
