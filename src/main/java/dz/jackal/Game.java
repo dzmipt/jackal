@@ -10,6 +10,7 @@ public class Game {
     private Map<Loc, Cell> cells = new HashMap<>();
     private Loc[] ships;
     private Map<PirateId,Pirate> pirates = new HashMap<>();
+    private int currentTeam = 0;
 
     private MoveCell[] moves = new MoveCell[] {
             //new KnightCell(),
@@ -36,7 +37,7 @@ public class Game {
                     ((col == 0 || col == 12) && row == 6)) icon = Icon.SHIP;
             else if ((row == 0 || row == 12 || col == 0 || col == 12) ||
                     ((row == 1 || row == 11) && (col == 1 || col == 11))) icon = Icon.SEA;
-            else if (random.nextInt(2)==0) icon = Icon.MOUNTAIN; //Icon.LAND;
+            else if (random.nextInt(2)==0) icon = Icon.LAND;
             else icon = Icon.MOVE; //icon = Icon.LAND; //Icon.MOUNTAIN;//Icon.LAND;
 
             Cell cell;
@@ -89,6 +90,13 @@ public class Game {
     public boolean hasEnemy(Pirate pirate, Collection<Pirate> heroes) {
         return heroes.stream()
                 .anyMatch(p -> enemy(pirate,p));
+    }
+
+    public void nextTurn() {
+        currentTeam = (currentTeam+1) % 4;
+    }
+    public int getCurrentTeam() {
+        return currentTeam;
     }
 
     public void moveShip(int team, Loc newLoc) {

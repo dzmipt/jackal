@@ -42,6 +42,7 @@ public class GoController {
 
             game.moveShip(((ShipCell)oldCell).team(), newLoc);
             animateShip = new View.AnimateShip(oldLoc, newLoc);
+            game.nextTurn();
         } else {
             newCell.open();
             game.movePirate(pirate, newLoc, request.withGold);
@@ -72,6 +73,9 @@ public class GoController {
                         .stream()
                         .filter(p -> game.enemy(p, pirate))
                         .forEach(p -> game.returnToShip(p));
+            }
+            if (pirate.dead() || ! newCell.move()) {
+                game.nextTurn();
             }
         }
 

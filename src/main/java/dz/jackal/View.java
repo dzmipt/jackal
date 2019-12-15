@@ -87,6 +87,8 @@ public class View {
         PirateView pirateView = new PirateView(loc);
         pirateView.dead = pirate.dead();
         if (pirateView.dead) return pirateView;
+        if (game.getCurrentTeam() != pirate.team() ) return pirateView;
+
         if (cell.move()) return getPirateMoveView(game, pirateView, pirate, hasGold);
 
         for (int dr=-1; dr<=1; dr++) {
