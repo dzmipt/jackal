@@ -77,6 +77,7 @@ public class View {
             for (PirateId id: PirateId.ALL) {
                 if (id.equals(movePirateId)) continue;
                 pirates[id.team()][id.num()].steps.clear();
+                pirates[id.team()][id.num()].stepsWithGold.clear();
             }
         }
     }

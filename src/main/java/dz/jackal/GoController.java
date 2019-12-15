@@ -19,7 +19,7 @@ public class GoController {
     public View action(GoRequest request) {
         Game game = Game.getGame(request.id);
         Pirate pirate = game.getPirate(request.pirate);
-        Loc oldLoc = pirate.getLoc();
+        final Loc oldLoc = pirate.getLoc();
         Cell oldCell = game.getCell(oldLoc);
         Loc newLoc = request.loc;
         Cell newCell = game.getCell(newLoc);
@@ -29,6 +29,17 @@ public class GoController {
 
         View.AnimateShip animateShip = null;
         if (oldCell.ship() && newCell.sea()) {
+            int theTeam = ((ShipCell)oldCell).team();
+            game.getCell(newLoc).heroes(0).forEach(
+                    p-> {
+                        if(game.enemy(p.team(),theTeam)) {
+                            game.returnToShip(p);
+                        } else {
+                          game.movePirate(p, oldLoc, false);
+                        }
+                    }
+            );
+
             game.moveShip(((ShipCell)oldCell).team(), newLoc);
             animateShip = new View.AnimateShip(oldLoc, newLoc);
         } else {
