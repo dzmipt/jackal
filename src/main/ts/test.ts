@@ -14,3 +14,9 @@ console.log(a.ftake());
 $(function(){
     console.log("JQuery started");
 });
+
+
+//var Stomp = require('stompjs');
+
+//let socket = new SockJS("/Jackal");
+//let stompClient = Stomp.over(socket);
