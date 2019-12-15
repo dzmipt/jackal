@@ -1,4 +1,6 @@
-package dz.jackal;
+package dz.jackal.cell;
+
+import dz.jackal.Loc;
 
 public enum Move {
 

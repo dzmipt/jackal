@@ -1,11 +1,13 @@
 package dz.jackal;
 
+import dz.jackal.cell.*;
+
 import java.util.*;
 
 public class Game {
 
     private String id;
-    private Map<Loc,Cell> cells = new HashMap<>();
+    private Map<Loc, Cell> cells = new HashMap<>();
     private Loc[] ships;
     private Map<PirateId,Pirate> pirates = new HashMap<>();
 
@@ -34,7 +36,7 @@ public class Game {
                     ((col == 0 || col == 12) && row == 6)) icon = Icon.SHIP;
             else if ((row == 0 || row == 12 || col == 0 || col == 12) ||
                     ((row == 1 || row == 11) && (col == 1 || col == 11))) icon = Icon.SEA;
-            else if (random.nextInt(2)==-1) icon = Icon.LAND;
+            else if (random.nextInt(2)==0) icon = Icon.LAND;
             else icon = Icon.MOVE; //icon = Icon.LAND; //Icon.MOUNTAIN;//Icon.LAND;
 
             Cell cell;

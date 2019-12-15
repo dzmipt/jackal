@@ -1,4 +1,6 @@
-package dz.jackal;
+package dz.jackal.cell;
+
+import dz.jackal.Icon;
 
 public class ShipCell extends Cell {
     private int team;

@@ -1,4 +1,7 @@
-package dz.jackal;
+package dz.jackal.cell;
+
+import dz.jackal.Icon;
+import dz.jackal.Loc;
 
 public class IceCell extends MoveCell {
 

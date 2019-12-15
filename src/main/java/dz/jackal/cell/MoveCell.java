@@ -1,4 +1,7 @@
-package dz.jackal;
+package dz.jackal.cell;
+
+import dz.jackal.Icon;
+import dz.jackal.Loc;
 
 abstract public class MoveCell extends Cell {
 
@@ -13,5 +16,5 @@ abstract public class MoveCell extends Cell {
         return true;
     }
 
-    abstract MoveCell duplicate();
+    abstract public MoveCell duplicate();
 }

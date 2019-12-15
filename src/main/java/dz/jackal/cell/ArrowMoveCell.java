@@ -1,4 +1,7 @@
-package dz.jackal;
+package dz.jackal.cell;
+
+import dz.jackal.Icon;
+import dz.jackal.Loc;
 
 import java.util.Random;
 import java.util.stream.Collectors;
