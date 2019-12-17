@@ -35,7 +35,7 @@ public class Cell {
 
     public String getIconView() {
         if (closed) return Icon.CLOSED.getLocation();
-        return icon.toString();
+        return icon.getLocation();
     }
 
     public boolean sea() {

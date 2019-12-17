@@ -27,6 +27,8 @@ dependencies {
     compile("org.webjars:jquery:3.4.1")
 //    compile("org.webjars:requirejs:2.3.6")
 
+    compile("org.yaml:snakeyaml:1.21")
+
     testCompile("org.springframework.boot:spring-boot-starter-test")
 }
 
