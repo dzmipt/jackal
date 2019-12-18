@@ -7,11 +7,17 @@
     <script src="/webjars/jquery/jquery.min.js"></script>
     <script src="/webjars/sockjs-client/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/stomp.min.js"></script>
-<!--    <script src="/webjars/requirejs/require.min.js"></script>-->
-<!--    <script src="/webjars/requirejs/require.js"></script>-->
 </head>
 <body>
-    <div id="field" class="field"></div>
+    <div id="top" class="top">
+        <img id="prev" height="70px" width="70px" class="prev" src="/img/prev.png"/>
+        <div id="topLabel" class="topLevel">
+            This is some textThis is some textThis is some textThis is some textThis is some textThis is some textThis is some textThis is some textThis is some text
+        </div>
+        <img id="next" height="70px" width="70px" class="next" src="/img/next.png"/>
+    </div>
+
+    <div id="field" class="field" style="border: solid black 2px"></div>
     <div id="panel" class="panel"></div>
 
     <script src="/ts/conn.js"></script>

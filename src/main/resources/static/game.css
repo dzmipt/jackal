@@ -10,14 +10,57 @@
       width: 70px;
       position: absolute;
       box-sizing: border-box;
-     /* background-color:yellow;*/
+}
+
+.prev {
+    position: absolute;
+    left: 0px;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    cursor: pointer;
+}
+
+.prev:active {
+  box-shadow: 0 3px 0 #D9F5CC;
+  top: 3px;
+}
+.next {
+    position: absolute;
+    right: 0px;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    cursor: pointer;
+}
+.next:active {
+  box-shadow: 0 3px 0 #D9F5CC;
+  top: 3px;
+}
+
+.topLevel {
+    position: absolute;
+    left: 70px;
+    height:70px;
+    width:770px;
+    background-image: url("/img/toplabel.png");
+    font-size: 30px;
+    vertical-align: middle;
+    padding: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.top {
+    position: relative;
+    margin: 0px 0px 0px 0px;
+    border: solid black;
+    border-width: 2px 2px 0px 2px;
+    width: 910px;
+    height: 70px;
 }
 
 .field {
-    position: absolute;
-    box-sizing: border-box;
-    left: 0px;
-    top: 0px;
+    position: relative;
+    margin: 0px 0px 0px 0px;
     width: 910px; /* 910 = 13 * 70 */
     height: 910px;
 }
