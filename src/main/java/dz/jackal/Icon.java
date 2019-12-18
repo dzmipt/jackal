@@ -8,7 +8,7 @@ public enum Icon {
     MOVE("move"),
     KNIGHT("knight"),
     ICE("ice"),
-    MOUNTAIN("mountain")
+    MOUNTAIN("mountain"),
     ;
 
     private String location;

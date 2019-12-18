@@ -4,8 +4,8 @@ import dz.jackal.Icon;
 import dz.jackal.Loc;
 
 abstract public class MoveCell extends Cell {
-
-    public MoveCell(Icon icon) {
+    private final static long serialVersionUID = 1;
+    MoveCell(Icon icon) {
         super(icon);
     }
 

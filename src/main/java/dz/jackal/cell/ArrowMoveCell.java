@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ArrowMoveCell extends MoveCell {
+    private final static long serialVersionUID = 1;
 
     private static Random random = new Random();
-
     private Move[] moves;
     private String iconView;
 

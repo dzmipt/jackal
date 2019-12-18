@@ -2,9 +2,11 @@ package dz.jackal;
 
 import dz.jackal.cell.*;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Game {
+public class Game implements Serializable {
+    private final static long serialVersionUID = 1;
 
     private String id;
     private Map<Loc, Cell> cells = new HashMap<>();
@@ -12,16 +14,16 @@ public class Game {
     private Map<PirateId,Pirate> pirates = new HashMap<>();
     private int currentTeam = 0;
 
-    private MoveCell[] moves = new MoveCell[] {
-            //new KnightCell(),
+    private static MoveCell[] moves = new MoveCell[] {
+            new KnightCell(),
             new IceCell(),
             new ArrowMoveCell(Move.N),
             new ArrowMoveCell(Move.NW),
-/*            new ArrowMoveCell(Move.E, Move.W),
-            new ArrowMoveCell(Move.NW, Move.SE),*/
-            /*new SimpleMoveCell(Move.E, Move.W, Move.N, Move.S),
-            new SimpleMoveCell(Move.NW, Move.NE, Move.SW, Move.SE),
-            new SimpleMoveCell(Move.NW, Move.E, Move.S)*/
+            new ArrowMoveCell(Move.E, Move.W),
+            new ArrowMoveCell(Move.NW, Move.SE),
+            new ArrowMoveCell(Move.E, Move.W, Move.N, Move.S),
+            new ArrowMoveCell(Move.NW, Move.NE, Move.SW, Move.SE),
+            new ArrowMoveCell(Move.NW, Move.E, Move.S)
     };
 
     private Game(String id) {
@@ -37,7 +39,7 @@ public class Game {
                     ((col == 0 || col == 12) && row == 6)) icon = Icon.SHIP;
             else if ((row == 0 || row == 12 || col == 0 || col == 12) ||
                     ((row == 1 || row == 11) && (col == 1 || col == 11))) icon = Icon.SEA;
-            else if (random.nextInt(2)==0) icon = Icon.LAND;
+            else if (random.nextInt(2)==-1) icon = Icon.LAND;
             else icon = Icon.MOVE; //icon = Icon.LAND; //Icon.MOUNTAIN;//Icon.LAND;
 
             Cell cell;

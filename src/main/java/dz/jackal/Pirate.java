@@ -1,10 +1,14 @@
 package dz.jackal;
 
-public class Pirate {
-    private PirateId id;
-    private Loc loc, initStepLoc, prevLoc;
-    private boolean dead = false;
+import java.io.Serializable;
 
+public class Pirate implements Serializable {
+    private final static long serialVersionUID = 1;
+
+    private PirateId id;
+    private Loc loc;
+    private Loc initStepLoc, prevLoc;
+    private boolean dead = false;
     public Pirate(PirateId id, Loc loc) {
         this.id = id;
         this.loc = loc;

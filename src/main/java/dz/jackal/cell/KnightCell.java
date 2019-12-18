@@ -4,6 +4,7 @@ import dz.jackal.Icon;
 import dz.jackal.Loc;
 
 public class KnightCell extends MoveCell {
+    private final static long serialVersionUID = 1;
 
     public KnightCell() {
         super(Icon.KNIGHT);

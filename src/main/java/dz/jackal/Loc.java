@@ -1,12 +1,14 @@
 package dz.jackal;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Loc {
-    public final static List<Loc> ALL;
+public class Loc implements Serializable {
+    private final static long serialVersionUID = 1;
 
+    public final static List<Loc> ALL;
     private int row, col;
     public Loc(int row, int col) {
         this.row = row;

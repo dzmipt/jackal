@@ -1,12 +1,14 @@
 package dz.jackal;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class PirateId {
-    public final static List<PirateId> ALL;
+public class PirateId implements Serializable {
+    private final static long serialVersionUID = 1;
 
+    public final static List<PirateId> ALL;
     private int team,num;
     public PirateId(int team, int num) {
         this.team = team;

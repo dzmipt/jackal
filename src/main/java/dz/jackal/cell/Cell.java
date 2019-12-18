@@ -3,12 +3,14 @@ package dz.jackal.cell;
 import dz.jackal.Icon;
 import dz.jackal.Pirate;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Cell {
+public class Cell implements Serializable {
+    private final static long serialVersionUID = 1;
 
     private Icon icon;
     private boolean closed = true;
