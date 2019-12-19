@@ -143,12 +143,19 @@ function initGame() {
         unselectWithGold();
      });
 
+    $("#prevTurn").click( () => {prevTurn()} );
+    $("#nextTurn").click( () => {nextTurn()} );
+
     send("init",{});
 }
 
-/*function send(topic:string, obj:any) {
+function prevTurn() {
+    send("prevTurn", {id:id});
+}
 
-}*/
+function nextTurn() {
+    send("nextTurn", {id:id});
+}
 
 $(function(){
     initField();

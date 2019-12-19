@@ -12,26 +12,16 @@
       box-sizing: border-box;
 }
 
-.prev {
+.button {
     position: absolute;
-    left: 0px;
+    width: 70px;
+    height: 70px;
     margin: 0px 0px 0px 0px;
     padding: 0px 0px 0px 0px;
     cursor: pointer;
 }
 
-.prev:active {
-  box-shadow: 0 3px 0 #D9F5CC;
-  top: 3px;
-}
-.next {
-    position: absolute;
-    right: 0px;
-    margin: 0px 0px 0px 0px;
-    padding: 0px 0px 0px 0px;
-    cursor: pointer;
-}
-.next:active {
+.button:active {
   box-shadow: 0 3px 0 #D9F5CC;
   top: 3px;
 }

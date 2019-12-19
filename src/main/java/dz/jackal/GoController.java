@@ -3,10 +3,13 @@ package dz.jackal;
 import dz.jackal.cell.Cell;
 import dz.jackal.cell.MoveCell;
 import dz.jackal.cell.ShipCell;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -14,9 +17,28 @@ import java.util.Set;
 
 @Controller
 public class GoController {
+    private final static Logger log = LoggerFactory.getLogger(GoController.class);
+
     @MessageMapping("/go")
     @SendTo("/jackal/view")
     public View action(GoRequest request) {
+        Game game = Game.getGame(request.id);
+        int beforeStep = game.getTurn();
+        View view = processAction(request);
+        boolean continueTurn = beforeStep == game.getTurn();
+        if (continueTurn) {
+            game.setContinueTurn();
+        } else {
+            try {
+                DbGames.saveGame(game);
+            } catch (IOException e) {
+                log.error("Can't save game " + game.getId(), e);
+            }
+        }
+        return view;
+    }
+
+    private View processAction(GoRequest request) {
         Game game = Game.getGame(request.id);
         Pirate pirate = game.getPirate(request.pirate);
         final Loc oldLoc = pirate.getLoc();
@@ -35,7 +57,7 @@ public class GoController {
                         if(game.enemy(p.team(),theTeam)) {
                             game.returnToShip(p);
                         } else {
-                          game.movePirate(p, oldLoc, false);
+                            game.movePirate(p, oldLoc, false);
                         }
                     }
             );
@@ -81,6 +103,7 @@ public class GoController {
 
         return game.getView().setAnimateShip(animateShip);
     }
+
 
     private boolean isCycle(Game game, Pirate pirate, Loc loc) {
         List<PairLoc> newLoc = new ArrayList<>();

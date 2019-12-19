@@ -1,18 +1,23 @@
 package dz.jackal;
 
 import dz.jackal.cell.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.*;
 
 public class Game implements Serializable {
     private final static long serialVersionUID = 1;
+    private final static Logger log = LoggerFactory.getLogger(Game.class);
 
     private String id;
     private Map<Loc, Cell> cells = new HashMap<>();
     private Loc[] ships;
     private Map<PirateId,Pirate> pirates = new HashMap<>();
     private int currentTeam = 0;
+    private int turn = 0;
+    private boolean startTurn = true;
 
     private static MoveCell[] moves = new MoveCell[] {
             new KnightCell(),
@@ -96,7 +101,17 @@ public class Game implements Serializable {
 
     public void nextTurn() {
         currentTeam = (currentTeam+1) % 4;
+        turn++;
+        startTurn = true;
     }
+    public void setContinueTurn() {
+        startTurn = false;
+    }
+    public boolean continueTurn() {
+        return !startTurn;
+    }
+    public int getTurn() {return turn;}
+
     public int getCurrentTeam() {
         return currentTeam;
     }
@@ -138,10 +153,12 @@ public class Game implements Serializable {
     public View getView() {return new View(this);}
 
     private static Map<String,Game> gameMap = new HashMap<>();
+
     public static Game getGame(String id) {
         if (! gameMap.containsKey(id)) throw new RuntimeException("Game not found");
         return gameMap.get(id);
     }
+
     private static String generateId(int len) {
         StringBuilder builder = new StringBuilder(len);
         int count = 'z'-'a'+1;
@@ -155,6 +172,11 @@ public class Game implements Serializable {
         String id = generateId(16);
         Game game = new Game(id);
         gameMap.put(id,game);
+        log.info("New game is created: " + id);
         return game;
     }
+    public static void putGame(Game game) {
+        gameMap.put(game.id, game);
+    }
+
 }
