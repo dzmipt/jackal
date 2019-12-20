@@ -36,6 +36,13 @@ public class DbGames {
         return PREFIX + turn + "." + EXT;
     }
 
+    public static String[] getIds() throws IOException {
+        return Files.list(root)
+                .filter(path -> !path.equals(root))
+                .map(path -> path.getFileName().toString())
+                .toArray(String[]::new);
+    }
+
     public static void saveGame(Game game) throws IOException {
         Path folder = root.resolve(game.getId());
         Files.createDirectories(folder);
