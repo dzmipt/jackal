@@ -26,11 +26,15 @@
   top: 3px;
 }
 
+.text {
+    position: absolute;
+    font-size:25px;
+    text-shadow: 1px 1px Green;
+    font-weight: bold;
+}
 .topLevel {
     position: absolute;
-    left: 70px;
     height:70px;
-    width:770px;
     background-image: url("/img/toplabel.png");
     font-size: 30px;
     vertical-align: middle;
