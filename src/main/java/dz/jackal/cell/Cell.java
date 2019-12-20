@@ -18,6 +18,7 @@ public class Cell implements Serializable {
     private int count;
     private Set<Pirate>[] heroes;
     private int[] gold;
+    private int rum = 0;
 
     public Cell(Icon icon) {
         this(icon,1);
@@ -76,6 +77,10 @@ public class Cell implements Serializable {
     public void takeGold(int index) {
         gold[index]--;
     }
+
+    public int countRum() {return rum;}
+    public void takeRum() {rum = 0;}
+    public void setRum(int rum) {this.rum = rum;}
 
     public List<Pirate> heroes(int index) {
         return new ArrayList<>(heroes[index]);

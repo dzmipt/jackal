@@ -51,11 +51,12 @@ public class Game implements Serializable {
             if (icon == Icon.MOUNTAIN) {
                 cell = new Cell(icon, 5);
                 cell.addGold(0);
-                cell.addGold(0);
+                cell.addGold(1);
             } else if (icon == Icon.LAND) {
                 cell = new Cell(icon, 1);
-                cell.addGold(0);
-                cell.addGold(0);
+                int cnt = random.nextInt(4);
+                for (int i=0;i<cnt;i++) cell.addGold(0);
+                cell.setRum(1);
             } else if (icon == Icon.MOVE) {
                 cell = moves[random.nextInt(moves.length)].duplicate();
             } else {
@@ -84,6 +85,22 @@ public class Game implements Serializable {
 
     public Cell getCell(Loc loc) {return cells.get(loc);}
     public Pirate getPirate(PirateId pirateId) {return pirates.get(pirateId);}
+
+    private ShipCell getTeamShip(int team) {
+        return (ShipCell) getCell(ships[team]);
+    }
+    public int getTeamGold(int team) {
+        return getTeamShip(team).gold(0);
+    }
+
+    public int getTeamRum(int team) {
+        return getTeamShip(team).countRum();
+    }
+
+    public void addRum(int team, int rum) {
+        Cell ship = getTeamShip(team);
+        ship.setRum(ship.countRum() + rum);
+    }
 
     public boolean enemy(int team1, int team2) {
         return (team1+team2) % 2 == 1;

@@ -48,6 +48,9 @@ public class GoController {
         pirate.setPrevLoc(oldLoc);
         if (!oldCell.move()) pirate.setInitStepLoc(oldLoc);
 
+        int rum = newCell.countRum();
+        game.addRum(pirate.team(), rum);
+        newCell.takeRum();
 
         View.AnimateShip animateShip = null;
         if (oldCell.ship() && newCell.sea()) {

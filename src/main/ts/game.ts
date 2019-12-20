@@ -84,11 +84,18 @@ function evtClick(data:OverData) {
     else panelClick(overData);
 }
 
+
+function setTopCellText(id:string, num:number) {
+    $("#"+id).empty().append(num == 0 ? "-" : ""+num);
+}
+
 let id:string="";
 let pirates:any = undefined;
 
 function setView(view:any) {
     id = view.id;
+    setTopCellText("goldText", view.gold);
+    setTopCellText("rumText", view.rum);
     unselectPirate();
     resetGold();
     let animate = view.animateShip == null;

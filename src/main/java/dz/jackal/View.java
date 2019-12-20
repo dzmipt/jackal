@@ -13,11 +13,20 @@ public class View {
     public CellView[][] cells;
     public PirateView[][] pirates;
     public AnimateShip animateShip = null;
+    public int gold,rum;
 
 
     public View(Game game) {
         id = game.getId();
 
+        initCellView(game);
+        initPirateView(game);
+        int team = game.getCurrentTeam();
+        gold = game.getTeamGold(team);
+        rum = game.getTeamRum(team);
+    }
+
+    private void initCellView(Game game) {
         cells = new CellView[13][13];
         for(Loc loc:Loc.ALL) {
             Cell cell = game.getCell(loc);
@@ -35,7 +44,9 @@ public class View {
             }
             cells[loc.row()][loc.col()] = cellView;
         }
+    }
 
+    private void initPirateView(Game game) {
         PirateId movePirateId = null;
         pirates = new PirateView[4][3];
         for(PirateId id: PirateId.ALL) {
