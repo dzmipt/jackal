@@ -1,50 +1,68 @@
 function initPanel() {
-   let panel = $("#panel");
-   let svg = $("<svg/>")
-                    .attr("id","psvg")
-                    .addClass("panel")
-                    .css("left","0px");
-   var frontEls = [];
-   PirateAll.forEach(p => {
-           let loc = new Loc(2*p.team, p.num);
-           let pcell = setCellLoc($("<div/>"),loc)
-                            .attr("id","pcell"+p.index())
-                            .addClass("pcell");
-           panel.append(pcell);
-
-           let pirate = pirateEl(p.team)
-                            .attr({cx:LEN*loc.col+35,cy:LEN*loc.row+35});
-           svg.append(pirate);
-
-           let front = setCellLoc($("<div/>"),loc)
-                            .attr("id","pfront"+p.index())
-                            .addClass("cell");
-           front = addEventListeners(front,p);
-           frontEls.push(front);
-   });
-
-   panel.append(svg);
-   panel.html(panel.html()); // workaround to fix svg element
-
-   frontEls.forEach(front=>{panel.append(front)});
+    let right = $("#right");
+    for(let team=0;team<4;team++){
+        right.append(
+            $("<div/>")
+                .attr("id","team"+team)
+                .addClass("team teamUnselected")
+                .append(
+                        setCellLoc($("<div/>"),new Loc(1,0))
+                            .attr("id","teamgold"+team)
+                            .addClass("teamicon")
+                            .append($("<img/>")
+                                     .attr("src","/img/gold.png")
+                                     .addClass("cell")
+                            )
+                            .append($("<div/>")
+                                     .attr("id","teamgoldtext"+team)
+                                     .addClass("text goldtext")
+                            )
+                            .hide()
+                )
+                .append(
+                        setCellLoc($("<div/>"),new Loc(2,0))
+                            .attr("id","teamrum"+team)
+                            .addClass("teamicon")
+                            .append($("<img/>")
+                                         .attr("src","/img/rumbottle.png")
+                                         .addClass("cell")
+                            )
+                            .append($("<div/>")
+                                     .attr("id","teamrumtext"+team)
+                                     .addClass("text goldtext")
+                            )
+                            .hide()
+                )
+                .append(
+                    $("<svg/>")
+                        .attr("id","svgteam"+team)
+                        .addClass("team")
+                        .append( pirateEl(team)
+                                    .attr({cx:35,cy:35})
+                        )
+                )
+        );
+    }
+    right.html(right.html()); // workaround to fix svg element
 }
 
-function pcell(p:Pirate) {return $("#pcell"+p.index())}
-function selectPCell(p:Pirate) {pcell(p).addClass("pselected")}
-function unselectPCell(p:Pirate) {pcell(p).removeClass("pselected")}
-//function isSelectedPCell(team,num) {pcell(team,num).hasClass("pselected")}
+function setTeamIcon(team:number,val:number,divId:string,textId:string) {
+    if (val == 0) {
+        $("#"+divId+team).hide();
+    } else {
+        $("#"+textId+team).empty().append(""+val);
+        $("#"+divId+team).show();
+    }
+}
 
-function panelOver(p:Pirate) {
-    if(pirates[p.team][p.num].steps.length == 0) return;
-    pcell(p).addClass("pover");
-}
-function panelLeave(p:Pirate) {
-    pcell(p).removeClass("pover");
-}
-function panelClick(p:Pirate) {
-    if (pirates[p.team][p.num].steps.length == 0) return;
-    if (selPirate!=undefined && selPirate.equals(p)) unselectPirate();
-    else selectPirate(p);
+function resetTeam(view:any) {
+    $("div.team").removeClass("teamSelected");
+    $("div.team").addClass("teamUnselected");
+    $("#team"+view.currentTeam).addClass("teamSelected");
+    for(let team=0;team<4;team++) {
+        setTeamIcon(team, view.gold[team], "teamgold", "teamgoldtext");
+        setTeamIcon(team, view.rum[team], "teamrum", "teamrumtext");
+    }
 }
 
 let selPirate:Pirate = undefined;
@@ -72,7 +90,6 @@ function unselectPirate() {
     if (selPirate == undefined) return;
     unselectFieldPirate(selPirate);
     let p = getSelectedPirate();
-    unselectPCell(selPirate);
     cell(p.loc).removeClass("fieldPirateSelected");
     unselectFieldCells();
     selPirate = undefined;
@@ -82,7 +99,6 @@ function selectPirate(p:Pirate) {
     selPirate = p;
     selectFieldPirate(selPirate);
     let pirate = getSelectedPirate();
-    selectPCell(p);
     cell(pirate.loc).addClass("fieldPirateSelected");
     selectFieldCells();
 }

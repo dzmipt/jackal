@@ -48,11 +48,17 @@ public class GoController {
         pirate.setPrevLoc(oldLoc);
         if (!oldCell.move()) pirate.setInitStepLoc(oldLoc);
 
-        int rum = newCell.countRum();
-        game.addRum(pirate.team(), rum);
-        newCell.takeRum();
-
         View.AnimateShip animateShip = null;
+        View.AnimateRum animateRum = null;
+        if (!newCell.ship()) {
+            int rum = newCell.countRum();
+            if (rum > 0) {
+                game.addRum(pirate.team(), rum);
+                newCell.takeRum();
+                animateRum = new View.AnimateRum(rum, newLoc, game.getTeamShipLoc(pirate.team()));
+            }
+        }
+
         if (oldCell.ship() && newCell.sea()) {
             int theTeam = ((ShipCell)oldCell).team();
             game.getCell(newLoc).heroes(0).forEach(
@@ -104,7 +110,9 @@ public class GoController {
             }
         }
 
-        return game.getView().setAnimateShip(animateShip);
+        return game.getView()
+                    .setAnimateShip(animateShip)
+                    .setAnimateRum(animateRum);
     }
 
 

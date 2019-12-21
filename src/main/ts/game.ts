@@ -64,7 +64,7 @@ var overData:OverData = undefined;
 function evtLeave(data:OverData) {
     if (overData != undefined) {
         if(overData instanceof Loc) fieldLeave(overData);
-        else panelLeave(overData);
+//        else panelLeave(overData);
     }
 
     if (data != overData) return;
@@ -75,18 +75,30 @@ function evtOver(data:OverData) {
     overData=data;
 
     if(overData instanceof Loc) fieldOver(overData);
-    else panelOver(overData);
+//    else panelOver(overData);
 
 }
 
 function evtClick(data:OverData) {
     if(overData instanceof Loc) fieldClick(overData);
-    else panelClick(overData);
+//    else panelClick(overData);
 }
 
 
-function setTopCellText(id:string, num:number) {
-    $("#"+id).empty().append(num == 0 ? "-" : ""+num);
+function animateRum(animateRum:any) {
+    if (animateRum == null) return;
+    $("#rumanimate").remove();
+    $("#field").append(
+            setCellLoc($("<img/>"),animateRum.from)
+                           .attr("id","rumanimate")
+                           .attr("src","/img/rumbottle.png")
+                           .addClass("cell")
+    );
+
+    let loc = getCoordinate(animateRum.to);
+    $("#rumanimate").animate({opacity:0.0,top:loc.top,left:loc.left},1000);
+
+    setTimeout(()=>{$("#rumanimate").remove()}, 1500);
 }
 
 let id:string="";
@@ -94,8 +106,7 @@ let pirates:any = undefined;
 
 function setView(view:any) {
     id = view.id;
-    setTopCellText("goldText", view.gold);
-    setTopCellText("rumText", view.rum);
+    resetTeam(view);
     unselectPirate();
     resetGold();
     let animate = view.animateShip == null;
@@ -134,6 +145,8 @@ function setView(view:any) {
     if (numToMove == 1) {
         selectPirate(selPirate);
     }
+
+    animateRum(view.animateRum);
 }
 
 function initGame() {

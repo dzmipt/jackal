@@ -5,13 +5,6 @@
       box-sizing: border-box;
 }
 
-.pcell {
-      height: 70px;
-      width: 70px;
-      position: absolute;
-      box-sizing: border-box;
-}
-
 .button {
     position: absolute;
     width: 70px;
@@ -30,6 +23,10 @@
     font-size:25px;
     text-shadow: 1px 1px Green;
     font-weight: bold;
+}
+.goldtext {
+    left:33px;
+    top:10px;
 }
 .topLabel {
     position: absolute;
@@ -61,22 +58,33 @@
     height: 910px; /* = 14*70 */
 }
 
+.team {
+    height: 210px;
+    width: 70px;
+    box-sizing: border-box;
+}
+.teamicon {
+    height:70px;
+    width:70px;
+    position:absolute;
+}
+div.team {
+    position: relative;
+}
+.teamUnselected {
+    border:solid grey;
+    border-width: 1px;
+}
+.teamSelected {
+    border:solid Magenta;
+    border-width: 2px;
+}
 .field {
     position: relative;
     margin: 0px 0px 0px 0px;
     width: 910px; /* 910 = 13 * 70 */
     height: 910px;
 }
-
-.panel {
-    position: absolute;
-    box-sizing: border-box;
-    left: 990px;
-    top: 0px;
-    width: 420px; /* 420 = 6 * 70 */
-    height: 910px;
-}
-
 
 .over {
     border: Purple solid 3px;
@@ -99,10 +107,6 @@
 
 .frontSelectable {
   cursor: pointer;
-}
-
-.pover {
-    border: Blue solid; /*Magenta solid;*/
 }
 
 .pselected {

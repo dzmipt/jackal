@@ -13,17 +13,21 @@ public class View {
     public CellView[][] cells;
     public PirateView[][] pirates;
     public AnimateShip animateShip = null;
-    public int gold,rum;
-
+    public AnimateRum animateRum = null;
+    public int[] gold = new int[4];
+    public int[] rum = new int[4];
+    public int currentTeam;
 
     public View(Game game) {
         id = game.getId();
 
         initCellView(game);
         initPirateView(game);
-        int team = game.getCurrentTeam();
-        gold = game.getTeamGold(team);
-        rum = game.getTeamRum(team);
+        currentTeam = game.getCurrentTeam();
+        for(int team=0;team<4;team++) {
+            gold[team] = game.getTeamGold(team);
+            rum[team] = game.getTeamRum(team);
+        }
     }
 
     private void initCellView(Game game) {
@@ -160,6 +164,10 @@ public class View {
         return this;
     }
 
+    public View setAnimateRum(AnimateRum animateRum) {
+        this.animateRum = animateRum;
+        return this;
+    }
     public static class CellView {
         public String icon;
         public int count;
@@ -186,5 +194,15 @@ public class View {
             this.from = from;
             this.to = to;
         }
+    }
+    public static class AnimateRum {
+        public int count;
+        public Loc from, to;
+        public AnimateRum(int count, Loc from, Loc to) {
+            this.count = count;
+            this.from = from;
+            this.to = to;
+        }
+
     }
 }

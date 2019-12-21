@@ -56,7 +56,7 @@ public class Game implements Serializable {
                 cell = new Cell(icon, 1);
                 int cnt = random.nextInt(4);
                 for (int i=0;i<cnt;i++) cell.addGold(0);
-                cell.setRum(1);
+                cell.setRum(random.nextInt(4));
             } else if (icon == Icon.MOVE) {
                 cell = moves[random.nextInt(moves.length)].duplicate();
             } else {
@@ -86,7 +86,10 @@ public class Game implements Serializable {
     public Cell getCell(Loc loc) {return cells.get(loc);}
     public Pirate getPirate(PirateId pirateId) {return pirates.get(pirateId);}
 
-    private ShipCell getTeamShip(int team) {
+    public Loc getTeamShipLoc(int team) {
+        return ships[team];
+    }
+    public ShipCell getTeamShip(int team) {
         return (ShipCell) getCell(ships[team]);
     }
     public int getTeamGold(int team) {
