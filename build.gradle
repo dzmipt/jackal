@@ -30,7 +30,11 @@ dependencies {
     compile("org.yaml:snakeyaml:1.21")
 
     testCompile("org.springframework.boot:spring-boot-starter-test")
+
+    runtime("org.springframework.boot:spring-boot-devtools")
+
 }
+
 
 task copyStatic(type:Copy) {
     from 'src/main/resources'

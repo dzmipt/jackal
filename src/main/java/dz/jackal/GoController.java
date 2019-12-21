@@ -116,6 +116,7 @@ public class GoController {
             List<PairLoc> nextNewLoc = new ArrayList<>();
             for(PairLoc locs:newLoc) {
                 Cell newCell = game.getCell(locs.newLoc);
+                if (newCell == null) continue; // Knight jumps outside field
                 if (newCell.closed()) return false;
                 if (!newCell.move()) return false;
                 Loc[] steps = ((MoveCell)newCell).nextSteps(locs.prevLoc, locs.newLoc);

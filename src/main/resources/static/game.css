@@ -22,7 +22,6 @@
 }
 
 .button:active {
-  box-shadow: 0 3px 0 #D9F5CC;
   top: 3px;
 }
 
@@ -32,10 +31,9 @@
     text-shadow: 1px 1px Green;
     font-weight: bold;
 }
-.topLevel {
+.topLabel {
     position: absolute;
-    height:70px;
-    background-image: url("/img/toplabel.png");
+    height:50px;
     font-size: 30px;
     vertical-align: middle;
     padding: 10px;
@@ -45,11 +43,22 @@
 }
 .top {
     position: relative;
+    background-image: url("/img/background.png");
     margin: 0px 0px 0px 0px;
     border: solid black;
-    border-width: 2px 2px 0px 2px;
-    width: 910px;
+    border-width: 2px 2px 2px 2px;
+    width: 982px;
     height: 70px;
+}
+
+.right {
+    position: relative;
+    background-image: url("/img/background.png");
+    margin: 0px 0px 0px 0px;
+    border: solid black;
+    border-width: 0px 2px 2px 0px;
+    width: 70px;
+    height: 910px; /* = 14*70 */
 }
 
 .field {
@@ -62,17 +71,13 @@
 .panel {
     position: absolute;
     box-sizing: border-box;
-    left: 910px;
+    left: 990px;
     top: 0px;
     width: 420px; /* 420 = 6 * 70 */
     height: 910px;
 }
 
 
-/*.over {
-  opacity: 0.2;
-  filter: alpha(opacity=20); /* For IE8 and earlier * /
-}*/
 .over {
     border: Purple solid 3px;
 }
