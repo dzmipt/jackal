@@ -1,4 +1,9 @@
 function initPanel() {
+    initRight();
+    $("#goldIcon").click(goldIconClick);
+}
+
+function initRight() {
     let right = $("#right");
     for(let team=0;team<4;team++){
         right.append(
@@ -63,10 +68,20 @@ function resetTeam(view:any) {
         setTeamIcon(team, view.gold[team], "teamgold", "teamgoldtext");
         setTeamIcon(team, view.rum[team], "teamrum", "teamrumtext");
     }
+
+    //resetTop(<number>view.currentTeam, view,pirates);
 }
 
 let selPirate:Pirate = undefined;
 let withGold:boolean = false;
+
+function goldIconClick() {
+    if (withGold) {
+        unselectWithGold();
+    } else {
+        selectWithGold();
+    }
+}
 
 function getSelectedPirate() {
     if (selPirate == undefined) return undefined;
@@ -104,6 +119,7 @@ function selectPirate(p:Pirate) {
 }
 
 function selectWithGold() {
+    $("#goldIcon").addClass("teamSelected");
     if (withGold) return;
     if (selPirate == undefined) return;
     unselectFieldCells();
@@ -112,6 +128,7 @@ function selectWithGold() {
 }
 
 function unselectWithGold() {
+    $("#goldIcon").removeClass("teamSelected");
     if (!withGold) return;
     unselectFieldCells();
     withGold = false;

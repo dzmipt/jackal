@@ -163,8 +163,8 @@ function initGame() {
         unselectWithGold();
      });
 
-    $("#prevTurn").click( () => {prevTurn()} );
-    $("#nextTurn").click( () => {nextTurn()} );
+    $("#prevTurn").click(prevTurn);
+    $("#nextTurn").click(nextTurn);
 
     send("init",{});
 }
