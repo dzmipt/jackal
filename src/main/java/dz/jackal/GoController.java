@@ -40,33 +40,33 @@ public class GoController {
 
     private View processAction(GoRequest request) {
         Game game = Game.getGame(request.id);
-        Pirate pirate = game.getPirate(request.pirate);
-        final Loc oldLoc = pirate.getLoc();
+        Hero hero = game.getHero(request.hero);
+        final Loc oldLoc = hero.getLoc();
         Cell oldCell = game.getCell(oldLoc);
         Loc newLoc = request.loc;
         Cell newCell = game.getCell(newLoc);
-        pirate.setPrevLoc(oldLoc);
-        if (!oldCell.move()) pirate.setInitStepLoc(oldLoc);
+        hero.setPrevLoc(oldLoc);
+        if (!oldCell.move()) hero.setInitStepLoc(oldLoc);
 
         View.AnimateShip animateShip = null;
         View.AnimateRum animateRum = null;
         if (!newCell.ship()) {
             int rum = newCell.countRum();
             if (rum > 0) {
-                game.addRum(pirate.team(), rum);
+                game.addRum(hero.team(), rum);
                 newCell.takeRum();
-                animateRum = new View.AnimateRum(rum, newLoc, game.getTeamShipLoc(pirate.team()));
+                animateRum = new View.AnimateRum(rum, newLoc, game.getTeamShipLoc(hero.team()));
             }
         }
 
-        if (oldCell.ship() && newCell.sea()) {
+        if (oldCell.ship() && newCell.sea()) { // sail the ship
             int theTeam = ((ShipCell)oldCell).team();
             game.getCell(newLoc).heroes(0).forEach(
-                    p-> {
-                        if(game.enemy(p.team(),theTeam)) {
-                            game.returnToShip(p);
+                    h-> {
+                        if(game.enemy(h.team(),theTeam)) {
+                            game.returnToShip(h);
                         } else {
-                            game.movePirate(p, oldLoc, false);
+                            game.moveHero(h, oldLoc, false);
                         }
                     }
             );
@@ -76,36 +76,39 @@ public class GoController {
             game.nextTurn();
         } else {
             newCell.open();
-            game.movePirate(pirate, newLoc, request.withGold);
+            game.moveHero(hero, newLoc, request.withGold);
 
             if (newCell.move()) {
-                if (isCycle(game, pirate, newLoc)) {
-                    pirate.die();
-                    int index = newCell.index(pirate);
-                    newCell.removeHero(index, pirate);
+                if (isCycle(game, hero, newLoc)) {
+                    hero.die();
+                    int index = newCell.index(hero);
+                    newCell.removeHero(index, hero);
                 }
             }
 
             if (oldCell.move() && oldCell.gold(0)>0) {
-                if (pirate.dead() || !request.withGold) {
+                if (hero.dead() || !request.withGold) { // for the move cell, return gold to the init loc
                     oldCell.takeGold(0);
-                    Cell initCell = game.getCell(pirate.getInitStepLoc());
+                    Cell initCell = game.getCell(hero.getInitStepLoc());
                     initCell.addGold(initCell.count() - 1);
                 }
             }
 
 
-            if (pirate.dead()) {
+            if (hero.dead()) {
             } else if (newCell.ship()) {
-                if (game.enemy(pirate.team(), ((ShipCell)newCell).team())) game.returnToShip(pirate);
+                if (game.enemy(hero.team(), ((ShipCell)newCell).team())) {
+                    // should be more rules for non pirates
+                    game.returnToShip(hero);
+                }
             } else {
-                int index = newCell.index(pirate);
+                int index = newCell.index(hero);
                 newCell.heroes(index)
                         .stream()
-                        .filter(p -> game.enemy(p, pirate))
+                        .filter(p -> game.enemy(p, hero))
                         .forEach(p -> game.returnToShip(p));
             }
-            if (pirate.dead() || ! newCell.move()) {
+            if (hero.dead() || ! newCell.move()) {
                 game.nextTurn();
             }
         }
@@ -116,9 +119,9 @@ public class GoController {
     }
 
 
-    private boolean isCycle(Game game, Pirate pirate, Loc loc) {
+    private boolean isCycle(Game game, Hero hero, Loc loc) {
         List<PairLoc> newLoc = new ArrayList<>();
-        newLoc.add(new PairLoc(pirate.getPrevLoc(), loc));
+        newLoc.add(new PairLoc(hero.getPrevLoc(), loc));
         Set<PairLoc> allLoc = new HashSet<>(newLoc);
         while (newLoc.size() > 0) {
             List<PairLoc> nextNewLoc = new ArrayList<>();
@@ -162,7 +165,7 @@ public class GoController {
 
     public static class GoRequest {
         public String id;
-        public PirateId pirate;
+        public HeroId hero;
         public Loc loc;
         public boolean withGold;
     }

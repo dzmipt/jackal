@@ -2,15 +2,17 @@ package dz.jackal;
 
 import java.io.Serializable;
 
-public class Pirate implements Serializable {
-    private final static long serialVersionUID = 1;
+public class Hero implements Serializable {
+    private final static long serialVersionUID = 2;
 
-    private PirateId id;
+    private HeroId id;
+    private int team;
     private Loc loc;
     private Loc initStepLoc, prevLoc;
     private boolean dead = false;
-    public Pirate(PirateId id, Loc loc) {
+    public Hero(HeroId id, int team, Loc loc) {
         this.id = id;
+        this.team = team;
         this.loc = loc;
     }
     public Loc getLoc() {
@@ -44,9 +46,15 @@ public class Pirate implements Serializable {
         this.prevLoc = prevLoc;
     }
 
-    public PirateId id() {return id;}
+    public HeroId id() {return id;}
 
-    public int team() {return id.team();}
+    public boolean benGunn() {return id.benGunn();}
+    public boolean friday() {return id.friday();}
+    public boolean missioner() {return id.missioner();}
+    public boolean pirate() {return id.pirate();}
+
+    public int team() {return team;}
+    public void setTeam(int team) {this.team = team;}
 
     @Override
     public int hashCode() {
@@ -55,7 +63,12 @@ public class Pirate implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        Pirate p = (Pirate) obj;
+        Hero p = (Hero) obj;
         return id.equals(p.id);
+    }
+
+    @Override
+    public String toString() {
+        return id + " @ " + loc;
     }
 }

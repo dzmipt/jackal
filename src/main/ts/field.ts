@@ -119,7 +119,7 @@ function switchSelectedPirate() {
 
 function fieldClick(loc:Loc) {
     if (isSelected(loc)) {
-        let go={id:id, pirate:selPirate, loc:loc, withGold:withGold};
+        let go={id:id, hero:{group:selPirate.team,num:selPirate.num}, loc:loc, withGold:withGold};
         send("go",go);
     } else if (isSelectable(loc)) {
         if (selPirate == undefined ||

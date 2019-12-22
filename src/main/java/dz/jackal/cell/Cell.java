@@ -1,7 +1,7 @@
 package dz.jackal.cell;
 
+import dz.jackal.Hero;
 import dz.jackal.Icon;
-import dz.jackal.Pirate;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ public class Cell implements Serializable {
     private boolean closed = true;
 
     private int count;
-    private Set<Pirate>[] heroes;
+    private Set<Hero>[] heroes;
     private int[] gold;
     private int rum = 0;
 
@@ -82,22 +82,22 @@ public class Cell implements Serializable {
     public void takeRum() {rum = 0;}
     public void setRum(int rum) {this.rum = rum;}
 
-    public List<Pirate> heroes(int index) {
+    public List<Hero> heroes(int index) {
         return new ArrayList<>(heroes[index]);
     }
 
-    public void addHero(int index, Pirate pirate) {
-        heroes[index].add(pirate);
+    public void addHero(int index, Hero hero) {
+        heroes[index].add(hero);
     }
 
-    public boolean removeHero(int index, Pirate pirate) {
-        return heroes[index].remove(pirate);
+    public boolean removeHero(int index, Hero hero) {
+        return heroes[index].remove(hero);
     }
 
-    public int index(Pirate pirate) {
+    public int index(Hero hero) {
         for (int i=0; i<count; i++) {
-            if (heroes[i].contains(pirate)) return i;
+            if (heroes[i].contains(hero)) return i;
         }
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException(hero + " not found at cell " + icon);
     }
 }

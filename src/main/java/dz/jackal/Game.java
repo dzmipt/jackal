@@ -8,13 +8,13 @@ import java.io.Serializable;
 import java.util.*;
 
 public class Game implements Serializable {
-    private final static long serialVersionUID = 1;
+    private final static long serialVersionUID = 2;
     private final static Logger log = LoggerFactory.getLogger(Game.class);
 
     private String id;
     private Map<Loc, Cell> cells = new HashMap<>();
     private Loc[] ships;
-    private Map<PirateId,Pirate> pirates = new HashMap<>();
+    private Map<HeroId, Hero> heroes = new HashMap<>();
     private int currentTeam = 0;
     private int turn = 0;
     private boolean startTurn = true;
@@ -75,16 +75,35 @@ public class Game implements Serializable {
             shipCell.open();
             cells.put(ships[team], shipCell);
         }
-        for(PirateId pirateId: PirateId.ALL) {
-            Loc loc = ships[pirateId.team()];
-            Pirate pirate = new Pirate(pirateId, loc);
-            pirates.put(pirateId, pirate);
-            cells.get(loc).addHero(0,pirate);
+        for(HeroId heroId : HeroId.ALL) {
+            int team;
+            Loc loc;
+            if (heroId.pirate()) {
+                team = heroId.group();
+                loc = ships[team];
+            } else {
+                team = -1;
+                loc = new Loc(6,1+heroId.group());
+            }
+            Hero hero = new Hero(heroId, team, loc);
+            heroes.put(heroId, hero);
+            if (heroId.pirate()) {
+                getTeamShip(team).addHero(0, hero);
+            }
         }
+
+        cells.put(new Loc(6,5),new Cell(Icon.LAND,1));
+        getCell(new Loc(6,5)).addHero(0, getHero(HeroId.BENGUNN_ID));
+
+        cells.put(new Loc(6,6),new Cell(Icon.LAND,1));
+        getCell(new Loc(6,6)).addHero(0, getHero(HeroId.FRIDAY_ID));
+
+        cells.put(new Loc(6,7),new Cell(Icon.LAND,1));
+        getCell(new Loc(6,7)).addHero(0, getHero(HeroId.MISSIONER_ID));
     }
 
     public Cell getCell(Loc loc) {return cells.get(loc);}
-    public Pirate getPirate(PirateId pirateId) {return pirates.get(pirateId);}
+    public Hero getHero(HeroId heroId) {return heroes.get(heroId);}
 
     public Loc getTeamShipLoc(int team) {
         return ships[team];
@@ -110,13 +129,13 @@ public class Game implements Serializable {
         //return team1!=team2;
     }
 
-    public boolean enemy(Pirate p1, Pirate p2) {
+    public boolean enemy(Hero p1, Hero p2) {
         return enemy(p1.team(), p2.team());
     }
 
-    public boolean hasEnemy(Pirate pirate, Collection<Pirate> heroes) {
+    public boolean hasEnemy(Hero hero, Collection<Hero> heroes) {
         return heroes.stream()
-                .anyMatch(p -> enemy(pirate,p));
+                .anyMatch(p -> enemy(hero,p));
     }
 
     public void nextTurn() {
@@ -145,28 +164,27 @@ public class Game implements Serializable {
         cells.put(newLoc,oldCell);
         cells.put(oldLoc,newCell);
 
-        oldCell.heroes(0).forEach(p->p.setLoc(newLoc));
+        oldCell.heroes(0).forEach(h->h.setLoc(newLoc));
     }
 
-    public void movePirate(Pirate p, Loc newLoc, boolean withGold) {
-        Loc oldLoc = p.getLoc();
-        p.setLoc(newLoc);
+    public void moveHero(Hero h, Loc newLoc, boolean withGold) {
+        Loc oldLoc = h.getLoc();
+        h.setLoc(newLoc);
         Cell oldCell = cells.get(oldLoc);
         Cell newCell = cells.get(newLoc);
-        int index = oldCell.index(p);
+        int index = oldCell.index(h);
         boolean stay = oldLoc.equals(newLoc);
-        //if (stay && ! oldLoc.equals(newLoc)) throw new IllegalArgumentException();
 
-        oldCell.removeHero(index,p);
+        oldCell.removeHero(index,h);
         if (withGold) oldCell.takeGold(index);
         index = stay ? index+1 : 0;
         if (index>=newCell.count()) throw new IllegalStateException();
-        newCell.addHero(index, p);
+        newCell.addHero(index, h);
         if (withGold) newCell.addGold(index);
     }
 
-    public void returnToShip(Pirate p) {
-        movePirate(p, ships[p.team()],false);
+    public void returnToShip(Hero h) {
+        moveHero(h, ships[h.team()],false);
     }
 
     public String getId() {return id;}
