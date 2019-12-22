@@ -119,19 +119,19 @@ function selectPirate(p:Pirate) {
 }
 
 function selectWithGold() {
-    $("#goldIcon").addClass("teamSelected");
     if (withGold) return;
     if (selPirate == undefined) return;
     unselectFieldCells();
     withGold = true;
+    $("#goldIcon").addClass("teamSelected");
     selectFieldCells();
 }
 
 function unselectWithGold() {
-    $("#goldIcon").removeClass("teamSelected");
     if (!withGold) return;
     unselectFieldCells();
     withGold = false;
+    $("#goldIcon").removeClass("teamSelected");
     selectFieldCells();
 }
 
