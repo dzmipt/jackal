@@ -77,8 +77,19 @@ function resetTop(currentTeam:number) {
     for(let i=0;i<6;i++) {
         let h = $("#hero"+i).hide();
         if (Hero.get(new HeroId(currentTeam,i)).hidden) continue;
-        h.attr("src","/img/team"+currentTeam+".png").show();
+        h.attr("src","/img/team"+currentTeam+"cell.png").show();
     }
+
+    let enabled:boolean = Hero.heroes.some(h => {return h.rumReady});
+    let el = $("#rumIcon");
+    if (enabled) el.show();
+    else el.hide();
+
+    enabled = Hero.heroes.some(h => {return h.stepsWithGold.length>0});
+    el = $("#goldIcon");
+    if (enabled) el.show();
+    else el.hide();
+
 }
 
 let selHero:Hero = undefined;
