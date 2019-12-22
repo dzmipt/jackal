@@ -69,7 +69,16 @@ function resetTeam(view:any) {
         setTeamIcon(team, view.rum[team], "teamrum", "teamrumtext");
     }
 
-    //resetTop(<number>view.currentTeam, view,pirates);
+    resetTop(<number>view.currentTeam, view.pirates);
+}
+
+function resetTop(currentTeam:number, pirates:any) {
+    for(let i=0;i<6;i++) {
+        let h = $("#hero"+i).hide();
+        if (i>=3) continue;
+        if (pirates[currentTeam][i].dead) continue;
+        h.attr("src","/img/team"+currentTeam+".png").show();
+    }
 }
 
 let selPirate:Pirate = undefined;
@@ -103,6 +112,7 @@ function selectFieldCells() {
 
 function unselectPirate() {
     if (selPirate == undefined) return;
+    $("#hero"+selPirate.num).removeClass("teamSelected");
     unselectFieldPirate(selPirate);
     let p = getSelectedPirate();
     cell(p.loc).removeClass("fieldPirateSelected");
@@ -111,6 +121,7 @@ function unselectPirate() {
 }
 function selectPirate(p:Pirate) {
     unselectPirate();
+    $("#hero"+p.num).addClass("teamSelected");
     selPirate = p;
     selectFieldPirate(selPirate);
     let pirate = getSelectedPirate();

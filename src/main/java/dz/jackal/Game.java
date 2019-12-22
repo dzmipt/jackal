@@ -20,15 +20,15 @@ public class Game implements Serializable {
     private boolean startTurn = true;
 
     private static MoveCell[] moves = new MoveCell[] {
-            new KnightCell(),
-            new IceCell(),
+            /*new KnightCell(),
+            new IceCell(),*/
             new ArrowMoveCell(Move.N),
-            new ArrowMoveCell(Move.NW),
+            /*new ArrowMoveCell(Move.NW),
             new ArrowMoveCell(Move.E, Move.W),
             new ArrowMoveCell(Move.NW, Move.SE),
             new ArrowMoveCell(Move.E, Move.W, Move.N, Move.S),
             new ArrowMoveCell(Move.NW, Move.NE, Move.SW, Move.SE),
-            new ArrowMoveCell(Move.NW, Move.E, Move.S)
+            new ArrowMoveCell(Move.NW, Move.E, Move.S)*/
     };
 
     private Game(String id) {
