@@ -2,31 +2,70 @@ const LEN = 70;
 const pirateColor = ["white","yellow","red","black"];
 const selPirateBorderColor = ["blue","blue","blue","cornsilk"];
 
+const heroesColor = ["ForestGreen","SaddleBrown","DarkBlue"];
+const selHeroesBorderColor = ["cornsilk","cornsilk","cornsilk"];
+
 class Loc {
     row:number;
     col:number;
-    constructor(row,col) {this.row = row;this.col = col}
+    constructor(row,col) {this.row = row; this.col = col}
     equals(x:Loc) {return this.row == x.row && this.col == x.col}
     index() {return ""+this.row+"_"+this.col}
+
+    static ALL:Loc[];
 }
-let LocAll = [];
+Loc.ALL = [];
 for(let row=0;row<13;row++) {
     for(let col=0;col<13;col++) {
-        LocAll.push(new Loc(row,col));
+        Loc.ALL.push(new Loc(row,col));
     }
 }
 
-class Pirate {
+class HeroId {
     team:number;
     num:number;
     constructor(team,num) {this.team = team; this.num = num}
-    equals(x:Pirate) {return this.team == x.team && this.num == x.num}
+    equals(x:HeroId) {return this.team == x.team && this.num == x.num}
     index() {return ""+this.team+"_"+this.num}
+    static ALL:HeroId[];
 }
-let PirateAll = [];
+HeroId.ALL = [];
 for(let team=0;team<4;team++){
     for(let num=0;num<3;num++){
-        PirateAll.push(new Pirate(team,num));
+        HeroId.ALL.push(new HeroId(team,num));
+    }
+}
+HeroId.ALL.push(new HeroId(-1,3)); // Ben Gunn
+HeroId.ALL.push(new HeroId(-1,4)); // Friday
+HeroId.ALL.push(new HeroId(-1,5)); // Missioner
+
+class Hero {
+    id:HeroId;
+    hidden:boolean;
+    loc:Loc;
+    steps:Loc[];
+    stepsWithGold:Loc[];
+    index:number;
+    count:number;
+    constructor(id:HeroId, hidden:boolean, loc:Loc, steps:Loc[], stepsWithGold: Loc[], index:number, count:number) {
+        this.id = id;
+        this.hidden = hidden;
+        this.loc = loc;
+        this.steps = steps;
+        this.stepsWithGold = stepsWithGold;
+        this.index = index;
+        this.count = count;
+    }
+    canGo():boolean { return this.steps.length>0 || this.stepsWithGold.length>0}
+    equals(h:Hero) {return this.id.equals(h.id)}
+    static heroes:Hero[];
+    static get(id:HeroId):Hero {
+        let index;
+        if(id.num == 3) index = 12;
+        else if(id.num == 4) index = 13;
+        else if(id.num == 5) index = 14;
+        else index = id.team * 3 + id.num;
+        return Hero.heroes[index];
     }
 }
 
@@ -38,18 +77,14 @@ function setCellLoc(el:JQuery,loc:Loc) {
     return el.css(getCoordinate(loc));
 }
 
-type OverData = Loc | Pirate;
-
-function addEventListeners(el:JQuery,data:OverData) {
-         return el
-                .on("mouseenter",data, (event) => {evtOver(event.data); } )
-                .on("mouseleave",data, (event) => {evtLeave(event.data); } )
-                .on("click",data, (event) => {evtClick(event.data); } );
-
+function getHeroSelectedBorderColor(id:HeroId) {
+    return id.num<3 ? selPirateBorderColor[id.team] : selHeroesBorderColor[id.num];
 }
-function pirateEl(team:number) {
+
+function heroEl(id:HeroId) {
+    let color = id.num<3 ? pirateColor[id.team] : heroesColor[id.num]
     return $("<circle r='10' stroke-width='2' stroke='black'/>")
-                     .attr("fill",pirateColor[team]);
+                     .attr("fill",color);
 }
 
 function goldEl() {
@@ -59,31 +94,6 @@ function goldEl() {
 function goldTextEl() {
      return $("<text fill='MediumBlue'/>");
 }
-
-var overData:OverData = undefined;
-function evtLeave(data:OverData) {
-    if (overData != undefined) {
-        if(overData instanceof Loc) fieldLeave(overData);
-//        else panelLeave(overData);
-    }
-
-    if (data != overData) return;
-    overData = undefined;
-}
-function evtOver(data:OverData) {
-    evtLeave(overData);
-    overData=data;
-
-    if(overData instanceof Loc) fieldOver(overData);
-//    else panelOver(overData);
-
-}
-
-function evtClick(data:OverData) {
-    if(overData instanceof Loc) fieldClick(overData);
-//    else panelClick(overData);
-}
-
 
 function animateRum(animateRum:any) {
     if (animateRum == null) return;
@@ -102,59 +112,80 @@ function animateRum(animateRum:any) {
 }
 
 let id:string="";
-let pirates:any = undefined;
+
+function setCells(cells:any) {
+    Loc.ALL.forEach(loc => {
+            cell(loc).attr("src", "/img/"+cells[loc.row][loc.col].icon+".png");
+            let count = cells[loc.row][loc.col].count;
+            for(let i=0;i<count; i++) {
+                showGold(loc,count,i,cells[loc.row][loc.col].gold[i]);
+            }
+    });
+}
+function getLoc(obj:any):Loc {
+    return new Loc(obj.row,obj.col);
+}
+function getLocs(objs:any):Loc[] {
+    let l:Loc[] = [];
+    if (objs == null) return l;
+    for(let obj of <any[]>objs) {
+        l.push(getLoc(obj));
+    }
+    return l;
+}
+
+function setHeroes(view:any) {
+    let vheroes:any = view.heroes;
+    Hero.heroes = [];
+    for(let i in HeroId.ALL) {
+        let vh:any = vheroes[i];
+        let id:HeroId = HeroId.ALL[i];
+        let loc = getLoc(vh.loc);
+        Hero.heroes.push(new Hero(id, vh.hidden, loc,
+                                    getLocs(vh.steps), getLocs(vh.stepsWithGold),
+                                    vh.index, view.cells[loc.row][loc.col].count) );
+    }
+}
+
+function resetFieldHeroes(animate:boolean) {
+    unselectHero();
+
+    let lastHero:Hero = undefined;
+    let numToMove = 0;
+
+    for(let hero of Hero.heroes) {
+        if (hero.canGo()) {
+            showHeroOnTop(hero);
+            lastHero = hero;
+            numToMove++;
+        }
+        setHero(hero, animate);
+
+    }
+
+    refreshSelectableFieldCell();
+    if (numToMove == 1) {
+        selectHero(lastHero);
+    }
+}
 
 function setView(view:any) {
     id = view.id;
-    resetTeam(view);
-    unselectPirate();
     resetGold();
+    setCells(view.cells);
+    setHeroes(view);
+    resetPanels(view);
     let animate = view.animateShip == null;
-    LocAll.forEach(loc => {
-            cell(loc).attr("src", "/img/"+view.cells[loc.row][loc.col].icon+".png");
-            let count = view.cells[loc.row][loc.col].count;
-            for(let i=0;i<count; i++) {
-                showGold(loc,count,i,view.cells[loc.row][loc.col].gold[i]);
-            }
-    });
-    let selPirate:Pirate = undefined;
-    let numToMove = 0;
-    pirates = view.pirates;
-
-    PirateAll.forEach(pirate => {
-        let p = pirates[pirate.team][pirate.num];
-        if (p.steps.length > 0 || p.stepsWithGold.length > 0) {
-            showPirateOnTop(pirate);
-        }
-    });
-
-    PirateAll.forEach(pirate => {
-            let p = pirates[pirate.team][pirate.num];
-            p.loc = new Loc(p.loc.row, p.loc.col);
-            let loc = p.loc;
-            for(let i=0;i<p.steps.length;i++) p.steps[i] = new Loc(p.steps[i].row, p.steps[i].col);
-            for(let i=0;i<p.stepsWithGold.length;i++) p.stepsWithGold[i] = new Loc(p.stepsWithGold[i].row, p.stepsWithGold[i].col);
-            setPirate(pirate,loc,animate,view.cells[loc.row][loc.col].count,p.index);
-            if (p.dead) hidePirate(pirate);
-            if (p.steps.length > 0 || p.stepsWithGold.length > 0) {
-                selPirate = pirate;
-                numToMove++;
-            }
-    });
-    refreshSelectableFieldCell();
-    if (numToMove == 1) {
-        selectPirate(selPirate);
-    }
-
+    resetFieldHeroes(animate);
     animateRum(view.animateRum);
 }
 
 function initGame() {
     $(window).keydown(e=>{
         if (e.keyCode == 27) { //esc
-            unselectPirate();
+            unselectHero();
         } else if (e.keyCode == 32) { //space
-            switchSelectedPirate();
+            switchSelectedHero();
         }
         if (e.shiftKey) selectWithGold();
         else unselectWithGold();

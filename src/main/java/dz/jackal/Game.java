@@ -45,7 +45,8 @@ public class Game implements Serializable {
             else if ((row == 0 || row == 12 || col == 0 || col == 12) ||
                     ((row == 1 || row == 11) && (col == 1 || col == 11))) icon = Icon.SEA;
             else if (random.nextInt(10)>5) icon = Icon.LAND;
-            else icon = Icon.MOVE; //icon = Icon.LAND; //Icon.MOUNTAIN;//Icon.LAND;
+            //else icon = Icon.MOVE; //icon = Icon.LAND; //Icon.MOUNTAIN;//Icon.LAND;
+            else icon = Icon.MOUNTAIN;
 
             Cell cell;
             if (icon == Icon.MOUNTAIN) {
@@ -79,27 +80,20 @@ public class Game implements Serializable {
             int team;
             Loc loc;
             if (heroId.pirate()) {
-                team = heroId.group();
+                team = heroId.team();
                 loc = ships[team];
             } else {
+                if (heroId.benGunn()) loc = new Loc(6,5);
+                else if (heroId.friday()) loc = new Loc(6,6);
+                else if (heroId.missioner()) loc = new Loc(6,7);
+                else throw new IllegalStateException();
                 team = -1;
-                loc = new Loc(6,1+heroId.group());
+                cells.put(loc, new Cell(Icon.LAND, 1));
             }
             Hero hero = new Hero(heroId, team, loc);
             heroes.put(heroId, hero);
-            if (heroId.pirate()) {
-                getTeamShip(team).addHero(0, hero);
-            }
+            getCell(loc).addHero(0,hero);
         }
-
-        cells.put(new Loc(6,5),new Cell(Icon.LAND,1));
-        getCell(new Loc(6,5)).addHero(0, getHero(HeroId.BENGUNN_ID));
-
-        cells.put(new Loc(6,6),new Cell(Icon.LAND,1));
-        getCell(new Loc(6,6)).addHero(0, getHero(HeroId.FRIDAY_ID));
-
-        cells.put(new Loc(6,7),new Cell(Icon.LAND,1));
-        getCell(new Loc(6,7)).addHero(0, getHero(HeroId.MISSIONER_ID));
     }
 
     public Cell getCell(Loc loc) {return cells.get(loc);}

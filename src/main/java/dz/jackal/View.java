@@ -5,13 +5,14 @@ import dz.jackal.cell.MoveCell;
 import dz.jackal.cell.ShipCell;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class View {
 
     public String id;
     public CellView[][] cells;
-    public PirateView[][] pirates;
+    public List<PirateView> heroes;
     public AnimateShip animateShip = null;
     public AnimateRum animateRum = null;
     public int[] gold = new int[4];
@@ -52,18 +53,18 @@ public class View {
 
     private void initPirateView(Game game) {
         HeroId moveHeroId = null;
-        pirates = new PirateView[7][3];
+        heroes = new ArrayList<>();
         for(HeroId id: HeroId.ALL) {
             Hero hero = game.getHero(id);
             PirateView pirateView;
             int index;
             if (hero.dead()) {
                 pirateView = new PirateView(new Loc(0, 0));
-                pirateView.dead = true;
+                pirateView.hidden = true;
                 index = 0;
             } else if (game.getCell(hero.getLoc()).closed()) {// additional heroes not discovered
                 pirateView = new PirateView(new Loc(0,0));
-                pirateView.dead = true;
+                pirateView.hidden = true;
                 index = 0;
             } else {
                 Loc loc = hero.getLoc();
@@ -89,14 +90,20 @@ public class View {
             }
 
             pirateView.index = index;
-            pirates[id.group()][id.num()] = pirateView;
+            heroes.add(pirateView);
         }
 
         if (moveHeroId != null) {
-            for (HeroId id: HeroId.ALL) {
+            Iterator<HeroId> i = HeroId.ALL.iterator();
+            Iterator<PirateView> j = heroes.iterator();
+            while (i.hasNext()) {
+                HeroId id = i.next();
+                PirateView pirateView = j.next();
+
                 if (id.equals(moveHeroId)) continue;
-                pirates[id.group()][id.num()].steps.clear();
-                pirates[id.group()][id.num()].stepsWithGold.clear();
+
+                pirateView.steps.clear();
+                pirateView.stepsWithGold.clear();
             }
         }
     }
@@ -104,8 +111,8 @@ public class View {
     private PirateView getPirateView(Game game, Loc loc, Hero hero, boolean hasGold) {
         Cell cell = game.getCell(loc);
         PirateView pirateView = new PirateView(loc);
-        pirateView.dead = hero.dead();
-        if (pirateView.dead) return pirateView;
+        pirateView.hidden = hero.dead();
+        if (pirateView.hidden) return pirateView;
         if (game.getCurrentTeam() != hero.team() ) return pirateView;
 
         if (cell.move()) return getPirateMoveView(game, pirateView, hero, hasGold);
@@ -183,8 +190,8 @@ public class View {
 
     public static class PirateView {
         public Loc loc;
-        public boolean dead;
-        public int index;
+        public boolean hidden;
+        public int index = 0;
         public List<Loc> steps = new ArrayList<>();
         public List<Loc> stepsWithGold = new ArrayList<>();
         public PirateView(Loc loc) {

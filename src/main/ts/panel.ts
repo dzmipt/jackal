@@ -42,7 +42,7 @@ function initRight() {
                     $("<svg/>")
                         .attr("id","svgteam"+team)
                         .addClass("team")
-                        .append( pirateEl(team)
+                        .append( heroEl(new HeroId(team,0))
                                     .attr({cx:35,cy:35})
                         )
                 )
@@ -60,7 +60,7 @@ function setTeamIcon(team:number,val:number,divId:string,textId:string) {
     }
 }
 
-function resetTeam(view:any) {
+function resetPanels(view:any) {
     $("div.team").removeClass("teamSelected");
     $("div.team").addClass("teamUnselected");
     $("#team"+view.currentTeam).addClass("teamSelected");
@@ -69,19 +69,18 @@ function resetTeam(view:any) {
         setTeamIcon(team, view.rum[team], "teamrum", "teamrumtext");
     }
 
-    resetTop(<number>view.currentTeam, view.pirates);
+    resetTop(<number>view.currentTeam);
 }
 
-function resetTop(currentTeam:number, pirates:any) {
+function resetTop(currentTeam:number) {
     for(let i=0;i<6;i++) {
         let h = $("#hero"+i).hide();
-        if (i>=3) continue;
-        if (pirates[currentTeam][i].dead) continue;
+        if (Hero.get(new HeroId(currentTeam,i)).hidden) continue;
         h.attr("src","/img/team"+currentTeam+".png").show();
     }
 }
 
-let selPirate:Pirate = undefined;
+let selHero:Hero = undefined;
 let withGold:boolean = false;
 
 function goldIconClick() {
@@ -92,46 +91,38 @@ function goldIconClick() {
     }
 }
 
-function getSelectedPirate() {
-    if (selPirate == undefined) return undefined;
-    return pirates[selPirate.team][selPirate.num];
-}
 function unselectFieldCells() {
-    let p = getSelectedPirate();
-    if (p == undefined) return;
-    p.steps.forEach(step => {unselectCell(step)});
+    if (selHero == undefined) return;
+    selHero.steps.forEach(step => {unselectCell(step)});
     refreshSelectableFieldCell();
 }
 function selectFieldCells() {
-    let p = getSelectedPirate();
-    if (p == undefined) return;
-    let steps = withGold ? p.stepsWithGold : p.steps;
+    if (selHero == undefined) return;
+    let steps = withGold ? selHero.stepsWithGold : selHero.steps;
     steps.forEach(step => {selectCell(step,withGold)});
     refreshSelectableFieldCell();
 }
 
-function unselectPirate() {
-    if (selPirate == undefined) return;
-    $("#hero"+selPirate.num).removeClass("teamSelected");
-    unselectFieldPirate(selPirate);
-    let p = getSelectedPirate();
-    cell(p.loc).removeClass("fieldPirateSelected");
+function unselectHero() {
+    if (selHero == undefined) return;
+    $("#hero"+selHero.id.num).removeClass("teamSelected");
+    unselectFieldHero(selHero);
+    cell(selHero.loc).removeClass("fieldPirateSelected");
     unselectFieldCells();
-    selPirate = undefined;
+    selHero = undefined;
 }
-function selectPirate(p:Pirate) {
-    unselectPirate();
-    $("#hero"+p.num).addClass("teamSelected");
-    selPirate = p;
-    selectFieldPirate(selPirate);
-    let pirate = getSelectedPirate();
-    cell(pirate.loc).addClass("fieldPirateSelected");
+function selectHero(h:Hero) {
+    unselectHero();
+    $("#hero"+h.id.num).addClass("teamSelected");
+    selHero = h;
+    selectFieldHero(selHero);
+    cell(selHero.loc).addClass("fieldPirateSelected");
     selectFieldCells();
 }
 
 function selectWithGold() {
     if (withGold) return;
-    if (selPirate == undefined) return;
+    if (selHero == undefined) return;
     unselectFieldCells();
     withGold = true;
     $("#goldIcon").addClass("teamSelected");
