@@ -1,6 +1,7 @@
 function initPanel() {
     initRight();
     $("#goldIcon").click(goldIconClick);
+    $("#rumIcon").click(rumIconClick);
 }
 
 function initRight() {
@@ -89,6 +90,13 @@ function goldIconClick() {
     } else {
         selectWithGold();
     }
+}
+
+function rumIconClick() {
+    if (selHero == undefined) return;
+    if (!selHero.rumReady) return;
+    let rum = {id:id, heroId:selHero.id};
+    send("drink", rum);
 }
 
 function unselectFieldCells() {

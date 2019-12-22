@@ -47,7 +47,9 @@ class Hero {
     stepsWithGold:Loc[];
     index:number;
     count:number;
-    constructor(id:HeroId, hidden:boolean, loc:Loc, steps:Loc[], stepsWithGold: Loc[], index:number, count:number) {
+    rumReady:boolean;
+    constructor(id:HeroId, hidden:boolean, loc:Loc, steps:Loc[], stepsWithGold: Loc[],
+                index:number, count:number, rumReady:boolean) {
         this.id = id;
         this.hidden = hidden;
         this.loc = loc;
@@ -55,6 +57,7 @@ class Hero {
         this.stepsWithGold = stepsWithGold;
         this.index = index;
         this.count = count;
+        this.rumReady = rumReady;
     }
     canGo():boolean { return this.steps.length>0 || this.stepsWithGold.length>0}
     equals(h:Hero) {return this.id.equals(h.id)}
@@ -143,7 +146,8 @@ function setHeroes(view:any) {
         let loc = getLoc(vh.loc);
         Hero.heroes.push(new Hero(id, vh.hidden, loc,
                                     getLocs(vh.steps), getLocs(vh.stepsWithGold),
-                                    vh.index, view.cells[loc.row][loc.col].count) );
+                                    vh.index, view.cells[loc.row][loc.col].count,
+                                    vh.rumReady));
     }
 }
 

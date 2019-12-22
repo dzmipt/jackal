@@ -112,6 +112,30 @@ public class Game implements Serializable {
     public int getTeamRum(int team) {
         return getTeamShip(team).countRum();
     }
+    public void drinkRumBottle(int theTeam) {
+        int team = -1;
+        if (getTeamRum(theTeam)>0) team = theTeam;
+        else {
+            for (int t=0;t<4;t++) {
+                if (enemy(t, theTeam)) continue;
+                if (getTeamRum(t)==0) continue;
+                team = t;
+                break;
+            }
+            if (team == -1) throw new IllegalStateException("No rum to drink in team " + theTeam);
+        }
+        ShipCell ship = getTeamShip(team);
+        int rum = ship.countRum();
+        ship.setRum(rum-1);
+    }
+    public int getAllTeamRum(int theTeam) {
+        int rum = 0;
+        for(int team=0;team<4;team++) {
+            if (enemy(team, theTeam)) continue;
+            rum += getTeamRum(team);
+        }
+        return rum;
+    }
 
     public void addRum(int team, int rum) {
         Cell ship = getTeamShip(team);
@@ -183,6 +207,7 @@ public class Game implements Serializable {
 
     public String getId() {return id;}
     public View getView() {return new View(this);}
+    public View getView(Hero selHero) {return new View(this, selHero);}
 
     private static Map<String,Game> gameMap = new HashMap<>();
 

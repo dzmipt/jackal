@@ -9,36 +9,24 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Controller
-public class GoController {
+public class GoController extends GameController {
     private final static Logger log = LoggerFactory.getLogger(GoController.class);
 
     @MessageMapping("/go")
     @SendTo("/jackal/view")
     public View action(GoRequest request) {
-        Game game = Game.getGame(request.id);
-        int beforeStep = game.getTurn();
-        View view = processAction(request);
-        boolean continueTurn = beforeStep == game.getTurn();
-        if (continueTurn) {
-            game.setContinueTurn();
-        } else {
-            try {
-                DbGames.saveGame(game);
-            } catch (IOException e) {
-                log.error("Can't save game " + game.getId(), e);
-            }
-        }
-        return view;
+        return super.action(request);
     }
 
-    private View processAction(GoRequest request) {
+    @Override
+    protected View processAction(Request aRequest) {
+        GoRequest request = (GoRequest) aRequest;
         Game game = Game.getGame(request.id);
         Hero hero = game.getHero(request.hero);
         final Loc oldLoc = hero.getLoc();
@@ -163,8 +151,7 @@ public class GoController {
         }
     }
 
-    public static class GoRequest {
-        public String id;
+    public static class GoRequest extends Request {
         public HeroId hero;
         public Loc loc;
         public boolean withGold;

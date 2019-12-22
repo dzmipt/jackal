@@ -20,10 +20,18 @@ public class View {
     public int currentTeam;
 
     public View(Game game) {
+        init(game, null);
+    }
+
+    public View(Game game, Hero selHero) {
+        init(game, selHero);
+    }
+
+    private void init(Game game, Hero selHero) {
         id = game.getId();
 
         initCellView(game);
-        initPirateView(game);
+        initPirateView(game, selHero);
         currentTeam = game.getCurrentTeam();
         for(int team=0;team<4;team++) {
             gold[team] = game.getTeamGold(team);
@@ -51,71 +59,56 @@ public class View {
         }
     }
 
-    private void initPirateView(Game game) {
-        HeroId moveHeroId = null;
+    private void initPirateView(Game game, Hero selHero) {
         heroes = new ArrayList<>();
         for(HeroId id: HeroId.ALL) {
             Hero hero = game.getHero(id);
-            PirateView pirateView;
-            int index;
-            if (hero.dead()) {
-                pirateView = new PirateView(new Loc(0, 0));
-                pirateView.hidden = true;
-                index = 0;
-            } else if (game.getCell(hero.getLoc()).closed()) {// additional heroes not discovered
-                pirateView = new PirateView(new Loc(0,0));
-                pirateView.hidden = true;
-                index = 0;
-            } else {
-                Loc loc = hero.getLoc();
-                Cell cell = game.getCell(loc);
-                if (cell.move()) moveHeroId = id;
-                index = cell.index(hero);
-                boolean hasGold = cell.gold(index) > 0;
-
-                if (cell.multiStep()) {
-                    if (index + 1 == cell.count()) {
-                        pirateView = getPirateView(game, loc, hero, hasGold);
-                    } else {
-                        pirateView = new PirateView(loc);
-                        pirateView.steps.add(loc);
-                        if (hasGold) {
-                            boolean hasEnemy = game.hasEnemy(hero, cell.heroes(index + 1));
-                            if (!hasEnemy) pirateView.stepsWithGold.add(loc);
-                        }
-                    }
-                } else {
-                    pirateView = getPirateView(game, loc, hero, hasGold);
-                }
-            }
-
-            pirateView.index = index;
+            PirateView pirateView = new PirateView();
             heroes.add(pirateView);
-        }
 
-        if (moveHeroId != null) {
-            Iterator<HeroId> i = HeroId.ALL.iterator();
-            Iterator<PirateView> j = heroes.iterator();
-            while (i.hasNext()) {
-                HeroId id = i.next();
-                PirateView pirateView = j.next();
+            if (hero.dead()) continue;
+            if (game.getCell(hero.getLoc()).closed()) {// additional heroes not discovered
+                continue;
+            }
 
-                if (id.equals(moveHeroId)) continue;
+            Loc loc = hero.getLoc();
+            Cell cell = game.getCell(loc);
+            int index = cell.index(hero);
+            boolean hasGold = cell.gold(index) > 0;
 
-                pirateView.steps.clear();
-                pirateView.stepsWithGold.clear();
+            pirateView.loc = loc;
+            pirateView.index = index;
+            pirateView.hidden = false;
+
+            if (selHero != null && ! hero.equals(selHero)) continue;
+            if (game.getCurrentTeam() != hero.team() ) continue;
+
+            if (cell.multiStep()) {
+                if (index + 1 == cell.count()) {
+                    addSteps(pirateView, game, loc, hero, hasGold);
+                } else {
+                    pirateView.steps.add(loc);
+                    if (hasGold) {
+                        boolean hasEnemy = game.hasEnemy(hero, cell.heroes(index + 1));
+                        if (!hasEnemy) pirateView.stepsWithGold.add(loc);
+                    }
+                    if (game.getAllTeamRum(hero.team())>0) {
+                        pirateView.rumReady = true;
+                    }
+                }
+            } else {
+                addSteps(pirateView, game, loc, hero, hasGold);
             }
         }
+
     }
 
-    private PirateView getPirateView(Game game, Loc loc, Hero hero, boolean hasGold) {
+    private void addSteps(PirateView pirateView, Game game, Loc loc, Hero hero, boolean hasGold) {
         Cell cell = game.getCell(loc);
-        PirateView pirateView = new PirateView(loc);
-        pirateView.hidden = hero.dead();
-        if (pirateView.hidden) return pirateView;
-        if (game.getCurrentTeam() != hero.team() ) return pirateView;
 
-        if (cell.move()) return getPirateMoveView(game, pirateView, hero, hasGold);
+        if (cell.move()) {
+            addStepsMove(pirateView,game, hero, hasGold);
+        }
 
         for (int dr=-1; dr<=1; dr++) {
             for (int dc=-1; dc<=1; dc++) {
@@ -149,10 +142,9 @@ public class View {
                 pirateView.stepsWithGold.add(newLoc);
             }
         }
-        return pirateView;
     }
 
-    private PirateView getPirateMoveView(Game game, PirateView pirateView, Hero hero, boolean hasGold){
+    private void addStepsMove(PirateView pirateView, Game game, Hero hero, boolean hasGold){
         MoveCell cell = (MoveCell) game.getCell(hero.getLoc());
         Loc[] steps = cell.nextSteps(hero.getPrevLoc(), hero.getLoc());
         for (Loc step:steps) {
@@ -167,7 +159,6 @@ public class View {
 
             pirateView.stepsWithGold.add(step);
         }
-        return pirateView;
     }
 
     public View setAnimateShip(AnimateShip animateShip) {
@@ -189,14 +180,12 @@ public class View {
     }
 
     public static class PirateView {
-        public Loc loc;
-        public boolean hidden;
+        public Loc loc = new Loc(0,0);
+        public boolean hidden = true;
+        public boolean rumReady = false;
         public int index = 0;
         public List<Loc> steps = new ArrayList<>();
         public List<Loc> stepsWithGold = new ArrayList<>();
-        public PirateView(Loc loc) {
-            this.loc = loc;
-        }
     }
 
     public static class AnimateShip {
