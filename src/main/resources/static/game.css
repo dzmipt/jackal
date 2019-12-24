@@ -4,6 +4,22 @@
       position: absolute;
       box-sizing: border-box;
 }
+.field {
+    position: absolute;
+    left:0px;
+    top:0px;
+    width: 910px; /* 910 = 13 * 70 */
+    height: 910px;
+}
+
+.mainfield {
+    display:inline-block;
+    border:solid black;
+    border-width:0px 2px 2px 2px;
+    float:left;
+    width: 910px; /* 910 = 13 * 70 */
+    height: 910px;
+}
 
 .button {
     position: absolute;
@@ -72,6 +88,9 @@
     width:70px;
     position:absolute;
 }
+.disabled {
+    opacity: 0.3;
+}
 div.team {
     position: relative;
 }
@@ -82,12 +101,6 @@ div.team {
 .teamSelected {
     border:solid Magenta;
     border-width: 2px;
-}
-.field {
-    position: relative;
-    margin: 0px 0px 0px 0px;
-    width: 910px; /* 910 = 13 * 70 */
-    height: 910px;
 }
 
 .fieldPirateSelected {

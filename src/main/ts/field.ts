@@ -1,17 +1,14 @@
 let maxGold = 40;
 let maxPirateText = 4*3+3;
 function initField() {
-    let field = $('#field');
+    let cells = $('#cells');
     Loc.ALL.forEach(loc => {
         let cell = setCellLoc($("<img/>"),loc)
                         .attr("id","cell"+loc.index())
                         .addClass("cell");
-         field.append(cell);
+         cells.append(cell);
     });
-    let svg = $("<svg/>")
-                    .attr("id","svg")
-                    .addClass("field");
-    field.append(svg);
+    let svg = $("#svg");
 
     for (let i=0; i<maxGold; i++) {
         svg.append(
@@ -25,29 +22,37 @@ function initField() {
                 .hide()
         );
     }
+    let field = $("#field");
+    field.html(field.html()); // workaround to fix svg element
 
+    let heroes = $("#heroes");
     for(let id of HeroId.ALL) {
-        svg.append( heroEl(id)
+        heroes.append( heroEl(id)
                     .attr("id","hero"+id.index())
                     .hide()
                   );
     };
 
-    for(let i=0;i<maxPirateText;i++){
-        svg.append($("<text fill='black'/>")
-                    .attr("id","piratetext"+i)
-                    .hide()
-        );
-    }
-
-    field.html(field.html()); // workaround to fix svg element
+    let fronts = $("#fronts");
     Loc.ALL.forEach(loc => {
          let front = setCellLoc($("<div/>"),loc)
                         .attr("id","front"+loc.index())
+                        .css("z-index","10")
                         .addClass("cell");
          front.click(loc, event => {fieldClick(event.data)});
-         field.append(front);
+         fronts.append(front);
     });
+}
+
+function getHeroImgSrc(id:HeroId, selected:boolean) {
+    let src:string = id.num<3 ? "team"+id.team : "hero"+id.num;
+    if (selected) src = src + "sel";
+    return "/img/"+src+".png";
+}
+function heroEl(id:HeroId) {
+    return $("<img/>")
+                .attr("src",getHeroImgSrc(id, false))
+                .css("position","absolute");
 }
 
 function hero(hero:Hero) {return $("#hero"+hero.id.index())}
@@ -83,32 +88,6 @@ function isSelectable(loc:Loc) {
     return front(loc).hasClass("frontSelectable");
 }
 
-function switchSelectedHero() {
-    if (selHero == undefined) return;
-
-    let loc = selHero.loc;
-    let firstHero:Hero = undefined;
-    let foundHero:Hero = undefined;
-    let next = false;
-    for(let h of Hero.heroes) {
-        if (! loc.equals(h.loc)) continue;
-        if (h.equals(selHero)) {
-            next = true;
-        } else if (next) {
-            foundHero = h;
-            break;
-        } else if (firstHero == undefined) {
-            firstHero = h;
-        }
-    }
-
-    if (foundHero != undefined) {
-        selectHero(foundHero);
-    } else if (firstHero != undefined) {
-        selectHero(firstHero);
-    }
-}
-
 function fieldClick(loc:Loc) {
     if (isSelected(loc)) {
         let go={id:id, hero:selHero.id, loc:loc, withGold:withGold};
@@ -139,14 +118,14 @@ const heroDelta = [
       [22,55],
       [58,55] ]  // 5
 ]
-const heroTextDelta = [-3,5];
+//const heroTextDelta = [-3,5];
 
 const moneyEllipseBottomDelta = [52,57];
 const moneyEllipseDelta = [-4,2];
 const moneyTextDelta = [-4,5];
 const moneyText10Delta = [-8,5];
 
-function setHero(h:Hero, animate:boolean) {
+function setHero(h:Hero, pos:number, count:number, animate:boolean) {
     if (h.hidden) {
         hideHero(h);
         return;
@@ -154,78 +133,40 @@ function setHero(h:Hero, animate:boolean) {
 
     let el = hero(h);
     let hd = heroDelta[h.count-1][h.index];
-    let attr={cy:h.loc.row*LEN+hd[1],cx:h.loc.col*LEN+hd[0]};
+    let attr={top:h.loc.row*LEN+hd[1]-10,left:h.loc.col*LEN+hd[0]-10};
     el = el.show();
 
     if (animate) el.animate(attr,500);
     else el.css(attr);
-    let txt;
-    if (h.count>1) {
-        txt = $("#piratetext"+pirateTextIndex)
-                .attr({x:attr.cx+heroTextDelta[0], y:attr.cy+heroTextDelta[1]})
-                .empty().append(""+(h.index+1));
-        if (animate) txt.show(1000);
-        else txt.show();
-        pirateTextIndex++;
-    }
     return el;
 }
 
 const attrName = ["cx","cy","r","fill","stroke","stroke-width"];
 const cssName = ["cx","cy"];
 
-function showHeroOnTop(h:Hero) {
-    /*let id = hero(h).attr("id");
-    let lastId = $("#svg circle:last").attr("id");
-    let sid = "#" + id;
-    let slastId = "#" + lastId;
-
-    if (id == lastId) return;
-    for (let name of attrName) {
-        let value = $(sid).attr(name);
-        let valueLast = $(slastId).attr(name);
-
-        $(sid).attr(name, valueLast);
-        $(slastId).attr(name, value);
-    }
-
-    for (let name of cssName) {
-        let value = $(sid).css(name);
-        let valueLast = $(slastId).css(name);
-
-        $(sid).css(name, valueLast);
-        $(slastId).css(name, value);
-    }
-
-    $(sid).attr("id",lastId);
-    $("#svg circle:last").attr("id",id);*/
+function heroZLevel(h:Hero, level:number) {
+    hero(h).css("z-index",""+level);
 }
 
 function selectFieldHero(h:Hero) {
-    hero(h)
-        .attr({'stroke-width':'4',stroke:getHeroSelectedBorderColor(h.id)});
-    showHeroOnTop(h);
+    hero(h).attr("src",getHeroImgSrc(h.id,true));
+    heroZLevel(selHero, 2);
 }
 function unselectFieldHero(h:Hero) {
-    hero(h)
-        .attr({'stroke-width':'2',stroke:'black'});
+    hero(h).attr("src",getHeroImgSrc(h.id,false));
+    heroZLevel(selHero, 1);
 }
 
 
 let goldIndex = 0;
-let pirateTextIndex = 0;
 function resetGold() {
     for (let i=0;i<goldIndex;i++) {
         gold(i).hide();
         goldText(i).hide();
     }
     goldIndex = 0;
-
-    for(let i=0;i<pirateTextIndex;i++) {
-        $("#piratetext"+i).hide();
-    }
-    pirateTextIndex = 0;
 }
+
 function showGold(loc:Loc,count:number,index:number,g:number) {
     if (g==0) return;
     let p0 = count==1 ? moneyEllipseBottomDelta : heroDelta[count-1][index];

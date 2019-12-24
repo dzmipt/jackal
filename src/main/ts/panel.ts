@@ -12,6 +12,11 @@ function initRight() {
                 .attr("id","team"+team)
                 .addClass("team teamUnselected")
                 .append(
+                        setCellLoc($("<img/>"), new Loc(0,0))
+                            .attr("src","/img/team"+team+"cell.png")
+                            .addClass("teamicon")
+                )
+                .append(
                         setCellLoc($("<div/>"),new Loc(1,0))
                             .attr("id","teamgold"+team)
                             .addClass("teamicon")
@@ -38,14 +43,6 @@ function initRight() {
                                      .addClass("text goldtext")
                             )
                             .hide()
-                )
-                .append(
-                    $("<svg/>")
-                        .attr("id","svgteam"+team)
-                        .addClass("team")
-                        .append( heroEl(new HeroId(team,0))
-                                    .attr({cx:35,cy:35})
-                        )
                 )
         );
     }
@@ -82,16 +79,26 @@ function resetTop(currentTeam:number) {
 
     let enabled:boolean = Hero.heroes.some(h => {return h.rumReady});
     let el = $("#rumIcon");
-    if (enabled) el.show();
-    else el.hide();
+    if (enabled) el.removeClass("disabled");
+    else el.addClass("disabled");
 
-    enabled = Hero.heroes.some(h => {return h.stepsWithGold.length>0});
-    el = $("#goldIcon");
-    if (enabled) el.show();
-    else el.hide();
-
+    updateGoldIcon();
 }
 
+function updateGoldIcon() {
+    let enabled;
+    if (selHero == undefined) {
+        enabled = Hero.heroes.some(h => {return h.stepsWithGold.length>0});
+    } else {
+        enabled = selHero.stepsWithGold.length>0;
+    }
+
+    let el = $("#goldIcon");
+    if (enabled) el.removeClass("disabled");
+    else el.addClass("disabled");
+}
+
+let selectableHeroes:Hero[] = [];
 let selHero:Hero = undefined;
 let withGold:boolean = false;
 
@@ -129,6 +136,7 @@ function unselectHero() {
     cell(selHero.loc).removeClass("fieldPirateSelected");
     unselectFieldCells();
     selHero = undefined;
+    updateGoldIcon();
 }
 function selectHero(h:Hero) {
     unselectHero();
@@ -137,6 +145,7 @@ function selectHero(h:Hero) {
     selectFieldHero(selHero);
     cell(selHero.loc).addClass("fieldPirateSelected");
     selectFieldCells();
+    updateGoldIcon();
 }
 
 function selectWithGold() {
@@ -154,5 +163,51 @@ function unselectWithGold() {
     withGold = false;
     $("#goldIcon").removeClass("teamSelected");
     selectFieldCells();
+}
+
+function switchSelectedHero() {
+    if (selHero == undefined) return;
+
+    let loc = selHero.loc;
+    let firstHero:Hero = undefined;
+    let foundHero:Hero = undefined;
+    let next = false;
+    for(let h of Hero.heroes) {
+        if (! loc.equals(h.loc)) continue;
+        if (h.equals(selHero)) {
+            next = true;
+        } else if (next) {
+            foundHero = h;
+            break;
+        } else if (firstHero == undefined) {
+            firstHero = h;
+        }
+    }
+
+    if (foundHero != undefined) {
+        selectHero(foundHero);
+    } else if (firstHero != undefined) {
+        selectHero(firstHero);
+    }
+}
+
+function selectNextPrevHero(delta:number) {
+    if (selectableHeroes.length == 0) return;
+
+    let index = 0;
+    if (selHero != undefined) {
+        index = selectableHeroes.indexOf(selHero);
+        let count = selectableHeroes.length;
+        index = (count+index+delta) % count;
+    }
+    selectHero(selectableHeroes[index]);
+}
+
+function selectNextHero() {
+    selectNextPrevHero(1);
+}
+
+function selectPrevHero() {
+    selectNextPrevHero(-1);
 }
 

@@ -1,9 +1,4 @@
 const LEN = 70;
-const pirateColor = ["white","yellow","red","black"];
-const selPirateBorderColor = ["blue","blue","blue","cornsilk"];
-
-const heroesColor = ["ForestGreen","SaddleBrown","DarkBlue"];
-const selHeroesBorderColor = ["cornsilk","cornsilk","cornsilk"];
 
 class Loc {
     row:number;
@@ -80,16 +75,6 @@ function setCellLoc(el:JQuery,loc:Loc) {
     return el.css(getCoordinate(loc));
 }
 
-function getHeroSelectedBorderColor(id:HeroId) {
-    return id.num<3 ? selPirateBorderColor[id.team] : selHeroesBorderColor[id.num];
-}
-
-function heroEl(id:HeroId) {
-    let color = id.num<3 ? pirateColor[id.team] : heroesColor[id.num]
-    return $("<circle r='10' stroke-width='2' stroke='black'/>")
-                     .attr("fill",color);
-}
-
 function goldEl() {
     return $("<ellipse rx='15' ry='8' fill='GoldenRod' stroke='MediumBlue'/>");
 }
@@ -154,22 +139,27 @@ function setHeroes(view:any) {
 function resetFieldHeroes(animate:boolean) {
     unselectHero();
 
-    let lastHero:Hero = undefined;
-    let numToMove = 0;
-
+    selectableHeroes = [];
     for(let hero of Hero.heroes) {
+        let zlevel = 0;
         if (hero.canGo()) {
-            showHeroOnTop(hero);
-            lastHero = hero;
-            numToMove++;
+            zlevel = 1;
+            selectableHeroes.push(hero);
         }
-        setHero(hero, animate);
+        heroZLevel(hero, zlevel);
+        let count=0;
+        let pos=-1;
+        for(let h of Hero.heroes) {
+            if(h.equals(hero)) pos = count;
+            if (h.index == hero.index && h.loc.equals(hero.loc)) count++;
+        }
+        setHero(hero, pos, count, animate);
 
     }
 
     refreshSelectableFieldCell();
-    if (numToMove == 1) {
-        selectHero(lastHero);
+    if (selectableHeroes.length == 1) {
+        selectHero(selectableHeroes[0]);
     }
 }
 
@@ -186,10 +176,14 @@ function setView(view:any) {
 
 function initGame() {
     $(window).keydown(e=>{
-        if (e.keyCode == 27) { //esc
+        if (e.keyCode == 27) { // esc
             unselectHero();
-        } else if (e.keyCode == 32) { //space
+        } else if (e.keyCode == 32) { // space
             switchSelectedHero();
+        } else if (e.keyCode == 37) { // left arrow
+            selectPrevHero();
+        } else if (e.keyCode == 39) { // right arrow
+            selectNextHero();
         }
         if (e.shiftKey) selectWithGold();
         else unselectWithGold();
