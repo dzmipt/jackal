@@ -44,7 +44,7 @@ public class Game implements Serializable {
                     ((col == 0 || col == 12) && row == 6)) icon = Icon.SHIP;
             else if ((row == 0 || row == 12 || col == 0 || col == 12) ||
                     ((row == 1 || row == 11) && (col == 1 || col == 11))) icon = Icon.SEA;
-            else if (random.nextInt(10)>5) icon = Icon.LAND;
+            else if (random.nextInt(10)>-15) icon = Icon.LAND;
             //else icon = Icon.MOVE; //icon = Icon.LAND; //Icon.MOUNTAIN;//Icon.LAND;
             else icon = Icon.MOUNTAIN;
 
@@ -67,6 +67,7 @@ public class Game implements Serializable {
 
             cells.put(loc, cell);
         }
+        cells.put(new Loc(5,6),new Cell(Icon.MOUNTAIN, 5));
 
         ships = new Loc[] {new Loc(0,6), new Loc(6, 12),
                              new Loc(12,6), new Loc(6,0)};

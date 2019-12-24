@@ -106,44 +106,6 @@ function hideHero(h:Hero) {
     hero(h).hide();
 }
 
-
-const heroDelta = [
-    [ [35,35] ], // 1
-    [], // 2
-    [], // 3
-    [], // 4
-    [ [63,11],
-      [33,11],
-      [16,31],
-      [22,55],
-      [58,55] ]  // 5
-]
-//const heroTextDelta = [-3,5];
-
-const moneyEllipseBottomDelta = [52,57];
-const moneyEllipseDelta = [-4,2];
-const moneyTextDelta = [-4,5];
-const moneyText10Delta = [-8,5];
-
-function setHero(h:Hero, pos:number, count:number, animate:boolean) {
-    if (h.hidden) {
-        hideHero(h);
-        return;
-    }
-
-    let el = hero(h);
-    let hd = heroDelta[h.count-1][h.index];
-    let attr={top:h.loc.row*LEN+hd[1]-10,left:h.loc.col*LEN+hd[0]-10};
-    el = el.show();
-
-    if (animate) el.animate(attr,500);
-    else el.css(attr);
-    return el;
-}
-
-const attrName = ["cx","cy","r","fill","stroke","stroke-width"];
-const cssName = ["cx","cy"];
-
 function heroZLevel(h:Hero, level:number) {
     hero(h).css("z-index",""+level);
 }
@@ -157,6 +119,80 @@ function unselectFieldHero(h:Hero) {
     heroZLevel(selHero, 1);
 }
 
+type Point = [number,number];
+
+// [x,y]
+const heroCenter:Point[][] = [
+    [ [35,35] ], // 1
+    [], // 2
+    [], // 3
+    [], // 4
+    [ [63,11],
+      [33,11],
+      [16,31],
+      [22,55],
+      [58,55] ]  // 5
+];
+
+// [dx,dy]
+const heroDelta:Point[][] = [
+    [ [0,0] ], // 1
+    [ [-1,0], [1,0] ], // 2
+    [ [-1,0], [0,0], [1,0] ], // 3
+    [ [-1,-1],[1,-1],[-1,1], [1,1] ], // 4
+    [ [-1,-1],[1,-1],[0,0], [-1,1], [1,1] ], // 5
+    [ [-1,-1],[0,-1],[1,-1], [-1,1], [0,1], [1,1] ], // 6
+    [ [-1,-1],[0,-1],[1,-1], [0,0], [-1,1], [0,1], [1,1] ], // 7
+    [ [-1,-1],[0,-1],[1,-1], [-1,0], [0,0], [-1,1], [0,1], [1,1] ], // 8
+    [ [-1,-1],[0,-1],[1,-1], [-1,0], [0,0], [1,0], [-1,1], [0,1], [1,1] ], // 8
+];
+
+const heroSpace = [
+    25, // 1
+    5, // 2
+    5, // 3
+    5, // 4
+    5  // 5
+]
+
+const moneyEllipseBottomDelta = [52,57];
+const moneyEllipseDelta = [-4,2];
+const moneyTextDelta = [-4,5];
+const moneyText10Delta = [-8,5];
+
+function add(x:[number,number], y:[number,number]):[number,number] {
+    return [ x[0]+y[0], x[1]+y[1] ];
+}
+
+function addC(x:[number,number], c:number):[number,number] {
+    return [ x[0]+c, x[1]+c ];
+}
+
+function mul(k:number, x:[number,number]):[number,number] {
+    return [ k*x[0], k*x[1]];
+}
+
+
+function setHero(h:Hero, pos:number, count:number, animate:boolean) {
+    if (h.hidden) {
+        hideHero(h);
+        return;
+    }
+
+    let el = hero(h);
+    let space = heroSpace[h.count-1];
+    let hd:Point = mul(space, heroDelta[count>9 ? 8 : count-1] [count>9 ? 8 : pos]);
+
+    let hc:Point = add(hd, addC( heroCenter[h.count-1][h.index], -10) );
+
+
+    let attr={top:h.loc.row*LEN+hc[1],left:h.loc.col*LEN+hc[0]};
+    el = el.show();
+
+    if (animate) el.animate(attr,500);
+    else el.css(attr);
+    return el;
+}
 
 let goldIndex = 0;
 function resetGold() {
@@ -169,7 +205,7 @@ function resetGold() {
 
 function showGold(loc:Loc,count:number,index:number,g:number) {
     if (g==0) return;
-    let p0 = count==1 ? moneyEllipseBottomDelta : heroDelta[count-1][index];
+    let p0 = count==1 ? moneyEllipseBottomDelta : heroCenter[count-1][index];
     let x=loc.col*LEN + p0[0]+moneyEllipseDelta[0];
     let y=loc.row*LEN + p0[1]+moneyEllipseDelta[1];
     gold(goldIndex).attr({cx:x,cy:y}).show();
