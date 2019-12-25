@@ -2,6 +2,9 @@ function initPanel() {
     initRight();
     $("#goldIcon").click(goldIconClick);
     $("#rumIcon").click(rumIconClick);
+    for (let num=0;num<6;num++) {
+        $("#hero"+num).click(num, event =>{heroClick(event.data)});
+    }
 }
 
 function initRight() {
@@ -61,16 +64,16 @@ function setTeamIcon(team:number,val:number,divId:string,textId:string) {
 function resetPanels(view:any) {
     $("div.team").removeClass("teamSelected");
     $("div.team").addClass("teamUnselected");
-    $("#team"+view.currentTeam).addClass("teamSelected");
+    $("#team"+currentTeam).addClass("teamSelected");
     for(let team=0;team<4;team++) {
         setTeamIcon(team, view.gold[team], "teamgold", "teamgoldtext");
         setTeamIcon(team, view.rum[team], "teamrum", "teamrumtext");
     }
 
-    resetTop(<number>view.currentTeam);
+    resetTop();
 }
 
-function resetTop(currentTeam:number) {
+function resetTop() {
     for(let i=0;i<6;i++) {
         let h = $("#hero"+i);
         let hero = Hero.get(new HeroId(currentTeam,i));
@@ -141,6 +144,12 @@ function rumIconClick() {
     if (!selHero.rumReady) return;
     let rum = {id:id, heroId:selHero.id};
     send("drink", rum);
+}
+
+function heroClick(num:number) {
+    let hero = Hero.get(new HeroId(currentTeam, num));
+    if ( selectableHeroes.indexOf(hero) == -1 ) return;
+    selectHero(hero);
 }
 
 let selectableHeroes:Hero[] = [];

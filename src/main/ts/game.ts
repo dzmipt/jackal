@@ -103,6 +103,7 @@ function animateRum(animateRum:any) {
 }
 
 let id:string="";
+let currentTeam:number = undefined;
 
 function setCells(cells:any) {
     Loc.ALL.forEach(loc => {
@@ -175,6 +176,7 @@ function resetFieldHeroes(animate:boolean) {
 
 function setView(view:any) {
     id = view.id;
+    currentTeam = view.currentTeam;
     HeroId.BenGunn.team = view.benGunnTeam;
     HeroId.Friday.team = view.fridayTeam;
     HeroId.Missioner.team = view.missionerTeam;
