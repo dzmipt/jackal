@@ -108,7 +108,7 @@ public class GoController extends GameController {
 
 
                 Hero missioner = game.getHero(HeroId.MISSIONER_ID);
-                if (missioner.drunk() && ! heroes.contains(missioner)) { // no fight on a cell with Missioner
+                if (! ( missioner.drunk() && heroes.contains(missioner) )) { // no fight on a cell with Missioner
                     newCell.heroes(index) // fight
                             .stream()
                             .filter(h -> game.enemy(h, hero))
