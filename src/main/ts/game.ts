@@ -201,7 +201,8 @@ function initGame() {
     $("#prevTurn").click(prevTurn);
     $("#nextTurn").click(nextTurn);
 
-    send("init",{});
+    let id:string = new URLSearchParams(document.location.search.substring(1)).get("id");
+    send("init",{id:id});
 }
 
 function prevTurn() {

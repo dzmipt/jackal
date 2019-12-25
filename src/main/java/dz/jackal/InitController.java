@@ -15,13 +15,38 @@ public class InitController {
     @MessageMapping("/init")
     @SendTo("/jackal/view")
     public View action(InitRequest request) {
+        Game game;
+        if (request.id == null) {
+            game = newGame();
+        } else {
+            game = loadGame(request.id);
+        }
+        return game.getView();
+    }
+
+    private Game newGame() {
         Game game = Game.newGame();
         try {
             DbGames.saveGame(game);
         } catch (IOException e) {
             log.error("Can't save game " + game.getId(), e);
         }
-        return game.getView();
+        return game;
     }
-    public static class InitRequest{}
+
+    private Game loadGame(String id) {
+        try {
+            int lastTurn = DbGames.getLastTurn(id);
+            Game game = DbGames.loadGame(id, lastTurn);
+            Game.putGame(game);
+            return game;
+        } catch (IOException e) {
+            log.error("Failed to load game with id " + id, e);
+            throw new IllegalArgumentException("Can't load game with id " + id, e);
+        }
+    }
+
+    public static class InitRequest{
+        public String id;
+    }
 }
