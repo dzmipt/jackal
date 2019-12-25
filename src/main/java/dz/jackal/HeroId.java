@@ -31,12 +31,14 @@ public class HeroId implements Serializable {
     @Override
     public boolean equals(Object obj) {
         HeroId heroId = (HeroId) obj;
-        return heroId.num == num && heroId.team == team;
+        if (heroId.num != num) return false;
+        if (num>=3) return true;
+        return heroId.team == team;
     }
 
     @Override
     public int hashCode() {
-        return team *30+num;
+        return (num>=3? -1:team) *30+num;
     }
 
 

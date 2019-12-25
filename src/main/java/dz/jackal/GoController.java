@@ -28,7 +28,7 @@ public class GoController extends GameController {
     protected View processAction(Request aRequest) {
         GoRequest request = (GoRequest) aRequest;
         Game game = Game.getGame(request.id);
-        Hero hero = game.getHero(request.hero);
+        Hero hero = game.getHero(request.getHeroId());
         final Loc oldLoc = hero.getLoc();
         Cell oldCell = game.getCell(oldLoc);
         Loc newLoc = request.loc;
@@ -91,10 +91,22 @@ public class GoController extends GameController {
                 }
             } else {
                 int index = newCell.index(hero);
-                newCell.heroes(index)
+
+                newCell.heroes(index) // discovery of additional hero
                         .stream()
-                        .filter(p -> game.enemy(p, hero))
-                        .forEach(p -> game.returnToShip(p));
+                        .filter(h -> h.team() == -1)
+                        .forEach(h -> h.setTeam(hero.team()));
+
+                Hero friday = game.getHero(HeroId.FRIDAY_ID);
+                if (newCell.heroes(index).contains(friday)) { // Friday joins new team
+                    friday.setTeam(hero.team());
+                }
+
+
+                newCell.heroes(index) // fight
+                        .stream()
+                        .filter(h -> game.enemy(h, hero))
+                        .forEach(h -> game.returnToShip(h));
             }
             if (hero.dead() || ! newCell.move()) {
                 game.nextTurn();
@@ -152,9 +164,17 @@ public class GoController extends GameController {
     }
 
     public static class GoRequest extends Request {
-        public HeroId hero;
+        private HeroId heroId;
         public Loc loc;
         public boolean withGold;
+
+        public void setHeroId(HeroId id) {
+            heroId = normalize(id);
+        }
+
+        public HeroId getHeroId() {
+            return heroId;
+        }
     }
 
 }

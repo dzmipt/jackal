@@ -73,8 +73,14 @@ function resetPanels(view:any) {
 function resetTop(currentTeam:number) {
     for(let i=0;i<6;i++) {
         let h = $("#hero"+i).hide();
-        if (Hero.get(new HeroId(currentTeam,i)).hidden) continue;
-        h.attr("src","/img/team"+currentTeam+"cell.png").show();
+        let hero = Hero.get(new HeroId(currentTeam,i));
+        if (hero.hidden) continue;
+
+        let src:string = hero.id.num<3 ? "team"+currentTeam : "hero"+hero.id.num;
+        h.attr("src","/img/" + src + "cell.png").show();
+
+        if (hero.id.team == currentTeam) h.removeClass("disabled");
+        else h.addClass("disabled");
     }
 
     let enabled:boolean = Hero.heroes.some(h => {return h.rumReady});

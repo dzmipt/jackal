@@ -18,6 +18,7 @@ public class View {
     public int[] gold = new int[4];
     public int[] rum = new int[4];
     public int currentTeam;
+    public int benGunnTeam, fridayTeam, missionerTeam;
 
     public View(Game game) {
         init(game, null);
@@ -37,6 +38,9 @@ public class View {
             gold[team] = game.getTeamGold(team);
             rum[team] = game.getTeamRum(team);
         }
+        benGunnTeam = game.getHero(HeroId.BENGUNN_ID).team();
+        fridayTeam = game.getHero(HeroId.FRIDAY_ID).team();
+        missionerTeam = game.getHero(HeroId.MISSIONER_ID).team();
     }
 
     private void initCellView(Game game) {

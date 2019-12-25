@@ -84,9 +84,9 @@ public class Game implements Serializable {
                 team = heroId.team();
                 loc = ships[team];
             } else {
-                if (heroId.benGunn()) loc = new Loc(6,5);
-                else if (heroId.friday()) loc = new Loc(6,6);
-                else if (heroId.missioner()) loc = new Loc(6,7);
+                if (heroId.benGunn()) loc = new Loc(1,7);
+                else if (heroId.friday()) loc = new Loc(5,11);
+                else if (heroId.missioner()) loc = new Loc(11,7);
                 else throw new IllegalStateException();
                 team = -1;
                 cells.put(loc, new Cell(Icon.LAND, 1));

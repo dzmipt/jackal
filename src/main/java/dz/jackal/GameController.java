@@ -33,5 +33,13 @@ abstract class GameController {
 
     public static class Request {
         public String id;
+
+        protected HeroId normalize(HeroId heroId) {
+            if (heroId.equals(HeroId.BENGUNN_ID)) return HeroId.BENGUNN_ID;
+            else if (heroId.equals(HeroId.FRIDAY_ID)) return HeroId.FRIDAY_ID;
+            else if (heroId.equals(HeroId.MISSIONER_ID)) return HeroId.MISSIONER_ID;
+
+            return heroId;
+        }
     }
 }

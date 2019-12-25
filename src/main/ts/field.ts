@@ -90,7 +90,7 @@ function isSelectable(loc:Loc) {
 
 function fieldClick(loc:Loc) {
     if (isSelected(loc)) {
-        let go={id:id, hero:selHero.id, loc:loc, withGold:withGold};
+        let go={id:id, heroId:selHero.id, loc:loc, withGold:withGold};
         send("go",go);
     } else if (isSelectable(loc)) {
         if (selHero == undefined ||

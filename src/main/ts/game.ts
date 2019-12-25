@@ -21,8 +21,11 @@ class HeroId {
     num:number;
     constructor(team,num) {this.team = team; this.num = num}
     equals(x:HeroId) {return this.team == x.team && this.num == x.num}
-    index() {return ""+this.team+"_"+this.num}
+    index() {return ""+(this.num<3?this.team:-1)+"_"+this.num}
     static ALL:HeroId[];
+    static BenGunn:HeroId = new HeroId(-1,3);
+    static Friday:HeroId = new HeroId(-1,4);
+    static Missioner:HeroId = new HeroId(-1,5);
 }
 HeroId.ALL = [];
 for(let team=0;team<4;team++){
@@ -30,9 +33,9 @@ for(let team=0;team<4;team++){
         HeroId.ALL.push(new HeroId(team,num));
     }
 }
-HeroId.ALL.push(new HeroId(-1,3)); // Ben Gunn
-HeroId.ALL.push(new HeroId(-1,4)); // Friday
-HeroId.ALL.push(new HeroId(-1,5)); // Missioner
+HeroId.ALL.push(HeroId.BenGunn); // Ben Gunn
+HeroId.ALL.push(HeroId.Friday); // Friday
+HeroId.ALL.push(HeroId.Missioner); // Missioner
 
 class Hero {
     id:HeroId;
@@ -165,6 +168,9 @@ function resetFieldHeroes(animate:boolean) {
 
 function setView(view:any) {
     id = view.id;
+    HeroId.BenGunn.team = view.benGunnTeam;
+    HeroId.Friday.team = view.fridayTeam;
+    HeroId.Missioner.team = view.missionerTeam;
     resetGold();
     setCells(view.cells);
     setHeroes(view);

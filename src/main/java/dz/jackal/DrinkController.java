@@ -20,7 +20,7 @@ public class DrinkController extends GameController {
 
         Game game = Game.getGame(request.id);
 
-        Hero hero = game.getHero(request.heroId);
+        Hero hero = game.getHero(request.getHeroId());
         Cell cell = game.getCell(hero.getLoc());
         int index = cell.index(hero);
         cell.removeHero(index, hero);
@@ -31,6 +31,14 @@ public class DrinkController extends GameController {
     }
 
     public static class DrinkRequest extends Request {
-        public HeroId heroId;
+        private HeroId heroId;
+
+        public void setHeroId(HeroId id) {
+            this.heroId = normalize(id);
+        }
+
+        public HeroId getHeroId() {
+            return heroId;
+        }
     }
 }
