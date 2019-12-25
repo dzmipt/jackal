@@ -88,15 +88,15 @@ public class View {
             if (game.getCurrentTeam() != hero.team() ) continue;
 
             if (cell.multiStep()) {
-                if (index + 1 == cell.count()) {
+                if (hero.friday() || index + 1 == cell.count()) {
                     addSteps(pirateView, game, loc, hero, hasGold);
                 } else {
                     pirateView.steps.add(loc);
-                    if (hasGold) {
+                    if (hasGold && !hero.missioner()) {
                         boolean hasEnemy = game.hasEnemy(hero, cell.heroes(index + 1));
                         if (!hasEnemy) pirateView.stepsWithGold.add(loc);
                     }
-                    if (game.getAllTeamRum(hero.team())>0) {
+                    if (!hero.missioner() && game.getAllTeamRum(hero.team())>0) {
                         pirateView.rumReady = true;
                     }
                 }
@@ -134,14 +134,16 @@ public class View {
                     }
                 } else { // on land
                     if (newCell.sea()) continue;
-                    if (newCell.ship() && game.enemy(hero.team(), ((ShipCell)newCell).team()) ) continue;
+                    if (newCell.ship() && game.enemy(hero, ((ShipCell)newCell).team()) ) continue;
                 }
+
+                List<Hero> heroes = newCell.heroes(0);
+                if (hero.friday() && game.hasEnemy(hero.team(),heroes)) continue;
 
                 pirateView.steps.add(newLoc);
                 if (cell.ship()) continue;
                 if (! hasGold) continue;
-                if (newCell.closed()) continue;
-                if (game.hasEnemy(hero, newCell.heroes(0))) continue;
+                if (! canGoWithGold(game, hero,newCell)) continue;
 
                 pirateView.stepsWithGold.add(newLoc);
             }
@@ -155,14 +157,20 @@ public class View {
             if (step.row()<0 || step.row()>12 || step.col()<0 || step.col()>12) continue;
             pirateView.steps.add(step);
             if (!hasGold) continue;
-            Cell newCell = game.getCell(step);
-            if (newCell.closed()) continue;
-            if (newCell.sea()) continue;
-            if (game.hasEnemy(hero, newCell.heroes(0))) continue;
-            if (newCell.ship() && game.enemy(hero.team(), ((ShipCell)newCell).team()) ) continue;
+            if (! canGoWithGold(game, hero, game.getCell(step))) continue;
 
             pirateView.stepsWithGold.add(step);
         }
+    }
+
+    private boolean canGoWithGold(Game game, Hero hero, Cell newCell) {
+        if (newCell.closed()) return false;
+        if (newCell.sea()) return false;
+        if (game.hasEnemy(hero, newCell.heroes(0))) return false;
+        if (newCell.ship() && game.enemy(hero, ((ShipCell)newCell).team()) ) return false;
+        if (hero.missioner()) return false;
+
+        return true;
     }
 
     public View setAnimateShip(AnimateShip animateShip) {

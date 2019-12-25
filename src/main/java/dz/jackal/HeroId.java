@@ -23,9 +23,9 @@ public class HeroId implements Serializable {
     public int team() {return team;}
     //public int num() {return num;}
 
-    public boolean benGunn() {return this == BENGUNN_ID;}
-    public boolean friday() {return this == FRIDAY_ID;}
-    public boolean missioner() {return this == MISSIONER_ID;}
+    public boolean benGunn() {return this.equals(BENGUNN_ID);}
+    public boolean friday() {return this.equals(FRIDAY_ID);}
+    public boolean missioner() {return this.equals(MISSIONER_ID);}
     public boolean pirate() {return team != -1;}
 
     @Override

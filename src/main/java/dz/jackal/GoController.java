@@ -51,7 +51,10 @@ public class GoController extends GameController {
             int theTeam = ((ShipCell)oldCell).team();
             game.getCell(newLoc).heroes(0).forEach(
                     h-> {
-                        if(game.enemy(h.team(),theTeam)) {
+                        if (h.friday()) {
+                            h.setTeam(theTeam);
+                        }
+                        if(game.enemy(h,theTeam)) {
                             game.returnToShip(h);
                         } else {
                             game.moveHero(h, oldLoc, false);
@@ -85,28 +88,37 @@ public class GoController extends GameController {
 
             if (hero.dead()) {
             } else if (newCell.ship()) {
-                if (game.enemy(hero.team(), ((ShipCell)newCell).team())) {
+                if (game.enemy(hero, ((ShipCell)newCell).team())) {
                     // should be more rules for non pirates
                     game.returnToShip(hero);
                 }
             } else {
                 int index = newCell.index(hero);
+                List<Hero> heroes = newCell.heroes(index);
 
-                newCell.heroes(index) // discovery of additional hero
-                        .stream()
+
+                heroes.stream() // discovery of additional hero
                         .filter(h -> h.team() == -1)
                         .forEach(h -> h.setTeam(hero.team()));
 
                 Hero friday = game.getHero(HeroId.FRIDAY_ID);
-                if (newCell.heroes(index).contains(friday)) { // Friday joins new team
+                if (heroes.contains(friday)) { // Friday joins new team
                     friday.setTeam(hero.team());
                 }
 
 
-                newCell.heroes(index) // fight
-                        .stream()
-                        .filter(h -> game.enemy(h, hero))
-                        .forEach(h -> game.returnToShip(h));
+                Hero missioner = game.getHero(HeroId.MISSIONER_ID);
+                if (missioner.drunk() && ! heroes.contains(missioner)) { // no fight on a cell with Missioner
+                    newCell.heroes(index) // fight
+                            .stream()
+                            .filter(h -> game.enemy(h, hero))
+                            .forEach(h -> game.returnToShip(h));
+                }
+
+                if (!missioner.drunk() && heroes.contains(missioner) && heroes.contains(friday)) {
+                    friday.die();
+                    missioner.die();
+                }
             }
             if (hero.dead() || ! newCell.move()) {
                 game.nextTurn();

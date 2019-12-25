@@ -10,6 +10,7 @@ public class Hero implements Serializable {
     private Loc loc;
     private Loc initStepLoc, prevLoc;
     private boolean dead = false;
+    private boolean drunk = false;
     public Hero(HeroId id, int team, Loc loc) {
         this.id = id;
         this.team = team;
@@ -29,6 +30,11 @@ public class Hero implements Serializable {
         dead = true;
         loc = null;
     }
+
+    public void setDrunk(boolean drunk) {
+        this.drunk = drunk;
+    }
+    public boolean drunk() {return drunk;}
 
     public Loc getInitStepLoc() {
         return initStepLoc;
@@ -50,8 +56,8 @@ public class Hero implements Serializable {
 
     public boolean benGunn() {return id.benGunn();}
     public boolean friday() {return id.friday();}
-    public boolean missioner() {return id.missioner();}
-    public boolean pirate() {return id.pirate();}
+    public boolean missioner() {return id.missioner() && !drunk;}
+    public boolean pirate() {return id.pirate() || benGunn() || (id.missioner() && drunk);}
 
     public int team() {return team;}
     public void setTeam(int team) {this.team = team;}

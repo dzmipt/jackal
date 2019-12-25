@@ -72,15 +72,26 @@ function resetPanels(view:any) {
 
 function resetTop(currentTeam:number) {
     for(let i=0;i<6;i++) {
-        let h = $("#hero"+i).hide();
+        let h = $("#hero"+i);
         let hero = Hero.get(new HeroId(currentTeam,i));
-        if (hero.hidden) continue;
+        if (hero.hidden) {
+            h.hide();
+        } else {
+            let src:string = hero.id.num<3 ? "team"+currentTeam : "hero"+hero.id.num;
+            h.attr("src","/img/" + src + "cell.png").show();
 
-        let src:string = hero.id.num<3 ? "team"+currentTeam : "hero"+hero.id.num;
-        h.attr("src","/img/" + src + "cell.png").show();
+            if (hero.id.team == currentTeam) h.removeClass("disabled");
+            else h.addClass("disabled");
+         }
 
-        if (hero.id.team == currentTeam) h.removeClass("disabled");
-        else h.addClass("disabled");
+        if (i>=3) {
+            let ht = $("#heroteam"+i);
+            if (hero.id.team == -1) {
+                ht.hide();
+            } else {
+                ht.attr("src","/img/team"+hero.id.team+".png").show();
+            }
+        }
     }
 
     let enabled:boolean = Hero.heroes.some(h => {return h.rumReady});

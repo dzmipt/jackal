@@ -88,6 +88,14 @@
     width:70px;
     position:absolute;
 }
+
+.heroteam {
+    position:absolute;
+    top:33px;
+    height:10px;
+    width:10px;
+}
+
 .disabled {
     opacity: 0.3;
 }

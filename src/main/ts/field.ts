@@ -148,7 +148,7 @@ const heroDelta:Point[][] = [
 ];
 
 const heroSpace = [
-    25, // 1
+    22, // 1
     5, // 2
     5, // 3
     5, // 4

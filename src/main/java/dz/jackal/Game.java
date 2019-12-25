@@ -148,14 +148,27 @@ public class Game implements Serializable {
         //return team1!=team2;
     }
 
-    public boolean enemy(Hero p1, Hero p2) {
-        return enemy(p1.team(), p2.team());
+    public boolean enemy(Hero h1, Hero h2) {
+        if (h1.friday() || h2.friday()) return false;
+        if (h1.missioner() || h2.missioner()) return false;
+        return enemy(h1.team(), h2.team());
+    }
+
+    public boolean enemy(Hero h, int team) {
+        if (h.friday() || h.missioner()) return false;
+        return enemy(h.team(), team);
     }
 
     public boolean hasEnemy(Hero hero, Collection<Hero> heroes) {
         return heroes.stream()
-                .anyMatch(p -> enemy(hero,p));
+                .anyMatch(h -> enemy(hero,h));
     }
+
+    public boolean hasEnemy(int team, Collection<Hero> heroes) {
+        return heroes.stream()
+                .anyMatch(h -> enemy(h,team));
+    }
+
 
     public void nextTurn() {
         currentTeam = (currentTeam+1) % 4;
