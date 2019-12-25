@@ -66,6 +66,14 @@ public class GoController extends GameController {
             animateShip = new View.AnimateShip(oldLoc, newLoc);
             game.nextTurn();
         } else {
+            if (hero.missioner()) {
+                List<Hero> heroes = oldCell.heroes(oldCell.index(hero));
+                heroes.remove(hero);
+                if (heroes.size()>0 && game.hasEnemy(heroes.get(0), heroes)) {
+                    heroes.forEach(game::returnToShip);
+                }
+            }
+
             newCell.open();
             game.moveHero(hero, newLoc, request.withGold);
 
@@ -84,7 +92,6 @@ public class GoController extends GameController {
                     initCell.addGold(initCell.count() - 1);
                 }
             }
-
 
             if (hero.dead()) {
             } else if (newCell.ship()) {
@@ -108,7 +115,7 @@ public class GoController extends GameController {
 
 
                 Hero missioner = game.getHero(HeroId.MISSIONER_ID);
-                if (! ( missioner.drunk() && heroes.contains(missioner) )) { // no fight on a cell with Missioner
+                if (! ( !missioner.drunk() && heroes.contains(missioner) )) { // no fight on a cell with Missioner
                     newCell.heroes(index) // fight
                             .stream()
                             .filter(h -> game.enemy(h, hero))
