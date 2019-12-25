@@ -126,6 +126,13 @@ function getLocs(objs:any):Loc[] {
 }
 
 function setHeroes(view:any) {
+    for(let team=0;team<4;team++) {
+        let coord = getCoordinate(getLoc(view.ship[team]));
+        coord.left += 58;
+        coord.top += 58;
+        $("#smallhero"+team).css(coord);
+    }
+
     let vheroes:any = view.heroes;
     Hero.heroes = [];
     for(let i in HeroId.ALL) {

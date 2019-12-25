@@ -15,6 +15,7 @@ public class View {
     public List<PirateView> heroes;
     public AnimateShip animateShip = null;
     public AnimateRum animateRum = null;
+    public Loc[] ship = new Loc[4];
     public int[] gold = new int[4];
     public int[] rum = new int[4];
     public int currentTeam;
@@ -37,6 +38,7 @@ public class View {
         for(int team=0;team<4;team++) {
             gold[team] = game.getTeamGold(team);
             rum[team] = game.getTeamRum(team);
+            ship[team] = game.getTeamShipLoc(team);
         }
         benGunnTeam = game.getHero(HeroId.BENGUNN_ID).team();
         fridayTeam = game.getHero(HeroId.FRIDAY_ID).team();
