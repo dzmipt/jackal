@@ -94,12 +94,7 @@ function resetTop(currentTeam:number) {
         }
     }
 
-    let enabled:boolean = Hero.heroes.some(h => {return h.rumReady});
-    let el = $("#rumIcon");
-    if (enabled) el.removeClass("disabled");
-    else el.addClass("disabled");
-
-    updateGoldIcon();
+    updateIcons();
 }
 
 function updateGoldIcon() {
@@ -115,9 +110,23 @@ function updateGoldIcon() {
     else el.addClass("disabled");
 }
 
-let selectableHeroes:Hero[] = [];
-let selHero:Hero = undefined;
-let withGold:boolean = false;
+function updateRumIcon() {
+    let enabled:boolean;
+     if (selHero == undefined) {
+        enabled = Hero.heroes.some(h => {return h.rumReady});
+     } else {
+        enabled = selHero.rumReady;
+     }
+
+    let el = $("#rumIcon");
+    if (enabled) el.removeClass("disabled");
+    else el.addClass("disabled");
+}
+
+function updateIcons() {
+    updateGoldIcon();
+    updateRumIcon();
+}
 
 function goldIconClick() {
     if (withGold) {
@@ -133,6 +142,11 @@ function rumIconClick() {
     let rum = {id:id, heroId:selHero.id};
     send("drink", rum);
 }
+
+let selectableHeroes:Hero[] = [];
+let selHero:Hero = undefined;
+let withGold:boolean = false;
+
 
 function unselectFieldCells() {
     if (selHero == undefined) return;
@@ -153,7 +167,7 @@ function unselectHero() {
     cell(selHero.loc).removeClass("fieldPirateSelected");
     unselectFieldCells();
     selHero = undefined;
-    updateGoldIcon();
+    updateIcons();
 }
 function selectHero(h:Hero) {
     unselectHero();
@@ -162,7 +176,7 @@ function selectHero(h:Hero) {
     selectFieldHero(selHero);
     cell(selHero.loc).addClass("fieldPirateSelected");
     selectFieldCells();
-    updateGoldIcon();
+    updateIcons();
 }
 
 function selectWithGold() {
