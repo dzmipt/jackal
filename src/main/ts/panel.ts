@@ -86,7 +86,7 @@ function resetTop(currentTeam:number) {
 
         if (i>=3) {
             let ht = $("#heroteam"+i);
-            if (hero.id.team == -1) {
+            if (hero.hidden) {
                 ht.hide();
             } else {
                 ht.attr("src","/img/team"+hero.id.team+".png").show();
@@ -182,30 +182,21 @@ function unselectWithGold() {
     selectFieldCells();
 }
 
+function selectHeroAtLoc(loc:Loc) {
+    if (selHero == undefined ||
+            ! selHero.loc.equals(loc) ) {
+        let h = selectableHeroes.find( h => { return h.loc.equals(loc)});
+        if (h != undefined) selectHero(h);
+    } else {
+        switchSelectedHero();
+    }
+}
 function switchSelectedHero() {
     if (selHero == undefined) return;
 
-    let loc = selHero.loc;
-    let firstHero:Hero = undefined;
-    let foundHero:Hero = undefined;
-    let next = false;
-    for(let h of Hero.heroes) {
-        if (! loc.equals(h.loc)) continue;
-        if (h.equals(selHero)) {
-            next = true;
-        } else if (next) {
-            foundHero = h;
-            break;
-        } else if (firstHero == undefined) {
-            firstHero = h;
-        }
-    }
-
-    if (foundHero != undefined) {
-        selectHero(foundHero);
-    } else if (firstHero != undefined) {
-        selectHero(firstHero);
-    }
+    let heroes:Hero[] = selectableHeroes.filter(h => {return h.loc.equals(selHero.loc)} );
+    let index = heroes.indexOf(selHero);
+    selectHero( heroes[ (index+1)%heroes.length ] );
 }
 
 function selectNextPrevHero(delta:number) {

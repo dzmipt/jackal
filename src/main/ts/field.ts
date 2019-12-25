@@ -93,13 +93,7 @@ function fieldClick(loc:Loc) {
         let go={id:id, heroId:selHero.id, loc:loc, withGold:withGold};
         send("go",go);
     } else if (isSelectable(loc)) {
-        if (selHero == undefined ||
-                ! selHero.loc.equals(loc) ) {
-            let h = Hero.heroes.find( h => { return h.loc.equals(loc)});
-            if (h != undefined) selectHero(h);
-        } else {
-            switchSelectedHero();
-        }
+        selectHeroAtLoc(loc);
     }
 }
 function hideHero(h:Hero) {
