@@ -36,9 +36,6 @@ function initTop() {
             );
         }
     }
-    $("#herolabel3").append("Ben Gunn");
-    $("#herolabel4").append("Friday");
-    $("#herolabel5").append("Missioner");
 }
 
 function initRight() {

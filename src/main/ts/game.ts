@@ -133,6 +133,9 @@ function setHeroes(view:any) {
         coord.top += 58;
         $("#smallhero"+team).css(coord);
     }
+    $("#herolabel3").empty().append("Ben Gunn");
+    $("#herolabel4").empty().append("Friday");
+    $("#herolabel5").empty().append("Missioner");
 
     let vheroes:any = view.heroes;
     Hero.heroes = [];
