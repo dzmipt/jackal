@@ -24,6 +24,12 @@ public class Loc implements Serializable {
         return new Loc(row+dRow,col+dCol);
     }
 
+    public int distance(Loc loc) {
+        int dr = Math.abs(this.row - loc.row);
+        int dc = Math.abs(this.col - loc.col);
+        return Math.max(dr, dc);
+    }
+
     @Override
     public boolean equals(Object obj) {
         Loc loc = (Loc) obj;

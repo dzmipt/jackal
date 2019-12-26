@@ -87,10 +87,15 @@ public class View {
             pirateView.hidden = false;
 
             if (selHero != null && ! hero.equals(selHero)) continue;
+
+            if (hero.friday() || hero.missioner()) {
+                setRumReady(game, pirateView, rumReady(game, hero));
+            }
             if (game.getCurrentTeam() != hero.team() ) continue;
 
+
             if (cell.multiStep()) {
-                if (hero.friday() || index + 1 == cell.count()) {
+                if (hero.friday() || index + 1 == cell.count() || hero.drunk()) {
                     addSteps(pirateView, game, loc, hero, hasGold);
                 } else {
                     pirateView.steps.add(loc);
@@ -98,8 +103,8 @@ public class View {
                         boolean hasEnemy = game.hasEnemy(hero, cell.heroes(index + 1));
                         if (!hasEnemy) pirateView.stepsWithGold.add(loc);
                     }
-                    if (!hero.missioner() && game.getAllTeamRum(hero.team())>0) {
-                        pirateView.rumReady = true;
+                    if (!hero.missioner()) {
+                        setRumReady(game, pirateView, true);
                     }
                 }
             } else {
@@ -163,6 +168,38 @@ public class View {
 
             pirateView.stepsWithGold.add(step);
         }
+    }
+
+    private void setRumReady(Game game, PirateView pirateView, boolean rumReady) {
+        if (rumReady) {
+            rumReady = game.getAllTeamRum(game.getCurrentTeam())>0;
+        }
+        pirateView.rumReady = rumReady;
+    }
+
+    private boolean rumReady(Game game, Hero hero) {
+        return HeroId.ALL.stream()
+                         .filter(id -> id.team() == game.getCurrentTeam())
+                         .anyMatch(id -> rumReady(game, hero, game.getHero(id)));
+    }
+
+    private boolean rumReady(Game game, Hero target, Hero from) {
+        Loc fromLoc = from.getLoc();
+        Cell fromCell = game.getCell(fromLoc);
+        int fromIndex = fromCell.index(from);
+        Loc targetLoc = target.getLoc();
+        Cell targetCell = game.getCell(targetLoc);
+        int targetIndex = targetCell.index(target);
+
+        if (fromLoc.equals(targetLoc)) {
+            return targetIndex == fromIndex || targetIndex == fromIndex+1;
+        }
+
+        if (fromIndex < fromCell.count()-1) {
+            return false;
+        }
+
+        return fromLoc.distance(targetLoc) == 1 && targetIndex == 0;
     }
 
     private boolean canGoWithGold(Game game, Hero hero, Cell newCell) {

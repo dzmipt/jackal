@@ -17,17 +17,21 @@ public class DrinkController extends GameController {
     @Override
     protected View processAction(Request aRequest) {
         DrinkRequest request = (DrinkRequest) aRequest;
-
         Game game = Game.getGame(request.id);
 
+        Hero selHero = null;
         Hero hero = game.getHero(request.getHeroId());
-        Cell cell = game.getCell(hero.getLoc());
-        int index = cell.index(hero);
-        cell.removeHero(index, hero);
-        cell.addHero(cell.count()-1, hero);
+        if(hero.friday()) {
+            hero.die();
+        } else if (hero.missioner()) {
+            ((Missioner)hero).drinkToPirate();
+        } else {
+            hero.setDrunk(true);
+            selHero = hero;
+        }
 
-        game.drinkRumBottle(hero.team());
-        return game.getView(hero);
+        game.drinkRumBottle(game.getCurrentTeam());
+        return game.getView(selHero);
     }
 
     public static class DrinkRequest extends Request {

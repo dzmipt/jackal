@@ -153,7 +153,7 @@ function resetFieldHeroes(animate:boolean) {
     selectableHeroes = [];
     for(let hero of Hero.heroes) {
         let zlevel = 0;
-        if (hero.canGo()) {
+        if (hero.canGo() || hero.rumReady) {
             zlevel = 1;
             selectableHeroes.push(hero);
         }

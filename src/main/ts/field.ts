@@ -64,7 +64,7 @@ function goldText(index:number) {return $("#goldtext"+index)}
 function refreshSelectableFieldCell() {
     $(".frontSelectable").removeClass("frontSelectable");
     for(let hero of Hero.heroes) {
-        if(! hero.canGo()) continue;
+        if(! (hero.canGo()||hero.rumReady) )  continue;
             let f = front(hero.loc);
             if (  !( f.hasClass("frontSelected") || f.hasClass("frontSelectedWithGold") )) {
                 f.addClass("frontSelectable");

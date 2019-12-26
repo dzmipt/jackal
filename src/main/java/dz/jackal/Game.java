@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.*;
 
 public class Game implements Serializable {
-    private final static long serialVersionUID = 2;
+    private final static long serialVersionUID = 3;
     private final static Logger log = LoggerFactory.getLogger(Game.class);
 
     private String id;
@@ -91,7 +91,7 @@ public class Game implements Serializable {
                 team = -1;
                 cells.put(loc, new Cell(Icon.LAND, 1));
             }
-            Hero hero = new Hero(heroId, team, loc);
+            Hero hero = heroId.equals(HeroId.MISSIONER_ID) ? new Missioner(loc) : new Hero(heroId, team, loc);
             heroes.put(heroId, hero);
             getCell(loc).addHero(0,hero);
         }
@@ -99,6 +99,7 @@ public class Game implements Serializable {
 
     public Cell getCell(Loc loc) {return cells.get(loc);}
     public Hero getHero(HeroId heroId) {return heroes.get(heroId);}
+    public Missioner getMissioner() {return (Missioner) getHero(HeroId.MISSIONER_ID);}
 
     public Loc getTeamShipLoc(int team) {
         return ships[team];
@@ -172,6 +173,9 @@ public class Game implements Serializable {
 
     public void nextTurn() {
         currentTeam = (currentTeam+1) % 4;
+        heroes.values().stream()
+                .filter(h -> h.team() == currentTeam)
+                .forEach(h -> h.setDrunk(false));
         turn++;
         startTurn = true;
     }

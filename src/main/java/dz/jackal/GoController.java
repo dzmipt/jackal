@@ -114,15 +114,15 @@ public class GoController extends GameController {
                 }
 
 
-                Hero missioner = game.getHero(HeroId.MISSIONER_ID);
-                if (! ( !missioner.drunk() && heroes.contains(missioner) )) { // no fight on a cell with Missioner
+                Hero missioner = game.getMissioner();
+                if (! ( missioner.missioner() && heroes.contains(missioner) )) { // no fight on a cell with Missioner
                     newCell.heroes(index) // fight
                             .stream()
                             .filter(h -> game.enemy(h, hero))
                             .forEach(h -> game.returnToShip(h));
                 }
 
-                if (!missioner.drunk() && heroes.contains(missioner) && heroes.contains(friday)) {
+                if (missioner.missioner() && heroes.contains(missioner) && heroes.contains(friday)) {
                     friday.die();
                     missioner.die();
                 }
