@@ -27,7 +27,6 @@ public class GoController extends GameController {
     @Override
     protected View processAction(Request aRequest) {
         GoRequest request = (GoRequest) aRequest;
-        Game game = Game.getGame(request.id);
         Hero hero = game.getHero(request.getHeroId());
         final Loc oldLoc = hero.getLoc();
         Cell oldCell = game.getCell(oldLoc);
@@ -64,7 +63,7 @@ public class GoController extends GameController {
 
             game.moveShip(((ShipCell)oldCell).team(), newLoc);
             animateShip = new View.AnimateShip(oldLoc, newLoc);
-            game.nextTurn();
+            nextTurn();
         } else {
             if (hero.missioner()) {
                 List<Hero> heroes = oldCell.heroes(oldCell.index(hero));
@@ -78,7 +77,7 @@ public class GoController extends GameController {
             game.moveHero(hero, newLoc, request.withGold);
 
             if (newCell.move()) {
-                if (isCycle(game, hero, newLoc)) {
+                if (isCycle(hero, newLoc)) {
                     hero.die();
                     int index = newCell.index(hero);
                     newCell.removeHero(index, hero);
@@ -138,7 +137,7 @@ public class GoController extends GameController {
     }
 
 
-    private boolean isCycle(Game game, Hero hero, Loc loc) {
+    private boolean isCycle(Hero hero, Loc loc) {
         List<PairLoc> newLoc = new ArrayList<>();
         newLoc.add(new PairLoc(hero.getPrevLoc(), loc));
         Set<PairLoc> allLoc = new HashSet<>(newLoc);
@@ -161,6 +160,11 @@ public class GoController extends GameController {
         }
 
         return true;
+    }
+
+    public void nextTurn() {
+        game.nextTurn();
+        HeroId.ALL.forEach(id -> game.getHero(id).setDrunk(false));
     }
 
     private static class PairLoc {

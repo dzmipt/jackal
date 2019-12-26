@@ -1,15 +1,19 @@
 package dz.jackal;
 
+import dz.jackal.cell.Cell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 
 abstract class GameController {
     private final static Logger log = LoggerFactory.getLogger(GoController.class);
 
+    protected Game game;
+
     public View action(Request request) {
-        Game game = Game.getGame(request.id);
+        game = Game.getGame(request.id);
         int beforeStep = game.getTurn();
         View view = processAction(request);
         boolean continueTurn = beforeStep == game.getTurn();

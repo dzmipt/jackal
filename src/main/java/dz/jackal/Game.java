@@ -101,6 +101,7 @@ public class Game implements Serializable {
     public Hero getHero(HeroId heroId) {return heroes.get(heroId);}
     public Missioner getMissioner() {return (Missioner) getHero(HeroId.MISSIONER_ID);}
 
+
     public Loc getTeamShipLoc(int team) {
         return ships[team];
     }
@@ -114,22 +115,7 @@ public class Game implements Serializable {
     public int getTeamRum(int team) {
         return getTeamShip(team).countRum();
     }
-    public void drinkRumBottle(int theTeam) {
-        int team = -1;
-        if (getTeamRum(theTeam)>0) team = theTeam;
-        else {
-            for (int t=0;t<4;t++) {
-                if (enemy(t, theTeam)) continue;
-                if (getTeamRum(t)==0) continue;
-                team = t;
-                break;
-            }
-            if (team == -1) throw new IllegalStateException("No rum to drink in team " + theTeam);
-        }
-        ShipCell ship = getTeamShip(team);
-        int rum = ship.countRum();
-        ship.setRum(rum-1);
-    }
+
     public int getAllTeamRum(int theTeam) {
         int rum = 0;
         for(int team=0;team<4;team++) {
@@ -173,9 +159,6 @@ public class Game implements Serializable {
 
     public void nextTurn() {
         currentTeam = (currentTeam+1) % 4;
-        heroes.values().stream()
-                .filter(h -> h.team() == currentTeam)
-                .forEach(h -> h.setDrunk(false));
         turn++;
         startTurn = true;
     }
