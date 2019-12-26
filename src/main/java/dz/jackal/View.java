@@ -71,6 +71,10 @@ public class View {
             Hero hero = game.getHero(id);
             PirateView pirateView = new PirateView();
             heroes.add(pirateView);
+            if (hero.id().equals(HeroId.MISSIONER_ID) && !hero.missioner() ) {
+                pirateView.notes.add(PirateView.Note.pirate);
+            }
+            if (hero.drunk()) pirateView.notes.add(PirateView.Note.drunk);
 
             if (hero.dead()) continue;
             if (game.getCell(hero.getLoc()).closed()) {// additional heroes not discovered
@@ -231,12 +235,14 @@ public class View {
     }
 
     public static class PirateView {
+        public enum Note {pirate,drunk};
         public Loc loc = new Loc(0,0);
         public boolean hidden = true;
         public boolean rumReady = false;
         public int index = 0;
         public List<Loc> steps = new ArrayList<>();
         public List<Loc> stepsWithGold = new ArrayList<>();
+        public List<Note> notes = new ArrayList<>();
     }
 
     public static class AnimateShip {

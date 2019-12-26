@@ -127,7 +127,7 @@ public class GoController extends GameController {
                 }
             }
             if (hero.dead() || ! newCell.move()) {
-                game.nextTurn();
+                nextTurn();
             }
         }
 

@@ -45,6 +45,16 @@
     left:33px;
     top:10px;
 }
+.heroLabel {
+    position:absolute;
+    width:70px;
+    top: 44px;
+    font-size:12px;
+    font-weight:bold;
+    /*line-height:10px;*/
+    text-align:center;
+    pointer-events: none;
+}
 .topLabel {
     display:inline-block;;
     position: absolute;

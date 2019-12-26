@@ -1,10 +1,44 @@
 function initPanel() {
+    initTop();
     initRight();
     $("#goldIcon").click(goldIconClick);
     $("#rumIcon").click(rumIconClick);
+}
+
+function initTop() {
+    let top = $("#top");
     for (let num=0;num<6;num++) {
-        $("#hero"+num).click(num, event =>{heroClick(event.data)});
+        let coord = getCoordinate(new Loc(0,3+num));
+        let divHero = $("<div/>")
+                        .attr("id","divhero" + num)
+                        .addClass("button")
+                        .css(coord)
+                        .append($("<img/>")
+                                .attr("id","hero"+num)
+                                .css("pointer-events","none")
+                        ).append($("<div/>")
+                                .attr("id","herolabel"+num)
+                                .addClass("heroLabel")
+                                .css("top","7px")
+                        ).append($("<div/>")
+                                .attr("id","heronotes"+num)
+                                .addClass("heroLabel")
+                        ).click(num, event =>{heroClick(event.data)})
+                        .mousedown(event => {$(event.target).css("top","3px")})
+                        .mouseup(event => {$(event.target).css("top","0px")});
+        top.append(divHero);
+        if (num>=3) {
+            top.append(
+                $("<img/>")
+                    .attr("id","heroteam"+num)
+                    .addClass("smallhero")
+                    .css({top:coord.top+33,left:coord.left+35})
+            );
+        }
     }
+    $("#herolabel3").append("Ben Gunn");
+    $("#herolabel4").append("Friday");
+    $("#herolabel5").append("Missioner");
 }
 
 function initRight() {
@@ -75,13 +109,14 @@ function resetPanels(view:any) {
 
 function resetTop() {
     for(let i=0;i<6;i++) {
-        let h = $("#hero"+i);
+        let h = $("#divhero"+i);
         let hero = Hero.get(new HeroId(currentTeam,i));
         if (hero.hidden) {
             h.hide();
         } else {
+            h.show();
             let src:string = hero.id.num<3 ? "team"+currentTeam : "hero"+hero.id.num;
-            h.attr("src","/img/" + src + "cell.png").show();
+            $("#hero"+i).attr("src","/img/" + src + "cell.png");
 
             if (hero.id.team == currentTeam || hero.rumReady) h.removeClass("disabled");
             else h.addClass("disabled");
@@ -171,7 +206,7 @@ function selectFieldCells() {
 
 function unselectHero() {
     if (selHero == undefined) return;
-    $("#hero"+selHero.id.num).removeClass("teamSelected");
+    $("#divhero"+selHero.id.num).removeClass("teamSelected");
     unselectFieldHero(selHero);
     cell(selHero.loc).removeClass("fieldPirateSelected");
     unselectFieldCells();
@@ -180,7 +215,7 @@ function unselectHero() {
 }
 function selectHero(h:Hero) {
     unselectHero();
-    $("#hero"+h.id.num).addClass("teamSelected");
+    $("#divhero"+h.id.num).addClass("teamSelected");
     selHero = h;
     selectFieldHero(selHero);
     cell(selHero.loc).addClass("fieldPirateSelected");

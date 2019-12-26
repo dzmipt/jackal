@@ -140,10 +140,29 @@ function setHeroes(view:any) {
         let vh:any = vheroes[i];
         let id:HeroId = HeroId.ALL[i];
         let loc = getLoc(vh.loc);
-        Hero.heroes.push(new Hero(id, vh.hidden, loc,
+        let hidden:boolean = vh.hidden;
+        let index:number = vh.index;
+        let count:number = view.cells[loc.row][loc.col].count;
+        Hero.heroes.push(new Hero(id, hidden, loc,
                                     getLocs(vh.steps), getLocs(vh.stepsWithGold),
-                                    vh.index, view.cells[loc.row][loc.col].count,
+                                    index, count,
                                     vh.rumReady));
+        if (id.team == currentTeam || id.num>=3) {
+            let notes:string[] = vh.notes;
+            let noteText:string[] = [];
+            for(let note of notes) {
+                if (note == "pirate") {
+                    $("#herolabel"+id.num).empty().append("Pirate");
+                }
+                if (note == "drunk") noteText.push("Drunk");
+            }
+            if (index<count-1) {
+                noteText.push(""+ (index+1) + " of " + count);
+            }
+            $("#heronotes"+id.num)
+                            .empty()
+                            .append(noteText.join("<br/>"));
+        }
     }
 }
 
