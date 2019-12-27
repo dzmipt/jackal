@@ -117,15 +117,11 @@ type Point = [number,number];
 
 // [x,y]
 const heroCenter:Point[][] = [
-    [ [35,35] ], // 1
-    [], // 2
-    [], // 3
-    [], // 4
-    [ [63,11],
-      [33,11],
-      [16,31],
-      [22,55],
-      [58,55] ]  // 5
+    [ [25,25] ], // 1
+    [ [1,46],[40,0] ], // 2
+    [ [47,48], [14,23] ,[47,0] ], // 3
+    [ [47,49], [7,34], [39,12], [10,0] ], // 4
+    [ [53,1], [23,1], [6,21], [12,45], [48,45] ]  // 5
 ];
 
 // [dx,dy]
@@ -149,8 +145,8 @@ const heroSpace = [
     5  // 5
 ]
 
-const moneyEllipseBottomDelta = [52,57];
-const moneyEllipseDelta = [-4,2];
+const moneyEllipseBottomDelta = [42,47];
+const moneyEllipseDelta = [6,12];
 const moneyTextDelta = [-4,5];
 const moneyText10Delta = [-8,5];
 
@@ -177,7 +173,7 @@ function setHero(h:Hero, pos:number, count:number, animate:boolean) {
     let space = heroSpace[h.count-1];
     let hd:Point = mul(space, heroDelta[count>9 ? 8 : count-1] [count>9 ? 8 : pos]);
 
-    let hc:Point = add(hd, addC( heroCenter[h.count-1][h.index], -10) );
+    let hc:Point = add(hd, heroCenter[h.count-1][h.index] );
 
 
     let attr={top:h.loc.row*LEN+hc[1],left:h.loc.col*LEN+hc[0]};

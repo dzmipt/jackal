@@ -67,7 +67,10 @@ public class Game implements Serializable {
 
             cells.put(loc, cell);
         }
-        cells.put(new Loc(5,6),new Cell(Icon.MOUNTAIN, 5));
+        cells.put(new Loc(2,6),new Cell(Icon.MOUNTAIN, 5));
+        cells.put(new Loc(2,5),new Cell(Icon.SWAMP, 4));
+        cells.put(new Loc(2,4),new Cell(Icon.DESERT, 3));
+        cells.put(new Loc(2,3),new Cell(Icon.JUNGLE2, 2));
 
         ships = new Loc[] {new Loc(0,6), new Loc(6, 12),
                              new Loc(12,6), new Loc(6,0)};

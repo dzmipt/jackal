@@ -165,7 +165,7 @@ function setHeroes(view:any) {
             if (dead) {
                 noteText.push("Dead");
             }
-            if (index<count-1) {
+            if (count>1) {
                 noteText.push(""+ (index+1) + " of " + count);
             }
             $("#heronotes"+id.num)

@@ -8,6 +8,9 @@ public enum Icon {
     MOVE("move"),
     KNIGHT("knight"),
     ICE("ice"),
+    JUNGLE2 ("jungle2"),
+    DESERT ("desert"),
+    SWAMP ("swamp"),
     MOUNTAIN("mountain"),
     ;
 
