@@ -40,16 +40,18 @@ HeroId.ALL.push(HeroId.Missioner); // Missioner
 class Hero {
     id:HeroId;
     hidden:boolean;
+    dead:boolean;
     loc:Loc;
     steps:Loc[];
     stepsWithGold:Loc[];
     index:number;
     count:number;
     rumReady:boolean;
-    constructor(id:HeroId, hidden:boolean, loc:Loc, steps:Loc[], stepsWithGold: Loc[],
+    constructor(id:HeroId, hidden:boolean, dead:boolean, loc:Loc, steps:Loc[], stepsWithGold: Loc[],
                 index:number, count:number, rumReady:boolean) {
         this.id = id;
         this.hidden = hidden;
+        this.dead = dead;
         this.loc = loc;
         this.steps = steps;
         this.stepsWithGold = stepsWithGold;
@@ -144,9 +146,10 @@ function setHeroes(view:any) {
         let id:HeroId = HeroId.ALL[i];
         let loc = getLoc(vh.loc);
         let hidden:boolean = vh.hidden;
+        let dead:boolean = vh.dead;
         let index:number = vh.index;
         let count:number = view.cells[loc.row][loc.col].count;
-        Hero.heroes.push(new Hero(id, hidden, loc,
+        Hero.heroes.push(new Hero(id, hidden, dead, loc,
                                     getLocs(vh.steps), getLocs(vh.stepsWithGold),
                                     index, count,
                                     vh.rumReady));
@@ -158,6 +161,9 @@ function setHeroes(view:any) {
                     $("#herolabel"+id.num).empty().append("Pirate");
                 }
                 if (note == "drunk") noteText.push("Drunk");
+            }
+            if (dead) {
+                noteText.push("Dead");
             }
             if (index<count-1) {
                 noteText.push(""+ (index+1) + " of " + count);

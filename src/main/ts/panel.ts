@@ -115,7 +115,7 @@ function resetTop() {
             let src:string = hero.id.num<3 ? "team"+currentTeam : "hero"+hero.id.num;
             $("#hero"+i).attr("src","/img/" + src + "cell.png");
 
-            if (hero.id.team == currentTeam || hero.rumReady) h.removeClass("disabled");
+            if ( ( hero.canGo() && hero.id.team == currentTeam) || hero.rumReady) h.removeClass("disabled");
             else h.addClass("disabled");
          }
 

@@ -76,8 +76,12 @@ public class View {
             }
             if (hero.drunk()) pirateView.notes.add(PirateView.Note.drunk);
 
-            if (hero.dead()) continue;
+            if (hero.dead()) {
+                pirateView.dead = true;
+                continue;
+            }
             if (game.getCell(hero.getLoc()).closed()) {// additional heroes not discovered
+                pirateView.hidden = true;
                 continue;
             }
 
@@ -88,7 +92,6 @@ public class View {
 
             pirateView.loc = loc;
             pirateView.index = index;
-            pirateView.hidden = false;
 
             if (selHero != null && ! hero.equals(selHero)) continue;
 
@@ -228,7 +231,8 @@ public class View {
     public static class PirateView {
         public enum Note {pirate,drunk};
         public Loc loc = new Loc(0,0);
-        public boolean hidden = true;
+        public boolean hidden = false;
+        public boolean dead = false;
         public boolean rumReady = false;
         public int index = 0;
         public List<Loc> steps = new ArrayList<>();
