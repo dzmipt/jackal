@@ -123,6 +123,7 @@ public class View {
 
         if (cell.move()) {
             addStepsMove(pirateView,game, hero, hasGold);
+            return;
         }
 
         for (int dr=-1; dr<=1; dr++) {
@@ -148,13 +149,12 @@ public class View {
                     if (newCell.ship() && game.enemy(hero, ((ShipCell)newCell).team()) ) continue;
                 }
 
-                List<Hero> heroes = newCell.heroes(0);
-                if (hero.friday() && game.hasEnemy(hero.team(),heroes)) continue;
+                if (! GameController.canGo(game, hero, newCell, false)) continue;
 
                 pirateView.steps.add(newLoc);
                 if (cell.ship()) continue;
                 if (! hasGold) continue;
-                if (! canGoWithGold(game, hero,newCell)) continue;
+                if (! GameController.canGo(game, hero,newCell, true)) continue;
 
                 pirateView.stepsWithGold.add(newLoc);
             }
@@ -166,9 +166,10 @@ public class View {
         Loc[] steps = cell.nextSteps(hero.getPrevLoc(), hero.getLoc());
         for (Loc step:steps) {
             if (step.row()<0 || step.row()>12 || step.col()<0 || step.col()>12) continue;
+            if (! GameController.canGo(game, hero, game.getCell(step), false)) continue;
             pirateView.steps.add(step);
             if (!hasGold) continue;
-            if (! canGoWithGold(game, hero, game.getCell(step))) continue;
+            if (! GameController.canGo(game, hero, game.getCell(step), true)) continue;
 
             pirateView.stepsWithGold.add(step);
         }
@@ -204,16 +205,6 @@ public class View {
         }
 
         return fromLoc.distance(targetLoc) == 1 && targetIndex == 0;
-    }
-
-    private boolean canGoWithGold(Game game, Hero hero, Cell newCell) {
-        if (newCell.closed()) return false;
-        if (newCell.sea()) return false;
-        if (game.hasEnemy(hero, newCell.heroes(0))) return false;
-        if (newCell.ship() && game.enemy(hero, ((ShipCell)newCell).team()) ) return false;
-        if (hero.missioner()) return false;
-
-        return true;
     }
 
     public View setAnimateShip(AnimateShip animateShip) {

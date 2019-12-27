@@ -38,7 +38,7 @@ public class GoController extends GameController {
         animateRum = null;
         withGold = request.withGold;
         hero = game.getHero(request.getHeroId());
-        Loc oldLoc = hero.getLoc();
+        oldLoc = hero.getLoc();
         oldCell = game.getCell(oldLoc);
         newLoc = request.loc;
         newCell = game.getCell(newLoc);
@@ -64,6 +64,10 @@ public class GoController extends GameController {
             }
         }
 
+        if (! canGo(game, hero, newCell, withGold)) {
+            hero.die();
+        }
+
         if (oldCell.ship() && newCell.sea()) { // sail the ship
             sailShip();
         } else if (!hero.dead()) { // Friday can be dead here
@@ -77,7 +81,19 @@ public class GoController extends GameController {
             moveHero();
         }
 
-        return game.getView()
+        if (oldCell.move() && oldCell.gold(0)>0) {
+            if (hero.dead() || !withGold) { // for the move cell, return gold to the init loc
+                oldCell.takeGold(0);
+                Cell initCell = game.getCell(hero.getInitStepLoc());
+                initCell.addGold(initCell.count() - 1);
+            }
+        }
+
+        if (hero.dead() || ! newCell.move()) {
+            nextTurn();
+        }
+
+        return game.getView(newCell.move() && !hero.dead() ? hero: null)
                     .setAnimateShip(animateShip)
                     .setAnimateRum(animateRum);
     }
@@ -99,7 +115,6 @@ public class GoController extends GameController {
 
         game.moveShip(((ShipCell)oldCell).team(), newLoc);
         animateShip = new View.AnimateShip(oldLoc, newLoc);
-        nextTurn();
     }
 
     private void moveHero() {
@@ -110,14 +125,6 @@ public class GoController extends GameController {
                 hero.die();
                 int index = newCell.index(hero);
                 newCell.removeHero(index, hero);
-            }
-        }
-
-        if (oldCell.move() && oldCell.gold(0)>0) {
-            if (hero.dead() || !withGold) { // for the move cell, return gold to the init loc
-                oldCell.takeGold(0);
-                Cell initCell = game.getCell(hero.getInitStepLoc());
-                initCell.addGold(initCell.count() - 1);
             }
         }
 
@@ -155,9 +162,6 @@ public class GoController extends GameController {
                 missioner.die();
             }
         }
-        if (hero.dead() || ! newCell.move()) {
-            nextTurn();
-        }
     }
 
     private boolean isCycle() {
@@ -170,7 +174,10 @@ public class GoController extends GameController {
                 Cell newCell = game.getCell(locs.newLoc);
                 if (newCell == null) continue; // Knight jumps outside field
                 if (newCell.closed()) return false;
-                if (!newCell.move()) return false;
+                if (! GameController.canGo(game, hero, newCell, false)) continue;
+                if (!newCell.move()) {
+                    return false;
+                }
                 Loc[] steps = ((MoveCell)newCell).nextSteps(locs.prevLoc, locs.newLoc);
                 for(Loc step: steps) {
                     PairLoc pl = new PairLoc(locs.newLoc, step);
