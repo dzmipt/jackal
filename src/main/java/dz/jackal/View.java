@@ -192,13 +192,13 @@ public class View {
     }
 
     private boolean rumReady(Game game, Hero target, Hero from) {
+        if (from.dead() || target.dead()) return false;
         Loc fromLoc = from.getLoc();
         Cell fromCell = game.getCell(fromLoc);
         int fromIndex = fromCell.index(from);
         Loc targetLoc = target.getLoc();
         Cell targetCell = game.getCell(targetLoc);
         int targetIndex = targetCell.index(target);
-
         if (fromLoc.equals(targetLoc)) {
             return targetIndex == fromIndex || targetIndex == fromIndex+1;
         }

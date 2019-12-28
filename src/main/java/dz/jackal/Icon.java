@@ -12,6 +12,7 @@ public enum Icon {
     DESERT ("desert"),
     SWAMP ("swamp"),
     MOUNTAIN("mountain"),
+    WOMAN ("woman")
     ;
 
     private String location;

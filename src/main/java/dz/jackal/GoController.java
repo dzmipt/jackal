@@ -9,10 +9,8 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Stream;
 
 @Controller
 public class GoController extends GameController {
@@ -92,6 +90,8 @@ public class GoController extends GameController {
         if (hero.dead() || ! newCell.move()) {
             nextTurn();
         }
+
+        checkWoman();
 
         return game.getView(newCell.move() && !hero.dead() ? hero: null)
                     .setAnimateShip(animateShip)
@@ -195,6 +195,25 @@ public class GoController extends GameController {
     public void nextTurn() {
         game.nextTurn();
         HeroId.ALL.forEach(id -> game.getHero(id).setDrunk(false));
+    }
+
+    private void checkWoman() {
+        Hero[] heroes = HeroId.ALL.stream()
+                .filter(id -> id.team() == game.getCurrentTeam()) // don't include additional heroes
+                .map(id -> game.getHero(id))
+                .toArray(Hero[]::new);
+
+        Hero body =  Stream.of(heroes).filter(Hero::dead).findFirst().orElse(null);
+        if (body == null) return;
+
+        Hero father = game.getWoman().heroes(0)
+                .stream()
+                .filter(h -> h.id().team() == game.getCurrentTeam())
+                .findFirst().orElse(null);
+
+        if (father == null) return;
+        body.birth(father.getLoc());
+        game.getCell(father.getLoc()).addHero(0, body);
     }
 
     private static class PairLoc {

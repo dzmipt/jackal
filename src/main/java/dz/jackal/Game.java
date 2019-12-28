@@ -8,11 +8,12 @@ import java.io.Serializable;
 import java.util.*;
 
 public class Game implements Serializable {
-    private final static long serialVersionUID = 3;
+    private final static long serialVersionUID = 4;
     private final static Logger log = LoggerFactory.getLogger(Game.class);
 
     private String id;
     private Map<Loc, Cell> cells = new HashMap<>();
+    private Cell woman;
     private Loc[] ships;
     private Map<HeroId, Hero> heroes = new HashMap<>();
     private int currentTeam = 0;
@@ -44,7 +45,7 @@ public class Game implements Serializable {
                     ((col == 0 || col == 12) && row == 6)) icon = Icon.SHIP;
             else if ((row == 0 || row == 12 || col == 0 || col == 12) ||
                     ((row == 1 || row == 11) && (col == 1 || col == 11))) icon = Icon.SEA;
-            else if (random.nextInt(10)>-5) icon = Icon.LAND;
+            else if (random.nextInt(10)>-6) icon = Icon.LAND;
             else icon = Icon.MOVE; //icon = Icon.LAND; //Icon.MOUNTAIN;//Icon.LAND;
             //else icon = Icon.MOUNTAIN;
 
@@ -72,6 +73,22 @@ public class Game implements Serializable {
         cells.put(new Loc(2,4),new Cell(Icon.DESERT, 3));
         cells.put(new Loc(2,3),new Cell(Icon.JUNGLE2, 2));
 
+        ArrowMoveCell move4 = new ArrowMoveCell(Move.E);
+        move4.setMoves(Move.E);
+        ArrowMoveCell move41 = new ArrowMoveCell(Move.E);
+        move41.setMoves(Move.E);
+        ArrowMoveCell move8 = new ArrowMoveCell(Move.W);
+        move8.setMoves(Move.W);
+        ArrowMoveCell move81 = new ArrowMoveCell(Move.W);
+        move81.setMoves(Move.W);
+
+        cells.put(new Loc(6, 11), new Cell(Icon.LAND, 1));
+        setWoman(new Loc(6,10));
+        cells.put(new Loc(6,9), move4);
+        cells.put(new Loc(5,9), move41);
+        cells.put(new Loc(5,10), move8);
+        cells.put(new Loc(4,9), move81);
+
         ships = new Loc[] {new Loc(0,6), new Loc(6, 12),
                              new Loc(12,6), new Loc(6,0)};
 
@@ -98,6 +115,15 @@ public class Game implements Serializable {
             heroes.put(heroId, hero);
             getCell(loc).addHero(0,hero);
         }
+    }
+
+    private void setWoman(Loc loc) {
+        woman = new Cell(Icon.WOMAN, 1);
+        cells.put(loc, woman);
+    }
+
+    public Cell getWoman() {
+        return woman;
     }
 
     public Cell getCell(Loc loc) {return cells.get(loc);}

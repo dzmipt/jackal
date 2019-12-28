@@ -32,6 +32,11 @@ public class Hero implements Serializable {
         loc = null;
     }
 
+    public void birth(Loc loc) {
+        dead = false;
+        this.loc = loc;
+    }
+
     public boolean drunk() {return drunk;}
     public void setDrunk(boolean drunk) {this.drunk = drunk;}
 

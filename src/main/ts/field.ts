@@ -164,7 +164,7 @@ function mul(k:number, x:[number,number]):[number,number] {
 
 
 function setHero(h:Hero, pos:number, count:number, animate:boolean) {
-    if (h.hidden) {
+    if (h.hidden || h.dead) {
         hideHero(h);
         return;
     }

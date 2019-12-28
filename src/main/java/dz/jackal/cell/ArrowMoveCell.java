@@ -25,12 +25,20 @@ public class ArrowMoveCell extends MoveCell {
                 moves[index] = moves[index].rotate();
             }
         }
+        initIconView();
+    }
 
+    public void setMoves(Move ... m) {
+        this.moves = m;
+        initIconView();
+    }
+
+    private void initIconView() {
         iconView = Icon.MOVE.getLocation() +
-                            Stream.of(moves)
-                                .map(d->""+(d.ordinal()+1))
-                                .sorted()
-                                .collect(Collectors.joining());
+                Stream.of(moves)
+                        .map(d->""+(d.ordinal()+1))
+                        .sorted()
+                        .collect(Collectors.joining());
     }
 
     @Override
