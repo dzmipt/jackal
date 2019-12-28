@@ -53,6 +53,10 @@ public class Cell implements Serializable {
         return icon == Icon.FORT;
     }
 
+    public boolean balloon() {
+        return icon == Icon.BALLOON;
+    }
+
     public boolean ship() {
         return false;
     }

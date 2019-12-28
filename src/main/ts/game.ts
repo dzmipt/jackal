@@ -42,17 +42,19 @@ class Hero {
     hidden:boolean;
     dead:boolean;
     loc:Loc;
+    viaLoc:Loc;
     steps:Loc[];
     stepsWithGold:Loc[];
     index:number;
     count:number;
     rumReady:boolean;
-    constructor(id:HeroId, hidden:boolean, dead:boolean, loc:Loc, steps:Loc[], stepsWithGold: Loc[],
+    constructor(id:HeroId, hidden:boolean, dead:boolean, loc:Loc, viaLoc:Loc, steps:Loc[], stepsWithGold: Loc[],
                 index:number, count:number, rumReady:boolean) {
         this.id = id;
         this.hidden = hidden;
         this.dead = dead;
         this.loc = loc;
+        this.viaLoc = viaLoc;
         this.steps = steps;
         this.stepsWithGold = stepsWithGold;
         this.index = index;
@@ -149,7 +151,7 @@ function setHeroes(view:any) {
         let dead:boolean = vh.dead;
         let index:number = vh.index;
         let count:number = view.cells[loc.row][loc.col].count;
-        Hero.heroes.push(new Hero(id, hidden, dead, loc,
+        Hero.heroes.push(new Hero(id, hidden, dead, loc, vh.viaLoc,
                                     getLocs(vh.steps), getLocs(vh.stepsWithGold),
                                     index, count,
                                     vh.rumReady));

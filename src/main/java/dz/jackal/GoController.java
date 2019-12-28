@@ -34,6 +34,7 @@ public class GoController extends GameController {
         GoRequest request = (GoRequest) aRequest;
         animateShip = null;
         animateRum = null;
+        Loc viaLoc = null;
         withGold = request.withGold;
         hero = game.getHero(request.getHeroId());
         oldLoc = hero.getLoc();
@@ -76,6 +77,12 @@ public class GoController extends GameController {
                     heroes.forEach(game::returnToShip);
                 }
             }
+            if (newCell.balloon()) {
+                newCell.open();
+                viaLoc = newLoc;
+                newCell = game.getTeamShip(hero.team());
+                newLoc = game.getTeamShipLoc(hero.team());
+            }
             moveHero();
         }
 
@@ -95,7 +102,8 @@ public class GoController extends GameController {
 
         return game.getView(newCell.move() && !hero.dead() ? hero: null)
                     .setAnimateShip(animateShip)
-                    .setAnimateRum(animateRum);
+                    .setAnimateRum(animateRum)
+                    .setViaLoc(hero.id(), viaLoc);
     }
 
     private void sailShip() {

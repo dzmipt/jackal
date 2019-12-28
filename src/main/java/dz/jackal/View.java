@@ -219,6 +219,12 @@ public class View {
         this.animateRum = animateRum;
         return this;
     }
+
+    public View setViaLoc(HeroId id, Loc viaLoc) {
+        int index = HeroId.ALL.indexOf(id);
+        heroes.get(index).viaLoc = viaLoc;
+        return this;
+    }
     public static class CellView {
         public String icon;
         public int count;
@@ -231,6 +237,7 @@ public class View {
     public static class PirateView {
         public enum Note {pirate,drunk};
         public Loc loc = new Loc(0,0);
+        public Loc viaLoc = null;
         public boolean hidden = false;
         public boolean dead = false;
         public boolean rumReady = false;
@@ -255,6 +262,5 @@ public class View {
             this.from = from;
             this.to = to;
         }
-
     }
 }

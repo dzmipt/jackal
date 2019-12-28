@@ -163,6 +163,16 @@ function mul(k:number, x:[number,number]):[number,number] {
 }
 
 
+function getTargetAttr(hindex:number, hcount:number, hloc:Loc, pos:number, count:number) {
+    let space = heroSpace[hcount-1];
+    let hd:Point = mul(space, heroDelta[count>9 ? 8 : count-1] [count>9 ? 8 : pos]);
+
+    let hc:Point = add(hd, heroCenter[hcount-1][hindex] );
+
+
+    return {top:hloc.row*LEN+hc[1],left:hloc.col*LEN+hc[0]};
+}
+
 function setHero(h:Hero, pos:number, count:number, animate:boolean) {
     if (h.hidden || h.dead) {
         hideHero(h);
@@ -170,17 +180,13 @@ function setHero(h:Hero, pos:number, count:number, animate:boolean) {
     }
 
     let el = hero(h);
-    let space = heroSpace[h.count-1];
-    let hd:Point = mul(space, heroDelta[count>9 ? 8 : count-1] [count>9 ? 8 : pos]);
-
-    let hc:Point = add(hd, heroCenter[h.count-1][h.index] );
-
-
-    let attr={top:h.loc.row*LEN+hc[1],left:h.loc.col*LEN+hc[0]};
     el = el.show();
 
-    if (animate) el.animate(attr,500);
-    else el.css(attr);
+    let attr = getTargetAttr(h.index,h.count,h.loc, pos, count);
+    if (animate) {
+        if (h.viaLoc != null) el.animate(getTargetAttr(0,1,h.viaLoc,0,1), 500);
+        el.animate(attr,500);
+    } else el.css(attr);
     return el;
 }
 

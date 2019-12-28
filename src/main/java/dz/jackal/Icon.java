@@ -13,7 +13,8 @@ public enum Icon {
     SWAMP ("swamp"),
     MOUNTAIN("mountain"),
     WOMAN ("woman"),
-    FORT ("fort")
+    FORT ("fort"),
+    BALLOON ("balloon")
     ;
 
     private String location;
