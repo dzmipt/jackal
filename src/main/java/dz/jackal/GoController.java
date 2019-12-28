@@ -1,5 +1,6 @@
 package dz.jackal;
 
+import dz.jackal.cell.Cannon;
 import dz.jackal.cell.Cell;
 import dz.jackal.cell.MoveCell;
 import dz.jackal.cell.ShipCell;
@@ -82,6 +83,12 @@ public class GoController extends GameController {
                 viaLoc = newLoc;
                 newCell = game.getTeamShip(hero.team());
                 newLoc = game.getTeamShipLoc(hero.team());
+            }
+            if (newCell.cannon()) {
+                newCell.open();
+                viaLoc = newLoc;
+                newLoc = ((Cannon)newCell).fire(newLoc);
+                newCell = game.getCell(newLoc);
             }
             moveHero();
         }

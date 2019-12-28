@@ -10,18 +10,19 @@ import java.util.stream.Stream;
 public class ArrowMoveCell extends MoveCell {
     private final static long serialVersionUID = 1;
 
-    private static Random random = new Random();
     private Move[] moves;
     private String iconView;
+    private Random random;
 
-    public ArrowMoveCell(Move ... m ){
+    public ArrowMoveCell(Random random, Move ... m ){
         super(Icon.MOVE);
+        this.random = random;
 
         moves = new Move[m.length];
         int count = random.nextInt(4);
         for(int index=0; index<m.length; index++) {
             moves[index] = m[index];
-            for (int i=0;i<count;i++) {
+            for (int i=0;i<=count;i++) {
                 moves[index] = moves[index].rotate();
             }
         }
@@ -36,7 +37,7 @@ public class ArrowMoveCell extends MoveCell {
     private void initIconView() {
         iconView = Icon.MOVE.getLocation() +
                 Stream.of(moves)
-                        .map(d->""+(d.ordinal()+1))
+                        .map(d->""+(d.index()))
                         .sorted()
                         .collect(Collectors.joining());
     }
@@ -53,7 +54,7 @@ public class ArrowMoveCell extends MoveCell {
 
     @Override
     public MoveCell duplicate() {
-        return new ArrowMoveCell(moves);
+        return new ArrowMoveCell(random, moves);
     }
 
     @Override

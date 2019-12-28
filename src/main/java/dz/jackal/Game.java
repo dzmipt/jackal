@@ -20,22 +20,22 @@ public class Game implements Serializable {
     private int turn = 0;
     private boolean startTurn = true;
 
+    private static Random random = new Random();
+
     private static MoveCell[] moves = new MoveCell[] {
             /*new KnightCell(),
             new IceCell(),*/
-            new ArrowMoveCell(Move.N),
-            /*new ArrowMoveCell(Move.NW),
-            new ArrowMoveCell(Move.E, Move.W),
-            new ArrowMoveCell(Move.NW, Move.SE),
-            new ArrowMoveCell(Move.E, Move.W, Move.N, Move.S),
-            new ArrowMoveCell(Move.NW, Move.NE, Move.SW, Move.SE),
-            new ArrowMoveCell(Move.NW, Move.E, Move.S)*/
+            new ArrowMoveCell(random, Move.N),
+            /*new ArrowMoveCell(random, Move.NW),
+            new ArrowMoveCell(random, Move.E, Move.W),
+            new ArrowMoveCell(random, Move.NW, Move.SE),
+            new ArrowMoveCell(random, Move.E, Move.W, Move.N, Move.S),
+            new ArrowMoveCell(random, Move.NW, Move.NE, Move.SW, Move.SE),
+            new ArrowMoveCell(random, Move.NW, Move.E, Move.S)*/
     };
 
     private Game(String id) {
         this.id = id;
-
-        Random random = new Random();
 
         for(Loc loc: Loc.ALL) {
             int row = loc.row();
@@ -73,13 +73,13 @@ public class Game implements Serializable {
         cells.put(new Loc(2,4),new Cell(Icon.DESERT, 3));
         cells.put(new Loc(2,3),new Cell(Icon.JUNGLE2, 2));
 
-        ArrowMoveCell move4 = new ArrowMoveCell(Move.E);
+        ArrowMoveCell move4 = new ArrowMoveCell(random, Move.E);
         move4.setMoves(Move.E);
-        ArrowMoveCell move41 = new ArrowMoveCell(Move.E);
+        ArrowMoveCell move41 = new ArrowMoveCell(random, Move.E);
         move41.setMoves(Move.E);
-        ArrowMoveCell move8 = new ArrowMoveCell(Move.W);
+        ArrowMoveCell move8 = new ArrowMoveCell(random, Move.W);
         move8.setMoves(Move.W);
-        ArrowMoveCell move81 = new ArrowMoveCell(Move.W);
+        ArrowMoveCell move81 = new ArrowMoveCell(random, Move.W);
         move81.setMoves(Move.W);
 
         cells.put(new Loc(6, 11), new Cell(Icon.LAND, 1));
@@ -91,6 +91,10 @@ public class Game implements Serializable {
 
         cells.put(new Loc(10, 6), new Cell(Icon.FORT, 1));
         cells.put(new Loc(6,6), new Cell(Icon.BALLOON, 1));
+
+        Cannon cannon = new Cannon(random);
+        cannon.setMove(Move.N);
+        cells.put(new Loc (6, 3), cannon);
 
         ships = new Loc[] {new Loc(0,6), new Loc(6, 12),
                              new Loc(12,6), new Loc(6,0)};

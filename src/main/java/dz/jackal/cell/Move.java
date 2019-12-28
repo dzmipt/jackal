@@ -20,6 +20,9 @@ public enum Move {
         this.dr = dr;
         this.dc = dc;
     }
+    public int index() {
+        return ordinal()+1;
+    }
     public Move rotate() {
         return Move.values()[(ordinal()+2) % Move.values().length];
     }
