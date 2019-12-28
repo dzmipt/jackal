@@ -93,8 +93,10 @@ public class Game implements Serializable {
         cells.put(new Loc(6,6), new Cell(Icon.BALLOON, 1));
 
         Cannon cannon = new Cannon(random);
-        cannon.setMove(Move.N);
-        cells.put(new Loc (6, 3), cannon);
+        cannon.setMove(Move.W);
+        cells.put(new Loc (10, 5), cannon);
+
+        cells.put(new Loc(4,11), new Cell(Icon.CANNIBAL, 1));
 
         ships = new Loc[] {new Loc(0,6), new Loc(6, 12),
                              new Loc(12,6), new Loc(6,0)};

@@ -15,7 +15,8 @@ public enum Icon {
     WOMAN ("woman"),
     FORT ("fort"),
     BALLOON ("balloon"),
-    CANNON ("cannon")
+    CANNON ("cannon"),
+    CANNIBAL ("cannibal")
     ;
 
     private String location;

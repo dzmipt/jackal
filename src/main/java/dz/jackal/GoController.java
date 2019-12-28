@@ -68,6 +68,10 @@ public class GoController extends GameController {
             hero.die();
         }
 
+        if (newCell.cannibal() && !hero.friday()) {
+            hero.die();
+        }
+
         if (oldCell.ship() && newCell.sea()) { // sail the ship
             sailShip();
         } else if (!hero.dead()) { // Friday can be dead here
