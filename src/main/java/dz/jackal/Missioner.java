@@ -6,7 +6,7 @@ public class Missioner extends Hero {
     private boolean pirate = false;
 
     public Missioner(Loc loc) {
-        super(HeroId.MISSIONER_ID, -1, loc);
+        super(HeroId.MISSIONER_ID, loc);
     }
 
     public void drinkToPirate() {

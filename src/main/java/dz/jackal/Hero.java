@@ -12,9 +12,9 @@ public class Hero implements Serializable {
     private boolean dead = false;
     private boolean drunk = false;
 
-    public Hero(HeroId id, int team, Loc loc) {
+    public Hero(HeroId id, Loc loc) {
         this.id = id;
-        this.team = team;
+        this.team = id.team();
         this.loc = loc;
     }
     public Loc getLoc() {

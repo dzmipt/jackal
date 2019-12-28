@@ -14,121 +14,33 @@ public class Game implements Serializable {
     private String id;
     private Map<Loc, Cell> cells = new HashMap<>();
     private Cell woman;
-    private Loc[] ships;
+    private Loc[] ships = new Loc[4];
     private Map<HeroId, Hero> heroes = new HashMap<>();
     private int currentTeam = 0;
     private int turn = 0;
     private boolean startTurn = true;
 
-    private static Random random = new Random();
-
-    private static MoveCell[] moves = new MoveCell[] {
-            /*new KnightCell(),
-            new IceCell(),*/
-            new ArrowMoveCell(random, Move.N),
-            /*new ArrowMoveCell(random, Move.NW),
-            new ArrowMoveCell(random, Move.E, Move.W),
-            new ArrowMoveCell(random, Move.NW, Move.SE),
-            new ArrowMoveCell(random, Move.E, Move.W, Move.N, Move.S),
-            new ArrowMoveCell(random, Move.NW, Move.NE, Move.SW, Move.SE),
-            new ArrowMoveCell(random, Move.NW, Move.E, Move.S)*/
-    };
-
     private Game(String id) {
         this.id = id;
+        cells = GameInitializer.init();
+        //cells = GameInitializer.initTest();
 
-        for(Loc loc: Loc.ALL) {
-            int row = loc.row();
-            int col = loc.col();
-            Icon icon;
-            if (((row == 0 || row == 12) && col == 6) ||
-                    ((col == 0 || col == 12) && row == 6)) icon = Icon.SHIP;
-            else if ((row == 0 || row == 12 || col == 0 || col == 12) ||
-                    ((row == 1 || row == 11) && (col == 1 || col == 11))) icon = Icon.SEA;
-            else if (random.nextInt(10)>-6) icon = Icon.LAND;
-            else icon = Icon.MOVE; //icon = Icon.LAND; //Icon.MOUNTAIN;//Icon.LAND;
-            //else icon = Icon.MOUNTAIN;
-
-            Cell cell;
-            if (icon == Icon.MOUNTAIN) {
-                cell = new Cell(icon, 5);
-                cell.addGold(0);
-                cell.addGold(1);
-            } else if (icon == Icon.LAND) {
-                cell = new Cell(icon, 1);
-                int cnt = random.nextInt(4);
-                for (int i=0;i<cnt;i++) cell.addGold(0);
-                cell.setRum(random.nextInt(4));
-            } else if (icon == Icon.MOVE) {
-                cell = moves[random.nextInt(moves.length)].duplicate();
-            } else {
-                cell = new Cell(icon);
-                cell.open();
+        for(Map.Entry<Loc,Cell> entry: cells.entrySet()) {
+            Loc loc = entry.getKey();
+            Cell cell = entry.getValue();
+            int count = cell.count();
+            for (int index=0; index<count; index++) {
+                for(Hero hero:cell.heroes(index)) {
+                    heroes.put(hero.id(), hero);
+                }
             }
-
-            cells.put(loc, cell);
-        }
-        cells.put(new Loc(2,6),new Cell(Icon.MOUNTAIN, 5));
-        cells.put(new Loc(2,5),new Cell(Icon.SWAMP, 4));
-        cells.put(new Loc(2,4),new Cell(Icon.DESERT, 3));
-        cells.put(new Loc(2,3),new Cell(Icon.JUNGLE2, 2));
-
-        ArrowMoveCell move4 = new ArrowMoveCell(random, Move.E);
-        move4.setMoves(Move.E);
-        ArrowMoveCell move41 = new ArrowMoveCell(random, Move.E);
-        move41.setMoves(Move.E);
-        ArrowMoveCell move8 = new ArrowMoveCell(random, Move.W);
-        move8.setMoves(Move.W);
-        ArrowMoveCell move81 = new ArrowMoveCell(random, Move.W);
-        move81.setMoves(Move.W);
-
-        cells.put(new Loc(6, 11), new Cell(Icon.LAND, 1));
-        setWoman(new Loc(6,10));
-        cells.put(new Loc(6,9), move4);
-        cells.put(new Loc(5,9), move41);
-        cells.put(new Loc(5,10), move8);
-        cells.put(new Loc(4,9), move81);
-
-        cells.put(new Loc(10, 6), new Cell(Icon.FORT, 1));
-        cells.put(new Loc(6,6), new Cell(Icon.BALLOON, 1));
-
-        Cannon cannon = new Cannon(random);
-        cannon.setMove(Move.W);
-        cells.put(new Loc (10, 5), cannon);
-
-        cells.put(new Loc(4,11), new Cell(Icon.CANNIBAL, 1));
-
-        ships = new Loc[] {new Loc(0,6), new Loc(6, 12),
-                             new Loc(12,6), new Loc(6,0)};
-
-        for(int team=0; team<4; team++) {
-            ShipCell shipCell = new ShipCell(team);
-            shipCell.open();
-            cells.put(ships[team], shipCell);
-        }
-        for(HeroId heroId : HeroId.ALL) {
-            int team;
-            Loc loc;
-            if (heroId.pirate()) {
-                team = heroId.team();
-                loc = ships[team];
-            } else {
-                if (heroId.benGunn()) loc = new Loc(1,7);
-                else if (heroId.friday()) loc = new Loc(5,11);
-                else if (heroId.missioner()) loc = new Loc(11,7);
-                else throw new IllegalStateException();
-                team = -1;
-                cells.put(loc, new Cell(Icon.LAND, 1));
+            if (cell.ship()) {
+                ships[((ShipCell)cell).team()] = loc;
             }
-            Hero hero = heroId.equals(HeroId.MISSIONER_ID) ? new Missioner(loc) : new Hero(heroId, team, loc);
-            heroes.put(heroId, hero);
-            getCell(loc).addHero(0,hero);
+            if (cell.woman()) {
+                woman = cell;
+            }
         }
-    }
-
-    private void setWoman(Loc loc) {
-        woman = new Cell(Icon.WOMAN, 1);
-        cells.put(loc, woman);
     }
 
     public Cell getWoman() {
