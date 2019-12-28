@@ -49,6 +49,10 @@ public class Cell implements Serializable {
         return icon == Icon.WOMAN;
     }
 
+    public boolean fort() {
+        return icon == Icon.FORT;
+    }
+
     public boolean ship() {
         return false;
     }

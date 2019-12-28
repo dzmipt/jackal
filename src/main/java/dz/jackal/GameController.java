@@ -44,7 +44,7 @@ abstract class GameController {
                 && game.enemy(hero, missioner.team())
                 && missioner.team()!=-1) return false;
 
-        if (newCell.woman() && game.hasEnemy(hero, newCell.heroes(0))) return false;
+        if ((newCell.woman() || newCell.fort()) && game.hasEnemy(hero, newCell.heroes(0))) return false;
 
         if (!withGold) return true;
 
@@ -53,7 +53,7 @@ abstract class GameController {
         if (game.hasEnemy(hero, newCell.heroes(0))) return false;
         if (newCell.ship() && game.enemy(hero, ((ShipCell)newCell).team()) ) return false;
         if (hero.missioner()) return false;
-        if (newCell.woman()) return false;
+        if (newCell.woman() || newCell.fort()) return false;
 
         return true;
     }
