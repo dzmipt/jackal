@@ -29,7 +29,7 @@ function initField() {
     for(let id of HeroId.ALL) {
         heroes.append( heroEl(id)
                     .attr("id","hero"+id.index())
-                    .hide()
+                    .css("opacity",0.0)
                   );
     };
 
@@ -95,9 +95,6 @@ function fieldClick(loc:Loc) {
     } else if (isSelectable(loc)) {
         selectHeroAtLoc(loc);
     }
-}
-function hideHero(h:Hero) {
-    hero(h).hide();
 }
 
 function heroZLevel(h:Hero, level:number) {
@@ -174,19 +171,20 @@ function getTargetAttr(hindex:number, hcount:number, hloc:Loc, pos:number, count
 }
 
 function setHero(h:Hero, pos:number, count:number, animate:boolean) {
-    if (h.hidden || h.dead) {
-        hideHero(h);
-        return;
-    }
+    let attr = getTargetAttr(h.index,h.count,h.loc, pos, count);
+    attr['opacity'] =  h.hidden || h.dead ? 0.0 : 1.0;
 
     let el = hero(h);
-    el = el.show();
-
-    let attr = getTargetAttr(h.index,h.count,h.loc, pos, count);
-    if (animate) {
-        if (h.viaLoc != null) el.animate(getTargetAttr(0,1,h.viaLoc,0,1), 500);
+    if (!animate) {
+        el.css(attr);
+    } else {
+        if (h.viaLoc != null) {
+            let attrVia = getTargetAttr(0,1,h.viaLoc,0,1);
+            attrVia['opacity'] = attr['opacity'];
+            el.animate(attrVia, 500);
+        }
         el.animate(attr,500);
-    } else el.css(attr);
+    }
     return el;
 }
 
