@@ -57,6 +57,10 @@ public class Cell implements Serializable {
         return icon == Icon.BALLOON;
     }
 
+    public boolean trap() {
+        return icon == Icon.TRAP;
+    }
+
     public boolean cannibal() {
         return icon == Icon.CANNIBAL;
     }

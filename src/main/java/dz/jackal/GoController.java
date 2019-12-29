@@ -94,6 +94,17 @@ public class GoController extends GameController {
                 newLoc = ((Cannon)newCell).fire(newLoc);
                 newCell = game.getCell(newLoc);
             }
+
+            if (newCell.trap()) {
+                List<Hero> heroes = newCell.heroes(0);
+                if (heroes.size() == 0) {
+                    if (! hero.friday()) {
+                        hero.setTrapped(true);
+                    }
+                } else {
+                    heroes.get(0).setTrapped(false);
+                }
+            }
             moveHero();
         }
 

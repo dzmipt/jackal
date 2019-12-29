@@ -16,7 +16,8 @@ public enum Icon {
     FORT ("fort"),
     BALLOON ("balloon"),
     CANNON ("cannon"),
-    CANNIBAL ("cannibal")
+    CANNIBAL ("cannibal"),
+    TRAP ("trap")
     ;
 
     private String location;

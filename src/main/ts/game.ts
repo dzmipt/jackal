@@ -163,6 +163,7 @@ function setHeroes(view:any) {
                     $("#herolabel"+id.num).empty().append("Pirate");
                 }
                 if (note == "drunk") noteText.push("Drunk");
+                if (note == "trapped") noteText.push("Trapped");
             }
             if (dead) {
                 noteText.push("Dead");

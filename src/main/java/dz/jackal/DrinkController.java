@@ -33,7 +33,11 @@ public class DrinkController extends GameController {
                 heroes.forEach(game::returnToShip);
             }
         } else {
-            hero.setDrunk(true);
+            if (hero.trapped()) {
+                hero.setTrapped(false);
+            } else {
+                hero.setDrunk(true);
+            }
             selHero = hero;
         }
 

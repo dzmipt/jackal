@@ -11,6 +11,7 @@ public class Hero implements Serializable {
     private Loc initStepLoc, prevLoc;
     private boolean dead = false;
     private boolean drunk = false;
+    private boolean trapped = false;
 
     public Hero(HeroId id, Loc loc) {
         this.id = id;
@@ -39,6 +40,9 @@ public class Hero implements Serializable {
 
     public boolean drunk() {return drunk;}
     public void setDrunk(boolean drunk) {this.drunk = drunk;}
+
+    public boolean trapped() {return trapped;}
+    public void setTrapped(boolean trapped) {this.trapped = trapped;}
 
     public Loc getInitStepLoc() {
         return initStepLoc;

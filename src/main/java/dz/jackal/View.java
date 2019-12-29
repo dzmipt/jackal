@@ -85,6 +85,10 @@ public class View {
                 continue;
             }
 
+            if (hero.trapped()) {
+                pirateView.notes.add(PirateView.Note.trapped);
+            }
+
             Loc loc = hero.getLoc();
             Cell cell = game.getCell(loc);
             int index = cell.index(hero);
@@ -100,6 +104,12 @@ public class View {
             }
             if (game.getCurrentTeam() != hero.team() ) continue;
 
+            if (hero.trapped()) {
+                if (!hero.missioner()) {
+                    setRumReady(game, pirateView, true);
+                }
+                continue;
+            }
 
             if (cell.multiStep()) {
                 if (hero.friday() || index + 1 == cell.count() || hero.drunk()) {
@@ -235,7 +245,7 @@ public class View {
     }
 
     public static class PirateView {
-        public enum Note {pirate,drunk};
+        public enum Note {pirate,drunk,trapped};
         public Loc loc = new Loc(0,0);
         public Loc viaLoc = null;
         public boolean hidden = false;

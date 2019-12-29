@@ -38,6 +38,9 @@ public class GameInitializer {
         next(2, () -> new Cell(Icon.BALLOON, 1));
         next(2, () -> new Cannon(random));
 
+        next( 3, () -> new Cell(Icon.TRAP,1));
+//        next( 4, () -> new Cell(Icon.CROCODILE,1));
+
         next(5, () -> goldCell(1));
         next(5, () -> goldCell(2));
         next(3, () -> goldCell(3));
@@ -206,6 +209,8 @@ public class GameInitializer {
 
         cells.put(new Loc(10, 6), new Cell(Icon.FORT, 1));
         cells.put(new Loc(6,6), new Cell(Icon.BALLOON, 1));
+
+        cells.put(new Loc(7, 10), new Cell(Icon.TRAP, 1));
 
         Cannon cannon = new Cannon(random);
         cannon.setMove(Move.W);
