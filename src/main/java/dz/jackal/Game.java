@@ -22,8 +22,8 @@ public class Game implements Serializable {
 
     private Game(String id) {
         this.id = id;
-        cells = GameInitializer.init();
-        //cells = GameInitializer.initTest();
+        //cells = GameInitializer.init();
+        cells = GameInitializer.initTest();
 
         for(Map.Entry<Loc,Cell> entry: cells.entrySet()) {
             Loc loc = entry.getKey();
@@ -153,7 +153,12 @@ public class Game implements Serializable {
     }
 
     public void returnToShip(Hero h) {
-        moveHero(h, ships[h.team()],false);
+        Loc newLoc = getTeamShipLoc(h.team());
+        if (h.getLoc().equals(newLoc)) {
+            log.warn("returnToShip: Hero " + h + " is already on the ship");
+            return;
+        }
+        moveHero(h, newLoc,false);
     }
 
     public String getId() {return id;}
