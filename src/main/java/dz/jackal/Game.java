@@ -12,6 +12,8 @@ public class Game implements Serializable {
     private final static Logger log = LoggerFactory.getLogger(Game.class);
 
     private String id;
+    private String[] teamNames = {"","","",""};
+
     private Map<Loc, Cell> cells = new HashMap<>();
     private Cell woman;
     private Loc[] ships = new Loc[4];
@@ -20,10 +22,12 @@ public class Game implements Serializable {
     private int turn = 0;
     private boolean startTurn = true;
 
-    private Game(String id) {
+    private Game(String id, String[] teamNames) {
         this.id = id;
-        //cells = GameInitializer.init();
-        cells = GameInitializer.initTest();
+        this.teamNames = teamNames;
+
+        cells = GameInitializer.init();
+//        cells = GameInitializer.initTest();
 
         for(Map.Entry<Loc,Cell> entry: cells.entrySet()) {
             Loc loc = entry.getKey();
@@ -81,7 +85,13 @@ public class Game implements Serializable {
     }
 
     public boolean enemy(int team1, int team2) {
-        return (team1+team2) % 2 == 1;
+        if (team1 == 0 || team1 == 3) {
+            return team2 == 1 || team2 == 2;
+        } else {
+            return team2 == 0 || team2 == 3;
+        }
+//        return (team1/2) != (team2/2);
+        //return (team1+team2) % 2 == 1;
         //return team1!=team2;
     }
 
@@ -138,9 +148,13 @@ public class Game implements Serializable {
 
     public void moveHero(Hero h, Loc newLoc, boolean withGold) {
         Loc oldLoc = h.getLoc();
-        h.setLoc(newLoc);
         Cell oldCell = cells.get(oldLoc);
         Cell newCell = cells.get(newLoc);
+        if (newLoc.equals(oldLoc) && !newCell.multiStep()) {
+            log.warn("moveHero: the hero " + h + " is alread at " + newLoc);
+            return;
+        }
+        h.setLoc(newLoc);
         int index = oldCell.index(h);
         boolean stay = oldLoc.equals(newLoc);
 
@@ -162,6 +176,7 @@ public class Game implements Serializable {
     }
 
     public String getId() {return id;}
+    public String getCurrentTeamName() {return teamNames[currentTeam];}
     public View getView() {return new View(this);}
     public View getView(Hero selHero) {return new View(this, selHero);}
 
@@ -181,9 +196,9 @@ public class Game implements Serializable {
         }
         return builder.toString();
     }
-    public static Game newGame() {
+    public static Game newGame(String[] teamNames) {
         String id = generateId(16);
-        Game game = new Game(id);
+        Game game = new Game(id, teamNames);
         gameMap.put(id,game);
         log.info("New game is created: " + id);
         return game;

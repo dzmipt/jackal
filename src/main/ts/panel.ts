@@ -101,10 +101,11 @@ function resetPanels(view:any) {
         setTeamIcon(team, view.rum[team], "teamrum", "teamrumtext");
     }
 
-    resetTop();
+    resetTop(view.teamName);
 }
 
-function resetTop() {
+function resetTop(teamName:string) {
+    $("#topLabel").empty().append(teamName);
     for(let i=0;i<6;i++) {
         let h = $("#divhero"+i);
         let hero = Hero.get(new HeroId(currentTeam,i));

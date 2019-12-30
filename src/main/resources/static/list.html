@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Jackal Game List</title>
+    <link href="/list.css" rel="stylesheet">
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+</head>
+<body>
+    <h1>List of Games</h1>
+    <p><span id="new" class="tile highlightable" style="border:red double;font-size:larger">New Game</span></p>
+    <div id="newgame" class="tile" style="display:none">
+        <p><img src="/img/team0.png" class="team"><input id="name0" class="name"/></p>
+        <p><img src="/img/team1.png" class="team"><input id="name1" class="name"/></p>
+        <p><img src="/img/team2.png" class="team"><input id="name2" class="name"/></p>
+        <p><img src="/img/team3.png" class="team"><input id="name3" class="name"/></p>
+        <p><span id="sendnew" class="tile disabled" style="fond-size:larger">Set Up</span></p>
+    </div>
+    <div id="list"></div>
+
+    <script src="/ts/conn.js"></script>
+    <script src="/ts/list.js"></script>
+</body>
+</html>

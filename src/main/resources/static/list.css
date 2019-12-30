@@ -1,0 +1,26 @@
+.tile {
+    margin: 5px 0px 5px 0px;
+    padding: 5px;
+    border: grey solid 1px;
+    border-radius: 5px;
+}
+
+.disabled {
+    color: grey;
+}
+.highlightable {
+    cursor: pointer;
+}
+
+.highlightable:hover {
+    background-color:PaleGreen;
+}
+
+.team {
+    vertical-align: middle;
+}
+
+.name {
+    margin-left: 20px;
+    font-size:medium;
+}

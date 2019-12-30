@@ -11,6 +11,7 @@ import java.util.List;
 public class View {
 
     public String id;
+    public String teamName;
     public CellView[][] cells;
     public List<PirateView> heroes;
     public AnimateShip animateShip = null;
@@ -31,6 +32,7 @@ public class View {
 
     private void init(Game game, Hero selHero) {
         id = game.getId();
+        teamName = game.getCurrentTeamName();
 
         initCellView(game);
         initPirateView(game, selHero);

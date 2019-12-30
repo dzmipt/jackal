@@ -241,6 +241,7 @@ function initGame() {
     $("#prevTurn").click(prevTurn);
     $("#nextTurn").click(nextTurn);
 
+    addSubscription("view", setView);
     let id:string = new URLSearchParams(document.location.search.substring(1)).get("id");
     send("init",{id:id});
 }

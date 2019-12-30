@@ -1,8 +1,15 @@
 declare var Stomp:any;
 
 let stompClient = null;
-//import * as stomp from 'stompjs';
-//import * from 'stompjs';
+
+type Callback = (res:any)=>void;
+type Subscription = [string, Callback];
+
+let subscriptions:Subscription[] = [];
+
+function addSubscription(topic:string, callback:Callback) {
+    subscriptions.push([topic, callback]);
+}
 
 function connect(topic:string, obj:any) {
     let socket = new SockJS("/Jackal");
@@ -10,7 +17,10 @@ function connect(topic:string, obj:any) {
     stompClient.reconnect_delay = 5000;
     stompClient.connect({}, function (frame) {
         console.log("Connected: " + frame);
-        subscribe("view",setView);
+        //subscribe("view",setView);
+        for(let s of subscriptions) {
+            subscribe(s[0], s[1]);
+        }
         sendMsg(topic, obj);
      }/*, function(error) {
         console.log('Error: '+error.headers.message);
@@ -21,7 +31,7 @@ function connect(topic:string, obj:any) {
     );
 }
 
-function subscribe(topic:string, callback: (res:any)=>void) {
+function subscribe(topic:string, callback: Callback) {
     stompClient.subscribe("/jackal/"+topic, response => {
        // console.log(response.body);
         callback(JSON.parse(response.body));

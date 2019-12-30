@@ -36,6 +36,10 @@ public class DbGames {
         return PREFIX + turn + "." + EXT;
     }
 
+    private static Path getPath(String id, int turn) {
+        return root.resolve(id).resolve(getFileName(turn));
+    }
+
     public static String[] getIds() throws IOException {
         return Files.list(root)
                 .filter(path -> !path.equals(root))
@@ -82,8 +86,12 @@ public class DbGames {
 
     }
 
+    public static long getTime(String id, int turn) throws IOException {
+        return Files.getLastModifiedTime(getPath(id, turn)).toMillis();
+    }
+
     public static Game loadGame(String id, int turn) throws IOException {
-        Path path = root.resolve(id).resolve(getFileName(turn));
+        Path path = getPath(id, turn);
         ByteArrayInputStream inp = new ByteArrayInputStream(Files.readAllBytes(path));
         ObjectInputStream ois = new ObjectInputStream(inp);
         try {
