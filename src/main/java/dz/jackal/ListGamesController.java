@@ -18,7 +18,7 @@ import java.util.List;
 public class ListGamesController {
     private final static Logger log = LoggerFactory.getLogger(ListGamesController.class);
 
-    private final Format formatter = new SimpleDateFormat("E, dd MMM yy hh:mm");
+    private final Format formatter = new SimpleDateFormat("E, dd MMM yy HH:mm");
 
     @MessageMapping("/list")
     @SendTo("/jackal/list")
@@ -35,6 +35,7 @@ public class ListGamesController {
                     game.from = formatter.format(new Date(from));
                     game.to = formatter.format(to);
                     game.millis = to;
+                    game.teamNames = DbGames.getTeamNames(id);
 
                     list.games.add(game);
                 } catch (IOException e) {
@@ -52,8 +53,8 @@ public class ListGamesController {
 
     @MessageMapping("/new")
     @SendTo("/jackal/new")
-    public NewGameResponse newGame(String[] names) {
-        Game game = Game.newGame(names);
+    public NewGameResponse newGame(NewGameRequest request) {
+        Game game = Game.newGame(request.names, request.friends);
         try {
             DbGames.saveGame(game);
         } catch (IOException e) {
@@ -66,23 +67,26 @@ public class ListGamesController {
         public List<GameView> games = new ArrayList<>();
     }
 
-    public static class GameView implements Comparable {
+    public static class GameView implements Comparable<GameView> {
         public String id;
         private long millis;
         public int last;
         public String from, to;
+        public String[] teamNames;
 
         @Override
-        public int compareTo(Object o) {
-            GameView game = (GameView) o;
-            if (game.millis == this.millis) return 0;
-            if (game.millis > this.millis) return 1;
-            else return -1;
+        public int compareTo(GameView game) {
+            return Long.compare(game.millis, this.millis);
         }
 
         public GameView(String id) {
             this.id = id;
         }
+    }
+
+    public static class NewGameRequest {
+        public String[] names;
+        public int[] friends;
     }
 
     public static class NewGameResponse {

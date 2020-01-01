@@ -7,6 +7,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,6 +26,7 @@ public class DbGames {
             root = Paths.get(path);
             Files.createDirectories(root);
         } catch (IOException e) {
+            log.error("Can't set up db at path " + path, e);
             throw new RuntimeException("Can't set up db at path: " + path, e);
         }
     }
@@ -47,6 +49,18 @@ public class DbGames {
                 .toArray(String[]::new);
     }
 
+    private static void saveGameInternal(Game game) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(out);
+        oos.writeObject(game);
+        oos.close();
+        out.close();
+
+        Path path = getPath(game.getId(), game.getTurn());
+        Files.write(path, out.toByteArray());
+        log.info("Game saved to " + path);
+    }
+
     public static void saveGame(Game game) throws IOException {
         Path folder = root.resolve(game.getId());
         Files.createDirectories(folder);
@@ -63,15 +77,7 @@ public class DbGames {
             Files.delete(f);
         }
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(out);
-        oos.writeObject(game);
-        oos.close();
-        out.close();
-
-        Path path = folder.resolve(getFileName(turn));
-        Files.write(path, out.toByteArray());
-        log.info("Game saved to " + path);
+        saveGameInternal(game);
     }
 
     public static int getLastTurn(String id) throws IOException {
@@ -90,6 +96,21 @@ public class DbGames {
         return Files.getLastModifiedTime(getPath(id, turn)).toMillis();
     }
 
+    public static void setTime(String id, int turn, long millis) throws IOException {
+        Files.setLastModifiedTime(getPath(id, turn), FileTime.fromMillis(millis));
+    }
+
+
+    public static String[] getTeamNames(String id) throws IOException {
+        int turn = getLastTurn(id);
+        Game game = loadGame(id, turn);
+        String[] names = new String[4];
+        for (int team=0; team<4; team++) {
+            names[team] = game.getTeamName(team);
+        }
+        return names;
+    }
+
     public static Game loadGame(String id, int turn) throws IOException {
         Path path = getPath(id, turn);
         ByteArrayInputStream inp = new ByteArrayInputStream(Files.readAllBytes(path));
@@ -100,7 +121,21 @@ public class DbGames {
             inp.close();
             return game;
         } catch (ClassNotFoundException e) {
+            log.error("Can't load game id " + id + "; turn " + turn, e);
             throw new IOException("Can't deserialize game at " + path, e);
+        }
+    }
+
+    public static void updateGame(String id, String[] names, int[] friends) throws IOException {
+        int last = getLastTurn(id);
+        for (int turn = 0; turn<=last; turn++) {
+            Game game = loadGame(id, turn);
+            game.setTeamNames(names);
+            game.setFriends(friends);
+
+            long millis = getTime(id, turn);
+            saveGameInternal(game);
+            setTime(id, turn, millis);
         }
     }
 

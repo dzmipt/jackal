@@ -32,7 +32,7 @@ public class View {
 
     private void init(Game game, Hero selHero) {
         id = game.getId();
-        teamName = game.getCurrentTeamName();
+        teamName = game.getTeamName(game.getCurrentTeam());
 
         initCellView(game);
         initPirateView(game, selHero);

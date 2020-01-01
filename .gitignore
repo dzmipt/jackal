@@ -2,6 +2,7 @@
 /.gradle
 /build
 /db
+/db-backup
 gradlew
 gradlew.bat
 gradle/wrapper

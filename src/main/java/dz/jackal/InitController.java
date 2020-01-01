@@ -25,7 +25,7 @@ public class InitController {
     }
 
     private Game newGame() {
-        Game game = Game.newGame(new String[]{"","","",""});
+        Game game = Game.newGame(new String[]{"","","",""}, new int[] {0,1,0,1});
         try {
             DbGames.saveGame(game);
         } catch (IOException e) {

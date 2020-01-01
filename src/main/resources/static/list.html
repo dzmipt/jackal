@@ -5,6 +5,7 @@
     <title>Jackal Game List</title>
     <link href="/list.css" rel="stylesheet">
     <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/jquery-ui/jquery-ui.min.js"></script>
     <script src="/webjars/sockjs-client/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/stomp.min.js"></script>
 </head>
@@ -12,10 +13,20 @@
     <h1>List of Games</h1>
     <p><span id="new" class="tile highlightable" style="border:red double;font-size:larger">New Game</span></p>
     <div id="newgame" class="tile" style="display:none">
-        <p><img src="/img/team0.png" class="team"><input id="name0" class="name"/></p>
-        <p><img src="/img/team1.png" class="team"><input id="name1" class="name"/></p>
-        <p><img src="/img/team2.png" class="team"><input id="name2" class="name"/></p>
-        <p><img src="/img/team3.png" class="team"><input id="name3" class="name"/></p>
+        <div style="display:flex;flex-direction:row">
+            <ul id="col0" class="column">
+                <li id="line0">1. <img id="team0" src="/img/team0.png" class="team"><input id="jackalname0" class="name"/></li>
+            </ul>
+            <ul id="col1" class="column">
+                <li id="line1" class="line">2. <img id="team1" src="/img/team1.png" class="team"><input id="jackalname1" class="name"/></li>
+            </ul>
+            <ul id="col2" class="column">
+                <li id="line2" class="line">3. <img id="team2" src="/img/team2.png" class="team"><input id="jackalname2" class="name"/></li>
+            </ul>
+            <ul id="col3" class="column">
+                <li id="line3" class="line">4. <img id="team3" src="/img/team3.png" class="team"><input id="jackalname3" class="name"/></li>
+            </ul>
+        </div>
         <p><span id="sendnew" class="tile disabled" style="fond-size:larger">Set Up</span></p>
     </div>
     <div id="list"></div>

@@ -4,6 +4,7 @@ import dz.jackal.cell.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 
@@ -12,7 +13,8 @@ public class Game implements Serializable {
     private final static Logger log = LoggerFactory.getLogger(Game.class);
 
     private String id;
-    private String[] teamNames = {"","","",""};
+    private String[] teamNames;
+    private int[] friends;
 
     private Map<Loc, Cell> cells = new HashMap<>();
     private Cell woman;
@@ -22,12 +24,19 @@ public class Game implements Serializable {
     private int turn = 0;
     private boolean startTurn = true;
 
-    private Game(String id, String[] teamNames) {
-        this.id = id;
-        this.teamNames = teamNames;
+    public static void main(String[] args) throws IOException {
+        String[] teamNames = new String[]{"Настя - белые", "Дима - жёлтые", "Дима - красные", "Настя - чёрные"};
+        int[] friends = new int[] {0, 1, 1, 0};
+        DbGames.updateGame("gzzynvrjmvxeypxt", teamNames, friends);
+    }
 
-        cells = GameInitializer.init();
-//        cells = GameInitializer.initTest();
+    private Game(String id, String[] teamNames, int[] friends) {
+        this.id = id;
+        setTeamNames(teamNames);
+        setFriends(friends);
+
+//        cells = GameInitializer.init();
+        cells = GameInitializer.initTest();
 
         for(Map.Entry<Loc,Cell> entry: cells.entrySet()) {
             Loc loc = entry.getKey();
@@ -45,6 +54,14 @@ public class Game implements Serializable {
                 woman = cell;
             }
         }
+    }
+
+    void setTeamNames(String[] teamNames) {
+        this.teamNames = teamNames;
+    }
+
+    void setFriends(int[] friends) {
+        this.friends = friends;
     }
 
     public Cell getWoman() {
@@ -85,11 +102,17 @@ public class Game implements Serializable {
     }
 
     public boolean enemy(int team1, int team2) {
-        if (team1 == 0 || team1 == 3) {
+        if (friends == null) {
+            return team1 != team2;
+        }
+        if (team1 == -1 || team2 == -1) return false;
+        return friends[team1] != friends[team2];
+
+/*        if (team1 == 0 || team1 == 3) {
             return team2 == 1 || team2 == 2;
         } else {
             return team2 == 0 || team2 == 3;
-        }
+        }*/
 //        return (team1/2) != (team2/2);
         //return (team1+team2) % 2 == 1;
         //return team1!=team2;
@@ -176,7 +199,11 @@ public class Game implements Serializable {
     }
 
     public String getId() {return id;}
-    public String getCurrentTeamName() {return teamNames[currentTeam];}
+    public String getTeamName(int team) {
+        // for old games
+        if (teamNames == null) return "";
+        return teamNames[team];
+    }
     public View getView() {return new View(this);}
     public View getView(Hero selHero) {return new View(this, selHero);}
 
@@ -196,9 +223,9 @@ public class Game implements Serializable {
         }
         return builder.toString();
     }
-    public static Game newGame(String[] teamNames) {
+    public static Game newGame(String[] teamNames, int[] friends) {
         String id = generateId(16);
-        Game game = new Game(id, teamNames);
+        Game game = new Game(id, teamNames, friends);
         gameMap.put(id,game);
         log.info("New game is created: " + id);
         return game;

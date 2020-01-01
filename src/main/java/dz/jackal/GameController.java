@@ -33,7 +33,9 @@ abstract class GameController {
     abstract protected View processAction(Request request);
 
     public static boolean canGo(Game game, Hero hero, Cell newCell, boolean withGold) {
-        if (newCell.closed() && !withGold) return true;
+        if (newCell.closed()) {
+            return !withGold;
+        }
 
         List<Hero> heroes = newCell.heroes(0);
         if (hero.friday() && game.hasEnemy(hero.team(),heroes)) return false;
