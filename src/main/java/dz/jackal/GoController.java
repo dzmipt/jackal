@@ -64,7 +64,7 @@ public class GoController extends GameController {
             }
         }
 
-        if (! canGo(game, hero, newCell, withGold)) {
+        if (! canGo(hero, newCell, withGold)) {
             hero.die();
         }
 
@@ -122,7 +122,7 @@ public class GoController extends GameController {
 
         checkWoman();
 
-        return game.getView(newCell.move() && !hero.dead() ? hero: null)
+        return getView(newCell.move() && !hero.dead() ? hero: null)
                     .setAnimateShip(animateShip)
                     .setAnimateRum(animateRum)
                     .setViaLoc(hero.id(), viaLoc);
@@ -204,7 +204,7 @@ public class GoController extends GameController {
                 Cell newCell = game.getCell(locs.newLoc);
                 if (newCell == null) continue; // Knight jumps outside field
                 if (newCell.closed()) return false;
-                if (! GameController.canGo(game, hero, newCell, false)) continue;
+                if (! canGo(hero, newCell)) continue;
                 if (!newCell.move()) {
                     return false;
                 }

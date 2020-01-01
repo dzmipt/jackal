@@ -4,9 +4,7 @@ import dz.jackal.cell.Cell;
 import dz.jackal.cell.MoveCell;
 import dz.jackal.cell.ShipCell;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class View {
 
@@ -22,20 +20,12 @@ public class View {
     public int currentTeam;
     public int benGunnTeam, fridayTeam, missionerTeam;
 
-    public View(Game game) {
-        init(game, null);
-    }
-
-    public View(Game game, Hero selHero) {
-        init(game, selHero);
-    }
-
-    private void init(Game game, Hero selHero) {
+    public View(Game game, Map<HeroId,Loc[]> steps, Map<HeroId,Loc[]> stepsWithGold, Set<HeroId> rumReady) {
         id = game.getId();
         teamName = game.getTeamName(game.getCurrentTeam());
 
         initCellView(game);
-        initPirateView(game, selHero);
+        initPirateView(game, steps, stepsWithGold, rumReady);
         currentTeam = game.getCurrentTeam();
         for(int team=0;team<4;team++) {
             gold[team] = game.getTeamGold(team);
@@ -67,159 +57,36 @@ public class View {
         }
     }
 
-    private void initPirateView(Game game, Hero selHero) {
+    private void initPirateView(Game game, Map<HeroId,Loc[]> steps, Map<HeroId,Loc[]> stepsWithGold, Set<HeroId> rumReady) {
         heroes = new ArrayList<>();
         for(HeroId id: HeroId.ALL) {
-            Hero hero = game.getHero(id);
             PirateView pirateView = new PirateView();
-            heroes.add(pirateView);
+            Hero hero = game.getHero(id);
+            Loc loc = hero.getLoc();
+
             if (hero.id().equals(HeroId.MISSIONER_ID) && !hero.missioner() ) {
                 pirateView.notes.add(PirateView.Note.pirate);
             }
             if (hero.drunk()) pirateView.notes.add(PirateView.Note.drunk);
 
-            if (hero.dead()) {
-                pirateView.dead = true;
-                continue;
-            }
-            if (game.getCell(hero.getLoc()).closed()) {// additional heroes not discovered
-                pirateView.hidden = true;
-                continue;
-            }
-
             if (hero.trapped()) {
                 pirateView.notes.add(PirateView.Note.trapped);
             }
 
-            Loc loc = hero.getLoc();
-            Cell cell = game.getCell(loc);
-            int index = cell.index(hero);
-            boolean hasGold = cell.gold(index) > 0;
-
-            pirateView.loc = loc;
-            pirateView.index = index;
-
-            if (selHero != null && ! hero.equals(selHero)) continue;
-
-            if (hero.friday() || hero.missioner()) {
-                setRumReady(game, pirateView, rumReady(game, hero));
-            }
-            if (game.getCurrentTeam() != hero.team() ) continue;
-
-            if (hero.trapped()) {
-                if (!hero.missioner()) {
-                    setRumReady(game, pirateView, true);
-                }
-                continue;
+            pirateView.dead = hero.dead();
+            pirateView.hidden = hero.team() == -1;
+            if (!pirateView.dead && !pirateView.hidden) {
+                pirateView.loc = loc;
+                pirateView.index = game.getCell(loc).index(hero);
             }
 
-            if (cell.multiStep()) {
-                if (hero.friday() || index + 1 == cell.count() || hero.drunk()) {
-                    addSteps(pirateView, game, loc, hero, hasGold);
-                } else {
-                    pirateView.steps.add(loc);
-                    if (hasGold && !hero.missioner()) {
-                        boolean hasEnemy = game.hasEnemy(hero, cell.heroes(index + 1));
-                        if (!hasEnemy) pirateView.stepsWithGold.add(loc);
-                    }
-                    if (!hero.missioner()) {
-                        setRumReady(game, pirateView, true);
-                    }
-                }
-            } else {
-                addSteps(pirateView, game, loc, hero, hasGold);
-            }
+            pirateView.steps = steps.get(id);
+            pirateView.stepsWithGold = stepsWithGold.get(id);
+            pirateView.rumReady = rumReady.contains(id);
+
+            heroes.add(pirateView);
         }
 
-    }
-
-    private void addSteps(PirateView pirateView, Game game, Loc loc, Hero hero, boolean hasGold) {
-        Cell cell = game.getCell(loc);
-
-        if (cell.move()) {
-            addStepsMove(pirateView,game, hero, hasGold);
-            return;
-        }
-
-        for (int dr=-1; dr<=1; dr++) {
-            for (int dc=-1; dc<=1; dc++) {
-                if (dr == 0 && dc == 0) continue;
-
-                int r = loc.row()+dr;
-                int c = loc.col()+dc;
-                if (r<0 || r>12 || c<0 || c>12) continue;
-                Loc newLoc = new Loc(r,c);
-                Cell newCell = game.getCell(newLoc);
-
-                if (cell.sea()) {
-                    if (newCell.land()) continue;
-                } else if (cell.ship()) {
-                    boolean diag = ! (dr == 0 || dc == 0);
-                    if (diag) continue;
-                    if (newCell.sea()) {
-                        if (r == 1 || r ==11 || c==1 || c==11) continue;
-                    }
-                } else { // on land
-                    if (newCell.sea()) continue;
-                    if (newCell.ship() && game.enemy(hero, ((ShipCell)newCell).team()) ) continue;
-                }
-
-                if (! GameController.canGo(game, hero, newCell, false)) continue;
-
-                pirateView.steps.add(newLoc);
-                if (cell.ship()) continue;
-                if (! hasGold) continue;
-                if (! GameController.canGo(game, hero,newCell, true)) continue;
-
-                pirateView.stepsWithGold.add(newLoc);
-            }
-        }
-    }
-
-    private void addStepsMove(PirateView pirateView, Game game, Hero hero, boolean hasGold){
-        MoveCell cell = (MoveCell) game.getCell(hero.getLoc());
-        Loc[] steps = cell.nextSteps(hero.getPrevLoc(), hero.getLoc());
-        for (Loc step:steps) {
-            if (step.row()<0 || step.row()>12 || step.col()<0 || step.col()>12) continue;
-            if (! GameController.canGo(game, hero, game.getCell(step), false)) continue;
-            pirateView.steps.add(step);
-            if (!hasGold) continue;
-            if (! GameController.canGo(game, hero, game.getCell(step), true)) continue;
-
-            pirateView.stepsWithGold.add(step);
-        }
-    }
-
-    private void setRumReady(Game game, PirateView pirateView, boolean rumReady) {
-        if (rumReady) {
-            rumReady = game.getAllTeamRum(game.getCurrentTeam())>0;
-        }
-        pirateView.rumReady = rumReady;
-    }
-
-    private boolean rumReady(Game game, Hero hero) {
-        return HeroId.ALL.stream()
-                         .filter(id -> id.team() == game.getCurrentTeam())
-                         .anyMatch(id -> rumReady(game, hero, game.getHero(id)));
-    }
-
-    private boolean rumReady(Game game, Hero target, Hero from) {
-        if (from.dead() || target.dead()) return false;
-        Loc fromLoc = from.getLoc();
-        Cell fromCell = game.getCell(fromLoc);
-        int fromIndex = fromCell.index(from);
-        Loc targetLoc = target.getLoc();
-        Cell targetCell = game.getCell(targetLoc);
-        int targetIndex = targetCell.index(target);
-        if (fromLoc.equals(targetLoc)) {
-            return targetIndex == fromIndex || targetIndex == fromIndex+1;
-        }
-
-        if (fromIndex < fromCell.count()-1) {
-            return false;
-        }
-
-        return fromLoc.distance(targetLoc) == 1 && targetIndex == 0;
     }
 
     public View setAnimateShip(AnimateShip animateShip) {
@@ -254,8 +121,8 @@ public class View {
         public boolean dead = false;
         public boolean rumReady = false;
         public int index = 0;
-        public List<Loc> steps = new ArrayList<>();
-        public List<Loc> stepsWithGold = new ArrayList<>();
+        public Loc[] steps;;
+        public Loc[] stepsWithGold;;
         public List<Note> notes = new ArrayList<>();
     }
 

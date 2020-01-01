@@ -42,7 +42,7 @@ public class DrinkController extends GameController {
         }
 
         drinkRumBottle(game.getCurrentTeam());
-        return game.getView(selHero);
+        return getView(selHero);
     }
 
     private void drinkRumBottle(int theTeam) {

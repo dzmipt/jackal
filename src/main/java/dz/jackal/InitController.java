@@ -10,18 +10,17 @@ import java.io.IOException;
 
 
 @Controller
-public class InitController {
+public class InitController extends GameController {
     private final static Logger log = LoggerFactory.getLogger(InitController.class);
     @MessageMapping("/init")
     @SendTo("/jackal/view")
     public View action(InitRequest request) {
-        Game game;
         if (request.id == null) {
             game = newGame();
         } else {
             game = loadGame(request.id);
         }
-        return game.getView();
+        return getView(null);
     }
 
     private Game newGame() {

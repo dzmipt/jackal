@@ -65,6 +65,8 @@ public class Cell implements Serializable {
         return icon == Icon.CANNIBAL;
     }
 
+    public boolean crocodile() {return icon == Icon.CROCODILE;}
+
     public boolean cannon() {
         return false;
     }

@@ -204,8 +204,6 @@ public class Game implements Serializable {
         if (teamNames == null) return "";
         return teamNames[team];
     }
-    public View getView() {return new View(this);}
-    public View getView(Hero selHero) {return new View(this, selHero);}
 
     private static Map<String,Game> gameMap = new HashMap<>();
 

@@ -72,7 +72,7 @@ $(function(){
       connectWith: ".column"
     }).disableSelection();
 
-    $("input").change(changeInput);
+    $("input").keypress(changeInput);
     send("list",{});
 
     $("#new").click(newClick);

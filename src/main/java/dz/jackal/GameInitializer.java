@@ -199,6 +199,9 @@ public class GameInitializer {
         move8.setMoves(Move.W);
         ArrowMoveCell move81 = new ArrowMoveCell(random, Move.W);
         move81.setMoves(Move.W);
+        ArrowMoveCell move82 = new ArrowMoveCell(random, Move.W);
+        move82.setMoves(Move.W);
+
 
         cells.put(new Loc(6, 11), new Cell(Icon.LAND, 1));
         cells.put(new Loc(6,10), new Cell(Icon.WOMAN, 1));
@@ -206,6 +209,7 @@ public class GameInitializer {
         cells.put(new Loc(5,9), move41);
         cells.put(new Loc(5,10), move8);
         cells.put(new Loc(4,9), move81);
+        cells.put(new Loc(7,1), move82);
 
         cells.put(new Loc(10, 6), new Cell(Icon.FORT, 1));
         cells.put(new Loc(6,6), new Cell(Icon.BALLOON, 1));
@@ -217,6 +221,9 @@ public class GameInitializer {
         cells.put(new Loc (10, 5), cannon);
 
         cells.put(new Loc(4,11), new Cell(Icon.CANNIBAL, 1));
+
+        cells.put(new Loc(11,2),new IceCell());
+        cells.put(new Loc(9,3), new KnightCell());
 
         Loc[] ships = new Loc[] {new Loc(0,6), new Loc(6, 12),
                 new Loc(12,6), new Loc(6,0)};

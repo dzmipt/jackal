@@ -9,14 +9,14 @@ import org.springframework.stereotype.Controller;
 import java.io.IOException;
 
 @Controller
-public class ChangeTurnController {
+public class ChangeTurnController extends GameController {
 
     private final static Logger log = LoggerFactory.getLogger(ChangeTurnController.class);
 
     @MessageMapping("/prevTurn")
     @SendTo("/jackal/view")
     public View prevTurn(ChangeRequest request) {
-        Game game = Game.getGame(request.id);
+        game = Game.getGame(request.id);
         int turn = game.getTurn();
         if (! game.continueTurn()) turn--;
 
@@ -25,13 +25,13 @@ public class ChangeTurnController {
         } else {
             game = getGame(request.id, turn, game);
         }
-        return game.getView();
+        return getView(null);
     }
 
     @MessageMapping("/nextTurn")
     @SendTo("/jackal/view")
     public View nextTurn(ChangeRequest request) {
-        Game game = Game.getGame(request.id);
+        game = Game.getGame(request.id);
         int turn = game.getTurn()+1;
         try {
             int lastTurn = DbGames.getLastTurn(request.id);
@@ -43,7 +43,7 @@ public class ChangeTurnController {
         } catch (IOException e) {
             log.warn("Can't get last turn for id " + request.id, e);
         }
-        return game.getView();
+        return getView(null);
     }
 
     private Game getGame(String id, int turn, Game defaultGame) {
