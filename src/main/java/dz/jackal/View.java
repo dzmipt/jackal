@@ -1,8 +1,6 @@
 package dz.jackal;
 
 import dz.jackal.cell.Cell;
-import dz.jackal.cell.MoveCell;
-import dz.jackal.cell.ShipCell;
 
 import java.util.*;
 

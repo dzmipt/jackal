@@ -48,7 +48,7 @@ public class Game implements Serializable {
                 }
             }
             if (cell.ship()) {
-                ships[((ShipCell)cell).team()] = loc;
+                ships[((Ship)cell).team()] = loc;
             }
             if (cell.woman()) {
                 woman = cell;
@@ -76,8 +76,8 @@ public class Game implements Serializable {
     public Loc getTeamShipLoc(int team) {
         return ships[team];
     }
-    public ShipCell getTeamShip(int team) {
-        return (ShipCell) getCell(ships[team]);
+    public Ship getTeamShip(int team) {
+        return (Ship) getCell(ships[team]);
     }
     public int getTeamGold(int team) {
         return getTeamShip(team).gold(0);

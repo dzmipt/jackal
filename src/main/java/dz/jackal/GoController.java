@@ -3,7 +3,7 @@ package dz.jackal;
 import dz.jackal.cell.Cannon;
 import dz.jackal.cell.Cell;
 import dz.jackal.cell.MoveCell;
-import dz.jackal.cell.ShipCell;
+import dz.jackal.cell.Ship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -129,7 +129,7 @@ public class GoController extends GameController {
     }
 
     private void sailShip() {
-        int theTeam = ((ShipCell)oldCell).team();
+        int theTeam = ((Ship)oldCell).team();
         game.getCell(newLoc).heroes(0).forEach(
                 h-> {
                     if (h.friday()) {
@@ -143,7 +143,7 @@ public class GoController extends GameController {
                 }
         );
 
-        game.moveShip(((ShipCell)oldCell).team(), newLoc);
+        game.moveShip(((Ship)oldCell).team(), newLoc);
         animateShip = new View.AnimateShip(oldLoc, newLoc);
     }
 
@@ -160,7 +160,7 @@ public class GoController extends GameController {
 
         if (hero.dead()) {
         } else if (newCell.ship()) {
-            if (game.enemy(hero, ((ShipCell)newCell).team())) {
+            if (game.enemy(hero, ((Ship)newCell).team())) {
                 // should be more rules for non pirates
                 game.returnToShip(hero);
             }
@@ -171,7 +171,13 @@ public class GoController extends GameController {
 
             heroes.stream() // discovery of additional hero
                     .filter(h -> h.team() == -1)
-                    .forEach(h -> h.setTeam(hero.team()));
+                    .forEach(h -> {
+                        h.setTeam(hero.team());
+                        if (h.id().equals(HeroId.BENGUNN_ID)) newCell.setTempIcon(Icon.BENGUNN);
+                        else if (h.id().equals(HeroId.FRIDAY_ID)) newCell.setTempIcon(Icon.FRIDAY);
+                        else if (h.id().equals(HeroId.MISSIONER_ID)) newCell.setTempIcon(Icon.MISSIONER);
+                        else throw new IllegalStateException("Unknown hero " + h);
+                    });
 
             Hero friday = game.getHero(HeroId.FRIDAY_ID);
             if (heroes.contains(friday)) { // Friday joins new team
@@ -225,6 +231,9 @@ public class GoController extends GameController {
     public void nextTurn() {
         game.nextTurn();
         HeroId.ALL.forEach(id -> game.getHero(id).setDrunk(false));
+        for(Loc loc:Loc.ALL) {
+            game.getCell(loc).nextStep();
+        }
     }
 
     private void checkWoman() {

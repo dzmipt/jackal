@@ -3,10 +3,10 @@ package dz.jackal.cell;
 import dz.jackal.Icon;
 import dz.jackal.Loc;
 
-public class KnightCell extends MoveCell {
+public class Knight extends MoveCell {
     private final static long serialVersionUID = 1;
 
-    public KnightCell() {
+    public Knight() {
         super(Icon.KNIGHT);
     }
 
@@ -26,6 +26,6 @@ public class KnightCell extends MoveCell {
 
     @Override
     public MoveCell duplicate() {
-        return new KnightCell();
+        return new Knight();
     }
 }

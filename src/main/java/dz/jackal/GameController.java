@@ -2,7 +2,7 @@ package dz.jackal;
 
 import dz.jackal.cell.Cell;
 import dz.jackal.cell.MoveCell;
-import dz.jackal.cell.ShipCell;
+import dz.jackal.cell.Ship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,7 +80,7 @@ abstract class GameController {
         if (!canGo(hero, newCell)) return false;
 
         if (game.hasEnemy(hero, newCell.heroes(0))) return false;
-        if (newCell.ship() && game.enemy(hero, ((ShipCell)newCell).team()) ) return false;
+        if (newCell.ship() && game.enemy(hero, ((Ship)newCell).team()) ) return false;
         if (hero.missioner()) return false;
         if (newCell.woman() || newCell.fort()) return false;
 

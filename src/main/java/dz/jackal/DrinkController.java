@@ -1,7 +1,7 @@
 package dz.jackal;
 
 import dz.jackal.cell.Cell;
-import dz.jackal.cell.ShipCell;
+import dz.jackal.cell.Ship;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
@@ -57,7 +57,7 @@ public class DrinkController extends GameController {
             }
             if (team == -1) throw new IllegalStateException("No rum to drink in team " + theTeam);
         }
-        ShipCell ship = game.getTeamShip(team);
+        Ship ship = game.getTeamShip(team);
         int rum = ship.countRum();
         ship.setRum(rum-1);
     }

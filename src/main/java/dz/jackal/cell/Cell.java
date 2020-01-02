@@ -14,6 +14,8 @@ public class Cell implements Serializable {
 
     private Icon icon;
     private boolean closed = true;
+    private String tempIconLocation;
+    private int temporary = 0;
 
     private int count;
     private Set<Hero>[] heroes;
@@ -37,9 +39,26 @@ public class Cell implements Serializable {
     }
 
     public String getIconView() {
+        if (temporary > 0) {
+            return tempIconLocation;
+        }
+
         if (closed) return Icon.CLOSED.getLocation();
         return icon.getLocation();
     }
+
+    public void setTempIconLocation(String tempIconLocation) {
+        this.tempIconLocation = tempIconLocation;
+        temporary = 2;
+    }
+    public void setTempIcon(Icon icon) {
+        setTempIconLocation(icon.getLocation());
+    }
+
+    public void nextStep() {
+        if (temporary>0) temporary--;
+    }
+
 
     public boolean sea() {
         return icon == Icon.SEA;

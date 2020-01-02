@@ -24,8 +24,8 @@ public class GameInitializer {
         next(3, () -> new ArrowMoveCell(random, Move.N, Move.E, Move.S, Move.W) );
         next(3, () -> new ArrowMoveCell(random, Move.NE, Move.SE, Move.SW, Move.NW) );
 
-        next(2, KnightCell::new);
-        next(6, IceCell::new);
+        next(2, Knight::new);
+        next(6, Ice::new);
 
         next(5, () -> new Cell(Icon.JUNGLE2, 2));
         next(4, () -> new Cell(Icon.DESERT, 3));
@@ -117,7 +117,7 @@ public class GameInitializer {
         Loc[] ships = new Loc[] {new Loc(0,6), new Loc(6, 12),
                 new Loc(12,6), new Loc(6,0)};
         for(int team=0; team<4; team++) {
-            Cell ship = new ShipCell(team);
+            Cell ship = new Ship(team);
             ship.open();
             cells.put(ships[team], ship);
         }
@@ -222,14 +222,14 @@ public class GameInitializer {
 
         cells.put(new Loc(4,11), new Cell(Icon.CANNIBAL, 1));
 
-        cells.put(new Loc(11,2),new IceCell());
-        cells.put(new Loc(9,3), new KnightCell());
+        cells.put(new Loc(11,2),new Ice());
+        cells.put(new Loc(9,3), new Knight());
 
         Loc[] ships = new Loc[] {new Loc(0,6), new Loc(6, 12),
                 new Loc(12,6), new Loc(6,0)};
 
         for(int team=0; team<4; team++) {
-            ShipCell shipCell = new ShipCell(team);
+            Ship shipCell = new Ship(team);
             shipCell.open();
             cells.put(ships[team], shipCell);
         }
