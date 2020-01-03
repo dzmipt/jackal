@@ -10,7 +10,6 @@ public class View {
     public String teamName;
     public CellView[][] cells;
     public List<PirateView> heroes;
-    public AnimateShip animateShip = null;
     public AnimateRum animateRum = null;
     public Loc[] ship = new Loc[4];
     public int[] gold = new int[4];
@@ -40,7 +39,7 @@ public class View {
         for(Loc loc:Loc.ALL) {
             Cell cell = game.getCell(loc);
             CellView cellView = new CellView(cell.getIconView());
-            if (cell.sea() || cell.closed()) {
+            if (cell.ship() || cell.sea() || cell.closed()) {
                 cellView.count = 1;
                 cellView.gold = new int[]{0};
             } else {
@@ -85,11 +84,6 @@ public class View {
             heroes.add(pirateView);
         }
 
-    }
-
-    public View setAnimateShip(AnimateShip animateShip) {
-        this.animateShip = animateShip;
-        return this;
     }
 
     public View setAnimateRum(AnimateRum animateRum) {

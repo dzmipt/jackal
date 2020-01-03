@@ -4,10 +4,37 @@ function initField() {
     let cells = $('#cells');
     Loc.ALL.forEach(loc => {
         let cell = setCellLoc($("<img/>"),loc)
-                        .attr("id","cell"+loc.index())
+                        .attr({id:"cell"+loc.index(), src:"/img/sea.png"})
                         .addClass("cell");
          cells.append(cell);
     });
+
+    for(let team=0;team<4;team++) {
+        cells.append(
+            $("<div/>")
+                .attr("id","ship"+team)
+                .addClass("cell")
+                .append(
+                    $("<img/>")
+                        .attr({src:"/img/ship.png", id:"shipimg"+team})
+                        .addClass("cell")
+                ).append($("<svg class='field'/>")
+                            .append(goldEl()
+                                        .attr({id:"gold"+(-team-1),cx:48,cy:59})
+                                        .hide()
+                            )
+                            .append(goldTextEl()
+                                        .attr({id:"goldtext"+(-team-1),cx:44,cy:64})
+                                        .hide()
+                            )
+                ).append(
+                    $("<img/>")
+                        .attr("src","/img/team"+team+".png")
+                        .addClass("smallhero")
+                        .css({left:58, top:58})
+                )
+        );
+    }
     let svg = $("#svg");
 
     for (let i=0; i<maxGold; i++) {
@@ -57,9 +84,26 @@ function heroEl(id:HeroId) {
 
 function hero(hero:Hero) {return $("#hero"+hero.id.index())}
 function front(loc:Loc) {return $("#front"+loc.index())}
-function cell(loc:Loc) {return $("#cell"+loc.index())}
+function cell(loc:Loc) {
+    for(let team=0;team<4;team++){
+        if(loc.equals(ships[team])) {
+            return $("#shipimg"+team);
+        }
+    }
+    return $("#cell"+loc.index())
+}
+function ship(team:number) {return $("#ship"+team)}
 function gold(index:number) {return $("#gold"+index)}
 function goldText(index:number) {return $("#goldtext"+index)}
+
+let ships:Loc[] = undefined;
+
+function setShips(locs:Loc[]) {
+    ships = locs;
+    for(let team=0;team<4;team++){
+        ship(team).animate(getCoordinate(locs[team]),500);
+    }
+}
 
 function refreshSelectableFieldCell() {
     $(".frontSelectable").removeClass("frontSelectable");
@@ -77,7 +121,7 @@ function selectCell(loc:Loc,withGold:boolean) {
     front(loc).addClass(withGold ? "frontSelectedWithGold":"frontSelected");
 }
 function unselectCell(loc:Loc) {
-    cell(loc).removeClass("fieldSelected");
+    $(".fieldSelected").removeClass("fieldSelected");
     front(loc).removeClass("frontSelected");
     front(loc).removeClass("frontSelectedWithGold");
 }
@@ -170,21 +214,17 @@ function getTargetAttr(hindex:number, hcount:number, hloc:Loc, pos:number, count
     return {top:hloc.row*LEN+hc[1],left:hloc.col*LEN+hc[0]};
 }
 
-function setHero(h:Hero, pos:number, count:number, animate:boolean) {
+function setHero(h:Hero, pos:number, count:number) {
     let attr = getTargetAttr(h.index,h.count,h.loc, pos, count);
     attr['opacity'] =  h.hidden || h.dead ? 0.0 : 1.0;
 
     let el = hero(h);
-    if (!animate) {
-        el.css(attr);
-    } else {
-        if (h.viaLoc != null) {
-            let attrVia = getTargetAttr(0,1,h.viaLoc,0,1);
-            attrVia['opacity'] = attr['opacity'];
-            el.animate(attrVia, 500);
-        }
-        el.animate(attr,500);
+    if (h.viaLoc != null) {
+        let attrVia = getTargetAttr(0,1,h.viaLoc,0,1);
+        attrVia['opacity'] = attr['opacity'];
+        el.animate(attrVia, 500);
     }
+    el.animate(attr,500);
     return el;
 }
 
@@ -197,19 +237,28 @@ function resetGold() {
     goldIndex = 0;
 }
 
-function showGold(loc:Loc,count:number,index:number,g:number) {
+function resetShipGold(gold:number[]) {
+    for(let team=0;team<4;team++) {
+        showGoldByIndex(-team-1, new Loc(0,0), 1,0, gold[team]);
+    }
+}
+
+function showGoldByIndex(goldIdx:number,loc:Loc,count:number,index:number,g:number) {
     if (g==0) return;
     let p0 = count==1 ? moneyEllipseBottomDelta : heroCenter[count-1][index];
     let x=loc.col*LEN + p0[0]+moneyEllipseDelta[0];
     let y=loc.row*LEN + p0[1]+moneyEllipseDelta[1];
-    gold(goldIndex).attr({cx:x,cy:y}).show();
+    gold(goldIdx).attr({cx:x,cy:y}).show();
 
     let dp = g<10 ? moneyTextDelta : moneyText10Delta;
     x+= dp[0];
     y+= dp[1];
 
-    goldText(goldIndex).attr({x:x,y:y})
+    goldText(goldIdx).attr({x:x,y:y})
         .empty().append(""+g).show();
+}
 
+function showGold(loc:Loc,count:number,index:number,g:number) {
+    showGoldByIndex(goldIndex,loc,count,index,g);
     goldIndex++;
 }

@@ -20,7 +20,6 @@ public class GoController extends GameController {
     private Hero hero;
     private Loc oldLoc, newLoc;
     private Cell oldCell, newCell;
-    private View.AnimateShip animateShip;
     private View.AnimateRum animateRum;
     private boolean withGold;
 
@@ -33,7 +32,6 @@ public class GoController extends GameController {
     @Override
     protected View processAction(Request aRequest) {
         GoRequest request = (GoRequest) aRequest;
-        animateShip = null;
         animateRum = null;
         Loc viaLoc = null;
         withGold = request.withGold;
@@ -123,7 +121,6 @@ public class GoController extends GameController {
         checkWoman();
 
         return getView(newCell.move() && !hero.dead() ? hero: null)
-                    .setAnimateShip(animateShip)
                     .setAnimateRum(animateRum)
                     .setViaLoc(hero.id(), viaLoc);
     }
@@ -144,7 +141,6 @@ public class GoController extends GameController {
         );
 
         game.moveShip(((Ship)oldCell).team(), newLoc);
-        animateShip = new View.AnimateShip(oldLoc, newLoc);
     }
 
     private void moveHero() {

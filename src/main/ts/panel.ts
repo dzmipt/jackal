@@ -206,7 +206,7 @@ function unselectHero() {
     if (selHero == undefined) return;
     $("#divhero"+selHero.id.num).removeClass("teamSelected");
     unselectFieldHero(selHero);
-    cell(selHero.loc).removeClass("fieldPirateSelected");
+    front(selHero.loc).removeClass("fieldPirateSelected");
     unselectFieldCells();
     selHero = undefined;
     updateIcons();
@@ -216,7 +216,7 @@ function selectHero(h:Hero) {
     $("#divhero"+h.id.num).addClass("teamSelected");
     selHero = h;
     selectFieldHero(selHero);
-    cell(selHero.loc).addClass("fieldPirateSelected");
+    front(selHero.loc).addClass("fieldPirateSelected");
     selectFieldCells();
     updateIcons();
 }

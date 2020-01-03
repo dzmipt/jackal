@@ -131,12 +131,6 @@ function getLocs(objs:any):Loc[] {
 }
 
 function setHeroes(view:any) {
-    for(let team=0;team<4;team++) {
-        let coord = getCoordinate(getLoc(view.ship[team]));
-        coord.left += 58;
-        coord.top += 58;
-        $("#smallhero"+team).css(coord);
-    }
     $("#herolabel3").empty().append("Ben Gunn");
     $("#herolabel4").empty().append("Friday");
     $("#herolabel5").empty().append("Missioner");
@@ -178,7 +172,7 @@ function setHeroes(view:any) {
     }
 }
 
-function resetFieldHeroes(animate:boolean) {
+function resetFieldHeroes() {
     unselectHero();
 
     selectableHeroes = [];
@@ -195,7 +189,7 @@ function resetFieldHeroes(animate:boolean) {
             if(h.equals(hero)) pos = count;
             if (h.index == hero.index && h.loc.equals(hero.loc)) count++;
         }
-        setHero(hero, pos, count, animate);
+        setHero(hero, pos, count);
 
     }
 
@@ -207,16 +201,18 @@ function resetFieldHeroes(animate:boolean) {
 
 function setView(view:any) {
     id = view.id;
+    if (currentTeam != view.currentTeam) unselectWithGold();
     currentTeam = view.currentTeam;
     HeroId.BenGunn.team = view.benGunnTeam;
     HeroId.Friday.team = view.fridayTeam;
     HeroId.Missioner.team = view.missionerTeam;
+    setShips(getLocs(view.ship));
     resetGold();
+    resetShipGold(view.gold);
     setCells(view.cells);
     setHeroes(view);
     resetPanels(view);
-    let animate = view.animateShip == null;
-    resetFieldHeroes(animate);
+    resetFieldHeroes();
     animateRum(view.animateRum);
 }
 
