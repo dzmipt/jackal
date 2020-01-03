@@ -41,6 +41,8 @@ public class GoController extends GameController {
         newLoc = request.loc;
         newCell = game.getCell(newLoc);
         hero.setPrevLoc(oldLoc);
+        Hero selHero = null;
+
         if (newCell.closed()) {
             newCell.open();
             int gold = newCell.gold(0);
@@ -69,7 +71,7 @@ public class GoController extends GameController {
             }
         }
 
-        if (! canGo(hero, newCell, withGold)) {
+        if (! canGo(hero, newCell, withGold) && !newCell.crocodile()) {
             hero.die();
         }
 
@@ -88,13 +90,11 @@ public class GoController extends GameController {
                 }
             }
             if (newCell.balloon()) {
-                newCell.open();
                 viaLoc = newLoc;
                 newCell = game.getTeamShip(hero.team());
                 newLoc = game.getTeamShipLoc(hero.team());
             }
             if (newCell.cannon()) {
-                newCell.open();
                 viaLoc = newLoc;
                 newLoc = ((Cannon)newCell).fire(newLoc);
                 newCell = game.getCell(newLoc);
@@ -110,7 +110,18 @@ public class GoController extends GameController {
                     heroes.get(0).setTrapped(false);
                 }
             }
-            moveHero();
+
+            if (newCell.crocodile()) {
+                if (whereCanGo(hero,false).size() == 0) {
+                    hero.die();
+                } else {
+                    viaLoc = newLoc;
+                }
+
+            }
+            if (!newCell.crocodile()) {
+                moveHero();
+            }
         }
 
         if (oldCell.move() && oldCell.gold(0)>0) {
@@ -121,13 +132,15 @@ public class GoController extends GameController {
             }
         }
 
-        if (hero.dead() || ! newCell.move()) {
+        if (hero.dead() || ! (newCell.move() || newCell.crocodile()) ) {
             nextTurn();
+        } else {
+            selHero = hero;
         }
 
         checkWoman();
 
-        return getView(newCell.move() && !hero.dead() ? hero: null)
+        return getView(selHero)
                     .setAnimateRum(animateRum)
                     .setViaLoc(hero.id(), viaLoc);
     }

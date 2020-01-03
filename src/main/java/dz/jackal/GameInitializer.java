@@ -39,7 +39,7 @@ public class GameInitializer {
         next(2, () -> new Cannon(random));
 
         next( 3, () -> new Cell(Icon.TRAP,1));
-//        next( 4, () -> new Cell(Icon.CROCODILE,1));
+        next( 4, () -> new Cell(Icon.CROCODILE,1));
 
         next(5, () -> goldCell(1));
         next(5, () -> goldCell(2));
@@ -224,6 +224,19 @@ public class GameInitializer {
 
         cells.put(new Loc(11,2),new Ice());
         cells.put(new Loc(9,3), new Knight());
+
+        cells.put(new Loc(1,5), new Cell(Icon.CROCODILE));
+
+        ArrowMoveCell move = new ArrowMoveCell(random, Move.NE, Move.SW);
+        move.setMoves(Move.NE, Move.SW);
+        cells.put(new Loc(7,11), move);
+        cells.put(new Loc(8,10), new Cell(Icon.CROCODILE));
+
+        move = new ArrowMoveCell(random, Move.W);
+        move.setMoves(Move.W);
+        cells.put(new Loc(11,5), move);
+        cells.put(new Loc(11,4), new Cell(Icon.CROCODILE));
+
 
         Loc[] ships = new Loc[] {new Loc(0,6), new Loc(6, 12),
                 new Loc(12,6), new Loc(6,0)};
