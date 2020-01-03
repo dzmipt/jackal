@@ -6,6 +6,7 @@ import dz.jackal.Loc;
 import java.util.Random;
 
 public class Cannon extends Cell {
+//    private final static long serialVersionUID = 1;
 
     private Move move;
     private String iconView;

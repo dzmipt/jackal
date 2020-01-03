@@ -38,8 +38,12 @@ public class Cell implements Serializable {
         }
     }
 
+    protected boolean temporaryIcon() {
+        return temporary>0;
+    }
+
     public String getIconView() {
-        if (temporary > 0) {
+        if (temporaryIcon()) {
             return tempIconLocation;
         }
 
@@ -56,7 +60,7 @@ public class Cell implements Serializable {
     }
 
     public void nextStep() {
-        if (temporary>0) temporary--;
+        if (temporaryIcon()) temporary--;
     }
 
 

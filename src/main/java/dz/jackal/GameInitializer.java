@@ -56,7 +56,7 @@ public class GameInitializer {
         initHero(HeroId.MISSIONER_ID);
 
         for(Loc loc:locs) {
-            cells.put(loc, new Cell(Icon.LAND, 1));
+            cells.put(loc, new Land(random));
         }
 
         return cells;
@@ -173,8 +173,8 @@ public class GameInitializer {
                 cell.addGold(0);
                 cell.addGold(1);
             } else if (icon == Icon.LAND) {
-                cell = new Cell(icon, 1);
-                int cnt = random.nextInt(4);
+                cell = new Land(random);
+                int cnt = random.nextInt(6);
                 for (int i=0;i<cnt;i++) cell.addGold(0);
                 cell.setRum(random.nextInt(4));
             } else if (icon == Icon.MOVE) {

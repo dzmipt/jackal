@@ -41,7 +41,13 @@ public class GoController extends GameController {
         newLoc = request.loc;
         newCell = game.getCell(newLoc);
         hero.setPrevLoc(oldLoc);
-        newCell.open();
+        if (newCell.closed()) {
+            newCell.open();
+            int gold = newCell.gold(0);
+            if (gold>0) {
+                newCell.setTempIconLocation(Icon.GOLD.getLocation() + gold);
+            }
+        }
 
         if (!oldCell.move()) hero.setInitStepLoc(oldLoc);
 
@@ -49,6 +55,7 @@ public class GoController extends GameController {
             int rum = newCell.countRum();
             if (rum > 0) {
                 newCell.takeRum();
+                newCell.setTempIconLocation(Icon.RUM.getLocation() + rum);
                 if (hero.friday()) {
                     rum--;
                     hero.die();

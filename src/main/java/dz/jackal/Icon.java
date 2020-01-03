@@ -20,6 +20,8 @@ public enum Icon {
     TRAP ("trap"),
     CROCODILE ("crocodile"),
 
+    GOLD ("gold"),
+    RUM ("rum"),
     BENGUNN ("bengunn"),
     FRIDAY ("friday"),
     MISSIONER ("missioner"),
