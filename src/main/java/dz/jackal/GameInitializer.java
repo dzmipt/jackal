@@ -37,9 +37,10 @@ public class GameInitializer {
         next(1, () -> new Cell(Icon.WOMAN, 1));
         next(2, () -> new Cell(Icon.BALLOON, 1));
         next(2, () -> new Cannon(random));
-
         next( 3, () -> new Cell(Icon.TRAP,1));
         next( 4, () -> new Cell(Icon.CROCODILE,1));
+
+        next(4, Cave::new);
 
         next(5, () -> goldCell(1));
         next(5, () -> goldCell(2));
@@ -237,6 +238,10 @@ public class GameInitializer {
         cells.put(new Loc(11,5), move);
         cells.put(new Loc(11,4), new Cell(Icon.CROCODILE));
 
+        cells.put(new Loc(1,8), new Cave());
+        cells.put(new Loc(5,1), new Cave());
+        cells.put(new Loc(4,8), new Cave());
+        cells.put(new Loc(11,8), new Cave());
 
         Loc[] ships = new Loc[] {new Loc(0,6), new Loc(6, 12),
                 new Loc(12,6), new Loc(6,0)};
@@ -257,13 +262,13 @@ public class GameInitializer {
                 else if (heroId.friday()) loc = new Loc(5,11);
                 else if (heroId.missioner()) loc = new Loc(11,7);
                 else throw new IllegalStateException();
-                team = -1;
                 cells.put(loc, new Cell(Icon.LAND, 1));
             }
             Hero hero = heroId.equals(HeroId.MISSIONER_ID) ? new Missioner(loc) : new Hero(heroId, loc);
             cells.get(loc).addHero(0,hero);
         }
 
+//        for (Cell cell:cells.values()) cell.open();
         return cells;
     }
 }

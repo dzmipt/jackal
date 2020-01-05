@@ -106,22 +106,22 @@ function resetPanels(view:any) {
 
 function resetTop(teamName:string) {
     $("#topLabel").empty().append(teamName);
-    for(let i=0;i<6;i++) {
-        let h = $("#divhero"+i);
-        let hero = Hero.get(new HeroId(currentTeam,i));
-        if (hero.hidden) {
+    for(let num=0;num<6;num++) {
+        let h = $("#divhero"+num);
+        let hero = Hero.get(new HeroId(currentTeam,num));
+        if (hero.hidden && num>=3) {
             h.hide();
         } else {
             h.show();
             let src:string = hero.id.num<3 ? "team"+currentTeam : "hero"+hero.id.num;
-            $("#hero"+i).attr("src","/img/" + src + "cell.png");
+            $("#hero"+num).attr("src","/img/" + src + "cell.png");
 
             if ( ( hero.canGo() && hero.id.team == currentTeam) || hero.rumReady) h.removeClass("disabled");
             else h.addClass("disabled");
          }
 
-        if (i>=3) {
-            let ht = $("#heroteam"+i);
+        if (num>=3) {
+            let ht = $("#heroteam"+num);
             if (hero.hidden) {
                 ht.hide();
             } else {

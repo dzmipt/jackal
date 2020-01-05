@@ -1,5 +1,6 @@
 package dz.jackal;
 
+import dz.jackal.cell.Cave;
 import dz.jackal.cell.Cell;
 import dz.jackal.cell.MoveCell;
 import dz.jackal.cell.Ship;
@@ -8,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 abstract class GameController {
     private final static Logger log = LoggerFactory.getLogger(GoController.class);
@@ -84,6 +86,7 @@ abstract class GameController {
         if (hero.missioner()) return false;
         if (newCell.woman() || newCell.fort()) return false;
 
+        if (newCell.cave() && whereCanGoFromCave(hero,((Cave)newCell).getExit()).size()==0) return false;
         return true;
     }
 
@@ -94,8 +97,7 @@ abstract class GameController {
 
     protected List<Loc> whereCanGo(Hero hero, boolean withGold) {
         List<Loc> steps = new ArrayList<>();
-        if (hero.dead()) return steps;
-        if (hero.team() == -1) return steps;
+        if (hero.dead() || hero.inCave() || hero.team() == -1) return steps;
         Loc loc = hero.getLoc();
         Cell cell = game.getCell(loc);
         int index = cell.index(hero);
@@ -104,6 +106,8 @@ abstract class GameController {
         if (withGold && cell.gold(index) == 0) return steps;
         if (cell.move()) {
             return whereCanGoFromMove(hero, withGold);
+        } else if (cell.cave() && hero.getInitStepLoc()!= null) {
+            return whereCanGoFromCave(hero, ((Cave)cell).getExit());
         }
 
         if (cell.multiStep()) {
@@ -164,9 +168,20 @@ abstract class GameController {
         return steps;
     }
 
+    protected List<Loc> whereCanGoFromCave(Hero hero, int caveEntrance) {
+        return game.caveLocs().stream()
+                    .filter(loc -> caveEntrance != ((Cave)game.getCell(loc)).getExit() )
+                    .filter(loc -> ! game.getCell(loc).closed())
+                    .filter(loc -> {
+                        Cell cell = game.getCell(loc);
+                        List<Hero> heroes = cell.heroes(0);
+                        if (heroes.size() == 0) return true;
+                        return ! game.enemy(hero.team(), heroes.get(0).team());
+                    }).collect(Collectors.toList());
+    }
+
     private boolean rumReady(Hero hero) {
-        if (hero.dead()) return false;
-        if (hero.team() == -1) return false;
+        if (hero.dead() || hero.inCave() || hero.team() == -1) return false;
 
         int currentTeam = game.getCurrentTeam();
         if (hero.friday() || hero.missioner() || hero.team() == currentTeam) {
@@ -179,7 +194,8 @@ abstract class GameController {
     }
 
     private boolean canDrink(Hero hero) {
-        if (hero.friday() || hero.missioner()) {
+        if (hero.dead() || hero.inCave()) return false;
+        if ( (hero.friday() || hero.missioner()) && ! hero.inCave() ) {
             return HeroId.ALL.stream()
                     .filter(id -> id.team() == game.getCurrentTeam())
                     .anyMatch(id -> canGiveBottle(hero, game.getHero(id)));
@@ -194,7 +210,7 @@ abstract class GameController {
     }
 
     private boolean canGiveBottle(Hero target, Hero from) {
-        if (from.dead() || target.dead()) return false;
+        if (from.dead() || target.dead() || from.inCave() || target.inCave()) return false;
         Loc fromLoc = from.getLoc();
         Cell fromCell = game.getCell(fromLoc);
         int fromIndex = fromCell.index(from);

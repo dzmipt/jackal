@@ -8,10 +8,12 @@ public class Hero implements Serializable {
     private HeroId id;
     private int team;
     private Loc loc;
-    private Loc initStepLoc, prevLoc;
+    private Loc initStepLoc = null, prevLoc = null;
     private boolean dead = false;
     private boolean drunk = false;
     private boolean trapped = false;
+    private boolean inCave = false;
+    private int caveExit = -1;
 
     public Hero(HeroId id, Loc loc) {
         this.id = id;
@@ -43,6 +45,17 @@ public class Hero implements Serializable {
 
     public boolean trapped() {return trapped;}
     public void setTrapped(boolean trapped) {this.trapped = trapped;}
+
+    public boolean inCave() {return inCave;}
+    public int getCaveExit() {return caveExit;}
+    public void jumpIntoCave(int caveExit) {
+        inCave = true;
+        this.caveExit = caveExit;
+    }
+    public void exitFromCave() {
+        inCave = false;
+        this.caveExit = -1;
+    }
 
     public Loc getInitStepLoc() {
         return initStepLoc;

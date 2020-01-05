@@ -1,5 +1,4 @@
-let maxGold = 40;
-let maxPirateText = 4*3+3;
+let maxGold = 117;
 function initField() {
     let cells = $('#cells');
     Loc.ALL.forEach(loc => {

@@ -90,6 +90,8 @@ public class Cell implements Serializable {
 
     public boolean crocodile() {return icon == Icon.CROCODILE;}
 
+    public boolean cave() {return false;}
+
     public boolean cannon() {
         return false;
     }

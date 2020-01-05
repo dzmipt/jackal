@@ -1,9 +1,6 @@
 package dz.jackal;
 
-import dz.jackal.cell.Cannon;
-import dz.jackal.cell.Cell;
-import dz.jackal.cell.MoveCell;
-import dz.jackal.cell.Ship;
+import dz.jackal.cell.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -11,13 +8,17 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Controller
 public class GoController extends GameController {
     private final static Logger log = LoggerFactory.getLogger(GoController.class);
 
+    private final static Random random = new Random();
+
     private Hero hero;
+    private Hero selHero;
     private Loc oldLoc, newLoc;
     private Cell oldCell, newCell;
     private View.AnimateRum animateRum;
@@ -40,8 +41,11 @@ public class GoController extends GameController {
         oldCell = game.getCell(oldLoc);
         newLoc = request.loc;
         newCell = game.getCell(newLoc);
+        if (hero.getInitStepLoc() == null) {
+            hero.setInitStepLoc(oldLoc);
+        }
         hero.setPrevLoc(oldLoc);
-        Hero selHero = null;
+        selHero = null;
 
         if (newCell.closed()) {
             newCell.open();
@@ -50,8 +54,6 @@ public class GoController extends GameController {
                 newCell.setTempIconLocation(Icon.GOLD.getLocation() + gold);
             }
         }
-
-        if (!oldCell.move()) hero.setInitStepLoc(oldLoc);
 
         if (!newCell.ship()) {
             int rum = newCell.countRum();
@@ -116,11 +118,20 @@ public class GoController extends GameController {
                     hero.die();
                 } else {
                     viaLoc = newLoc;
+                    selHero = hero;
                 }
-
             }
-            if (!newCell.crocodile()) {
-                moveHero();
+
+            moveHero();
+
+            if (newCell.cave() && !oldCell.cave()) {
+                boolean canGo = whereCanGoFromCave(hero, ((Cave)newCell).getExit()).size()>0;
+                if (canGo) {
+                    selHero = hero;
+                } else {
+                    hero.jumpIntoCave(((Cave)newCell).getExit());
+                    newCell.removeHero(0, hero);
+                }
             }
         }
 
@@ -132,10 +143,9 @@ public class GoController extends GameController {
             }
         }
 
-        if (hero.dead() || ! (newCell.move() || newCell.crocodile()) ) {
+        if (selHero == null) {
+            checkCaves();
             nextTurn();
-        } else {
-            selHero = hero;
         }
 
         checkWoman();
@@ -164,6 +174,8 @@ public class GoController extends GameController {
     }
 
     private void moveHero() {
+        if (newCell.crocodile()) return;
+
         game.moveHero(hero, newLoc, withGold);
 
         if (newCell.move()) {
@@ -171,6 +183,8 @@ public class GoController extends GameController {
                 hero.die();
                 int index = newCell.index(hero);
                 newCell.removeHero(index, hero);
+            } else {
+                selHero = hero;
             }
         }
 
@@ -246,9 +260,30 @@ public class GoController extends GameController {
 
     public void nextTurn() {
         game.nextTurn();
-        HeroId.ALL.forEach(id -> game.getHero(id).setDrunk(false));
+        for(HeroId id: HeroId.ALL) {
+            Hero hero = game.getHero(id);
+            hero.setDrunk(false);
+            hero.setInitStepLoc(null);
+        }
         for(Loc loc:Loc.ALL) {
             game.getCell(loc).nextStep();
+        }
+    }
+
+    private void checkCaves() {
+        List<Hero> heroes = HeroId.ALL.stream()
+                                        .map(id -> game.getHero(id))
+                                        .filter(hero -> hero.inCave())
+                                        .collect(Collectors.toList());
+        while (heroes.size()>0) {
+            Hero hero = heroes.remove(random.nextInt(heroes.size()));
+            List<Loc> steps = whereCanGoFromCave(hero, hero.getCaveExit());
+            if (steps.size() > 0) {
+                Loc loc = steps.get(random.nextInt(steps.size()));
+                game.getCell(loc).addHero(0, hero);
+                hero.setLoc(loc);
+                hero.exitFromCave();
+            }
         }
     }
 
@@ -261,7 +296,7 @@ public class GoController extends GameController {
         Hero body =  Stream.of(heroes).filter(Hero::dead).findFirst().orElse(null);
         if (body == null) return;
 
-        Hero father = game.getWoman().heroes(0)
+        Hero father = game.woman().heroes(0)
                 .stream()
                 .filter(h -> h.id().team() == game.getCurrentTeam())
                 .findFirst().orElse(null);

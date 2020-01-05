@@ -18,6 +18,7 @@ public class Game implements Serializable {
 
     private Map<Loc, Cell> cells = new HashMap<>();
     private Cell woman;
+    private List<Loc> caveLocs;
     private Loc[] ships = new Loc[4];
     private Map<HeroId, Hero> heroes = new HashMap<>();
     private int currentTeam = 0;
@@ -35,9 +36,10 @@ public class Game implements Serializable {
         setTeamNames(teamNames);
         setFriends(friends);
 
-        cells = GameInitializer.init();
-//        cells = GameInitializer.initTest();
+//        cells = GameInitializer.init();
+        cells = GameInitializer.initTest();
 
+        caveLocs = new ArrayList<>();
         for(Map.Entry<Loc,Cell> entry: cells.entrySet()) {
             Loc loc = entry.getKey();
             Cell cell = entry.getValue();
@@ -49,9 +51,10 @@ public class Game implements Serializable {
             }
             if (cell.ship()) {
                 ships[((Ship)cell).team()] = loc;
-            }
-            if (cell.woman()) {
+            } else if (cell.woman()) {
                 woman = cell;
+            } else if (cell.cave()) {
+                caveLocs.add(loc);
             }
         }
     }
@@ -64,8 +67,12 @@ public class Game implements Serializable {
         this.friends = friends;
     }
 
-    public Cell getWoman() {
+    public Cell woman() {
         return woman;
+    }
+
+    public List<Loc> caveLocs() {
+        return caveLocs;
     }
 
     public Cell getCell(Loc loc) {return cells.get(loc);}
@@ -102,20 +109,8 @@ public class Game implements Serializable {
     }
 
     public boolean enemy(int team1, int team2) {
-        if (friends == null) {
-            return team1 != team2;
-        }
         if (team1 == -1 || team2 == -1) return false;
         return friends[team1] != friends[team2];
-
-/*        if (team1 == 0 || team1 == 3) {
-            return team2 == 1 || team2 == 2;
-        } else {
-            return team2 == 0 || team2 == 3;
-        }*/
-//        return (team1/2) != (team2/2);
-        //return (team1+team2) % 2 == 1;
-        //return team1!=team2;
     }
 
     public boolean enemy(Hero h1, Hero h2) {
@@ -200,8 +195,6 @@ public class Game implements Serializable {
 
     public String getId() {return id;}
     public String getTeamName(int team) {
-        // for old games
-        if (teamNames == null) return "";
         return teamNames[team];
     }
 

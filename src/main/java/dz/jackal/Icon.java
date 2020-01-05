@@ -19,6 +19,7 @@ public enum Icon {
     CANNIBAL ("cannibal"),
     TRAP ("trap"),
     CROCODILE ("crocodile"),
+    CAVE ("cave"),
 
     GOLD ("gold"),
     RUM ("rum"),

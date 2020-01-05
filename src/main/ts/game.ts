@@ -158,6 +158,7 @@ function setHeroes(view:any) {
                 }
                 if (note == "drunk") noteText.push("Drunk");
                 if (note == "trapped") noteText.push("Trapped");
+                if (note == "inCave") noteText.push("In Cave");
             }
             if (dead) {
                 noteText.push("Dead");
