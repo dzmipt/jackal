@@ -259,6 +259,7 @@ function showGoldByIndex(goldIdx:number,loc:Loc,count:number,index:number,g:numb
 }
 
 function showGold(loc:Loc,count:number,index:number,g:number) {
+    if (g==0) return;
     showGoldByIndex(goldIndex,loc,count,index,g);
     goldIndex++;
 }

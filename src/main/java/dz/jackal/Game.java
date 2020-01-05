@@ -35,8 +35,8 @@ public class Game implements Serializable {
         setTeamNames(teamNames);
         setFriends(friends);
 
-//        cells = GameInitializer.init();
-        cells = GameInitializer.initTest();
+        cells = GameInitializer.init();
+//        cells = GameInitializer.initTest();
 
         for(Map.Entry<Loc,Cell> entry: cells.entrySet()) {
             Loc loc = entry.getKey();
