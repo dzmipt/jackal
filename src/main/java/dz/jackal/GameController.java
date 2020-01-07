@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 abstract class GameController {
     private final static Logger log = LoggerFactory.getLogger(GoController.class);
@@ -126,32 +127,30 @@ abstract class GameController {
             }
         }
 
-        for (int dr=-1; dr<=1; dr++) {
-            for (int dc=-1; dc<=1; dc++) {
-                if (dr == 0 && dc == 0) continue;
+        for (Loc newLoc: loc.around()) {
+            Cell newCell = game.getCell(newLoc);
+            if (newCell == null) continue; // no cell at the location;
 
-                int r = loc.row()+dr;
-                int c = loc.col()+dc;
-                if (r<0 || r>12 || c<0 || c>12) continue;
-                Loc newLoc = new Loc(r,c);
-                Cell newCell = game.getCell(newLoc);
-
-                if (cell.sea()) {
-                    if (newCell.land()) continue;
-                } else if (cell.ship()) {
-                    boolean diag = ! (dr == 0 || dc == 0);
-                    if (diag) continue;
-                    if (newCell.sea()) {
-                        if (r == 1 || r ==11 || c==1 || c==11) continue;
-                    }
-                    if (!canGo(hero,newCell, withGold)) continue;
-                } else { // on land
-                    if (newCell.sea()) continue;
-                    if (!canGo(hero, newCell, withGold)) continue;
+            if (cell.sea()) {
+                if (newCell.land()) continue;
+            } else if (cell.ship()) {
+                if (newLoc.diagonal(loc)) continue;
+                if (newCell.sea()) {
+                    long landAround = Stream.of(newLoc.around())
+                                            .filter(l -> ! l.diagonal(newLoc))
+                                            .map(l->game.getCell(l))
+                                            .filter(Objects::nonNull)
+                                            .filter(Cell::land)
+                                            .count();
+                    if (landAround == 0) continue;
                 }
-
-                steps.add(newLoc);
+                if (!canGo(hero,newCell, withGold)) continue;
+            } else { // on land
+                if (newCell.sea()) continue;
+                if (!canGo(hero, newCell, withGold)) continue;
             }
+
+            steps.add(newLoc);
         }
         return  steps;
     }
@@ -161,8 +160,9 @@ abstract class GameController {
         MoveCell cell = (MoveCell) game.getCell(hero.getLoc());
         Loc[] moveSteps = cell.nextSteps(hero.getPrevLoc(), hero.getLoc());
         for (Loc step:moveSteps) {
-            if (step.row()<0 || step.row()>12 || step.col()<0 || step.col()>12) continue;
-            if (!canGo(hero, game.getCell(step), withGold)) continue;
+            Cell newCell = game.getCell(step);
+            if (newCell == null) continue;
+            if (!canGo(hero, newCell, withGold)) continue;
             steps.add(step);
         }
         return steps;

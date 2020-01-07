@@ -44,10 +44,7 @@ public class Cannon extends Cell {
     }
 
     public Loc fire(Loc loc) {
-        while ( loc.row()>0 && loc.row()<12 && loc.col()>0 && loc.col()<12 ) {
-            loc = move.move(loc);
-        }
-        return loc;
+        return move.move(loc);
     }
 
 }

@@ -98,7 +98,11 @@ public class GoController extends GameController {
             }
             if (newCell.cannon()) {
                 viaLoc = newLoc;
-                newLoc = ((Cannon)newCell).fire(newLoc);
+                Cannon cannon = (Cannon)newCell;
+                newLoc = Stream.iterate(newLoc, cannon::fire)
+                                .filter(l -> !game.getCell(l).land())
+                                .findFirst().orElse(null);
+
                 newCell = game.getCell(newLoc);
             }
 

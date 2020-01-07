@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class Loc implements Serializable {
     private final static long serialVersionUID = 1;
@@ -22,6 +23,13 @@ public class Loc implements Serializable {
     public int col() {return col;}
     public Loc add(int dRow,int dCol) {
         return new Loc(row+dRow,col+dCol);
+    }
+    public Loc[] around() {
+        return Stream.of(-1,0,1).flatMap(dr -> Stream.of(-1,0,1).map(dc -> add(dr, dc)))
+                        .filter(loc -> ! loc.equals(this)).toArray(Loc[]::new);
+    }
+    public boolean diagonal(Loc loc) {
+        return Math.abs(loc.row - row) == 1 && Math.abs(loc.col - col) == 1;
     }
 
     public int distance(Loc loc) {
