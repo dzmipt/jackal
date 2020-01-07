@@ -80,6 +80,7 @@ function initRight() {
                 )
         );
     }
+    right.append($("<img id='cave' src='/img/cave.png'/>"));
     right.html(right.html()); // workaround to fix svg element
 }
 

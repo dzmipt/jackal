@@ -70,13 +70,10 @@ public class View {
                 pirateView.notes.add(PirateView.Note.trapped);
             }
 
-            if (hero.inCave()) {
-                pirateView.notes.add(PirateView.Note.inCave);
-            }
-
+            pirateView.inCave = hero.inCave();
             pirateView.dead = hero.dead();
-            pirateView.hidden = hero.team() == -1 || hero.inCave();
-            if (!pirateView.dead && !pirateView.hidden) {
+            pirateView.hidden = hero.team() == -1;
+            if (! (pirateView.dead || pirateView.hidden || pirateView.inCave) ) {
                 pirateView.loc = loc;
                 pirateView.index = game.getCell(loc).index(hero);
             }
@@ -110,10 +107,11 @@ public class View {
     }
 
     public static class PirateView {
-        public enum Note {pirate,drunk,trapped,inCave};
+        public enum Note {pirate,drunk,trapped};
         public Loc loc = new Loc(0,0);
         public Loc viaLoc = null;
         public boolean hidden = false;
+        public boolean inCave = false;
         public boolean dead = false;
         public boolean rumReady = false;
         public int index = 0;

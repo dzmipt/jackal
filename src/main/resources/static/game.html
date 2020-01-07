@@ -9,24 +9,25 @@
     <script src="/webjars/stomp-websocket/stomp.min.js"></script>
 </head>
 <body>
-    <div id="top" class="top">
-        <img id="prevTurn" class="button" style="left:0px" src="/img/prev.png"/>
-        <img id="goldIcon" class="button" style="left:70px" src="/img/goldcenter.png"/>
-        <img id="rumIcon" class="button" style="left:140px" src="/img/rumcenter.png"/>
-        <div id="topLabel" class="topLabel"></div>
-        <img id="nextTurn" class="button" style="right:0px" src="/img/next.png"/>
-    </div>
-    <div id="field" class="mainfield" >
-        <div style="position:relative">
-            <div id="cells" class="field"></div>
-            <svg id="svg" class="field"></svg>
-            <div id="heroes" class="field"></div>
-            <div id="fronts" class="field"></div>
+    <div style="user-select: none">
+        <div id="top" class="top">
+            <img id="prevTurn" class="button" style="left:0px" src="/img/prev.png"/>
+            <img id="goldIcon" class="button" style="left:70px" src="/img/goldcenter.png"/>
+            <img id="rumIcon" class="button" style="left:140px" src="/img/rumcenter.png"/>
+            <div id="topLabel" class="topLabel"></div>
+            <img id="nextTurn" class="button" style="right:0px" src="/img/next.png"/>
+        </div>
+        <div id="field" class="mainfield" >
+            <div style="position:relative">
+                <div id="cells" class="field"></div>
+                <svg id="svg" class="field"></svg>
+                <div id="heroes" class="field"></div>
+                <div id="fronts" class="field"></div>
+            </div>
+        </div>
+        <div id="right" class="right" style="display:inline-block;float:left">
         </div>
     </div>
-    <div id="right" class="right" style="display:inline-block;float:left">
-    </div>
-
     <script src="/ts/conn.js"></script>
     <script src="/ts/game.js"></script>
     <script src="/ts/field.js"></script>

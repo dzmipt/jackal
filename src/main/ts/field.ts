@@ -146,11 +146,11 @@ function heroZLevel(h:Hero, level:number) {
 
 function selectFieldHero(h:Hero) {
     hero(h).attr("src",getHeroImgSrc(h.id,true));
-    heroZLevel(selHero, 2);
+    heroZLevel(selHero, 3);
 }
 function unselectFieldHero(h:Hero) {
     hero(h).attr("src",getHeroImgSrc(h.id,false));
-    heroZLevel(selHero, 1);
+    heroZLevel(selHero, 2);
 }
 
 type Point = [number,number];
@@ -215,6 +215,7 @@ function getTargetAttr(hindex:number, hcount:number, hloc:Loc, pos:number, count
 
 function setHero(h:Hero, pos:number, count:number) {
     let attr = getTargetAttr(h.index,h.count,h.loc, pos, count);
+    if (h.inCave) attr.left += 2;
     attr['opacity'] =  h.hidden || h.dead ? 0.0 : 1.0;
 
     let el = hero(h);

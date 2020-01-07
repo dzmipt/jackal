@@ -25,12 +25,6 @@ public class Game implements Serializable {
     private int turn = 0;
     private boolean startTurn = true;
 
-    public static void main(String[] args) throws IOException {
-        String[] teamNames = new String[]{"Настя - белые", "Дима - жёлтые", "Дима - красные", "Настя - чёрные"};
-        int[] friends = new int[] {0, 1, 1, 0};
-        DbGames.updateGame("gzzynvrjmvxeypxt", teamNames, friends);
-    }
-
     private Game(String id, String[] teamNames, int[] friends) {
         this.id = id;
         setTeamNames(teamNames);

@@ -39,6 +39,7 @@ HeroId.ALL.push(HeroId.Missioner); // Missioner
 
 class Hero {
     id:HeroId;
+    inCave:boolean;
     hidden:boolean;
     dead:boolean;
     loc:Loc;
@@ -48,9 +49,10 @@ class Hero {
     index:number;
     count:number;
     rumReady:boolean;
-    constructor(id:HeroId, hidden:boolean, dead:boolean, loc:Loc, viaLoc:Loc, steps:Loc[], stepsWithGold: Loc[],
+    constructor(id:HeroId, inCave:boolean, hidden:boolean, dead:boolean, loc:Loc, viaLoc:Loc, steps:Loc[], stepsWithGold: Loc[],
                 index:number, count:number, rumReady:boolean) {
         this.id = id;
+        this.inCave = inCave;
         this.hidden = hidden;
         this.dead = dead;
         this.loc = loc;
@@ -140,12 +142,13 @@ function setHeroes(view:any) {
     for(let i in HeroId.ALL) {
         let vh:any = vheroes[i];
         let id:HeroId = HeroId.ALL[i];
-        let loc = getLoc(vh.loc);
+        let inCave:boolean = vh.inCave;
         let hidden:boolean = vh.hidden;
         let dead:boolean = vh.dead;
         let index:number = vh.index;
-        let count:number = view.cells[loc.row][loc.col].count;
-        Hero.heroes.push(new Hero(id, hidden, dead, loc, vh.viaLoc,
+        let loc = inCave ? new Loc(12,13) : getLoc(vh.loc);
+        let count:number = inCave ? 1 : view.cells[loc.row][loc.col].count;
+        Hero.heroes.push(new Hero(id, inCave, hidden, dead, loc, vh.viaLoc,
                                     getLocs(vh.steps), getLocs(vh.stepsWithGold),
                                     index, count,
                                     vh.rumReady));
@@ -158,10 +161,12 @@ function setHeroes(view:any) {
                 }
                 if (note == "drunk") noteText.push("Drunk");
                 if (note == "trapped") noteText.push("Trapped");
-                if (note == "inCave") noteText.push("In Cave");
             }
             if (dead) {
                 noteText.push("Dead");
+            }
+            if (inCave) {
+                noteText.push("In Cave");
             }
             if (count>1) {
                 noteText.push(""+ (index+1) + " of " + count);
@@ -178,9 +183,9 @@ function resetFieldHeroes() {
 
     selectableHeroes = [];
     for(let hero of Hero.heroes) {
-        let zlevel = 0;
+        let zlevel = 1;
         if (hero.canGo() || hero.rumReady) {
-            zlevel = 1;
+            zlevel = 2;
             selectableHeroes.push(hero);
         }
         heroZLevel(hero, zlevel);
@@ -230,6 +235,8 @@ function initGame() {
         }
         if (e.shiftKey) selectWithGold();
         else unselectWithGold();
+
+        e.preventDefault();
      });
      $(window).keyup(e=>{
         unselectWithGold();
