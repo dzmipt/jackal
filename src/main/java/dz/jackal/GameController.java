@@ -127,32 +127,49 @@ abstract class GameController {
             }
         }
 
-        for (Loc newLoc: loc.around()) {
+        loc.allAround().forEach(newLoc -> {
             Cell newCell = game.getCell(newLoc);
-            if (newCell == null) continue; // no cell at the location;
+            if (newCell == null) return; // no cell at the location;
 
             if (cell.sea()) {
-                if (newCell.land()) continue;
+                if (newCell.land()) return;
             } else if (cell.ship()) {
-                if (newLoc.diagonal(loc)) continue;
-                if (newCell.sea()) {
-                    long landAround = Stream.of(newLoc.around())
-                                            .filter(l -> ! l.diagonal(newLoc))
-                                            .map(l->game.getCell(l))
-                                            .filter(Objects::nonNull)
-                                            .filter(Cell::land)
-                                            .count();
-                    if (landAround == 0) continue;
-                }
-                if (!canGo(hero,newCell, withGold)) continue;
+                if (newCell.sea()) return; // ship sailing is below
+                if (newLoc.diagonal(loc)) return;
+                if (!canGo(hero,newCell, withGold)) return;
             } else { // on land
-                if (newCell.sea()) continue;
-                if (!canGo(hero, newCell, withGold)) continue;
+                if (newCell.sea()) return;
+                if (!canGo(hero, newCell, withGold)) return;
             }
 
             steps.add(newLoc);
+        });
+
+        steps.addAll(whereCanSail(loc));
+        return steps;
+    }
+
+    private Set<Loc> whereCanSail(Loc loc ) {
+        Set<Loc> sailTo = new HashSet<>();
+        Cell cell = game.getCell(loc);
+        if (! cell.ship()) return sailTo;
+        long pirateCount = cell.heroes(0).stream()
+                .filter(h -> !h.friday())
+                .filter(h -> !h.missioner()).count();
+        sailTo.add(loc);
+        Set<Loc> border = new HashSet<>(sailTo);
+        for(int i=0; i<pirateCount; i++) {
+            border = border.stream()
+                    .flatMap(Loc::around)
+                    .filter(l -> ! sailTo.contains(l))
+                    .filter(l -> game.getCell(l)!= null)
+                    .filter(l -> !game.getCell(l).land())
+                    .filter(l -> l.around().map(la -> game.getCell(la)).filter(Objects::nonNull).anyMatch(Cell::land))
+                    .collect(Collectors.toSet());
+            sailTo.addAll(border);
         }
-        return  steps;
+        sailTo.remove(loc);
+        return sailTo;
     }
 
     private List<Loc> whereCanGoFromMove(Hero hero, boolean withGold) {

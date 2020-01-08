@@ -24,10 +24,24 @@ public class Loc implements Serializable {
     public Loc add(int dRow,int dCol) {
         return new Loc(row+dRow,col+dCol);
     }
-    public Loc[] around() {
-        return Stream.of(-1,0,1).flatMap(dr -> Stream.of(-1,0,1).map(dc -> add(dr, dc)))
-                        .filter(loc -> ! loc.equals(this)).toArray(Loc[]::new);
+
+    public Stream<Loc> around() {
+        return Stream.of(-1,1).flatMap(dx -> Stream.of(add(dx,0),add(0,dx)));
     }
+    public Stream<Loc> allAround() {
+        return Stream.concat(around(), diagonal());
+    }
+    public Stream<Loc> diagonal() {
+        return Stream.of(-1,1).flatMap(dr -> Stream.of(-1,1).map(dc -> add(dr, dc)));
+    }
+
+    public Stream<Loc> path(Loc newLoc) {
+        return Stream.iterate(this, l-> l.add(Integer.signum(newLoc.row-l.row),
+                                                    Integer.signum(newLoc.col-l.col)))
+                        .skip(1)
+                        .limit(distance(newLoc));
+    }
+
     public boolean diagonal(Loc loc) {
         return Math.abs(loc.row - row) == 1 && Math.abs(loc.col - col) == 1;
     }

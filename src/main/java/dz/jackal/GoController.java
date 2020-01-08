@@ -161,18 +161,20 @@ public class GoController extends GameController {
 
     private void sailShip() {
         int theTeam = ((Ship)oldCell).team();
-        game.getCell(newLoc).heroes(0).forEach(
-                h-> {
-                    if (h.friday()) {
-                        h.setTeam(theTeam);
+        oldLoc.path(newLoc)
+                .flatMap(l -> game.getCell(l).heroes(0).stream())
+                .forEach(
+                    h-> {
+                        if (h.friday()) {
+                            h.setTeam(theTeam);
+                        }
+                        if(game.enemy(h,theTeam)) {
+                            game.returnToShip(h);
+                        } else {
+                            game.moveHero(h, oldLoc, false);
+                        }
                     }
-                    if(game.enemy(h,theTeam)) {
-                        game.returnToShip(h);
-                    } else {
-                        game.moveHero(h, oldLoc, false);
-                    }
-                }
-        );
+                );
 
         game.moveShip(((Ship)oldCell).team(), newLoc);
     }
