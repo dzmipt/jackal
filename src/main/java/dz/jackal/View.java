@@ -1,10 +1,13 @@
 package dz.jackal;
 
 import dz.jackal.cell.Cell;
+import dz.jackal.cell.Earthquake;
 
 import java.util.*;
 
 public class View {
+
+    public enum Adv {Earthquake};
 
     public String id;
     public String teamName;
@@ -16,6 +19,7 @@ public class View {
     public int[] rum = new int[4];
     public int currentTeam;
     public int benGunnTeam, fridayTeam, missionerTeam;
+    public Adv adv = null;
 
     public View(Game game, Map<HeroId,Loc[]> steps, Map<HeroId,Loc[]> stepsWithGold, Set<HeroId> rumReady) {
         id = game.getId();
@@ -97,6 +101,12 @@ public class View {
         heroes.get(index).viaLoc = viaLoc;
         return this;
     }
+
+    public View setAdv(Adv adv) {
+        this.adv = adv;
+        return this;
+    }
+
     public static class CellView {
         public String icon;
         public int count;

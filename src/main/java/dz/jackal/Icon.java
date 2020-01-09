@@ -20,6 +20,7 @@ public enum Icon {
     TRAP ("trap"),
     CROCODILE ("crocodile"),
     CAVE ("cave"),
+    EARTHQUAKE ("earthquake"),
 
     GOLD ("gold"),
     RUM ("rum"),

@@ -4,10 +4,7 @@ import dz.jackal.Hero;
 import dz.jackal.Icon;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Cell implements Serializable {
     private final static long serialVersionUID = 1;
@@ -37,6 +34,8 @@ public class Cell implements Serializable {
             gold[i] = 0;
         }
     }
+
+    public void random() {}
 
     protected boolean temporaryIcon() {
         return temporary>0;
@@ -89,6 +88,8 @@ public class Cell implements Serializable {
     }
 
     public boolean crocodile() {return icon == Icon.CROCODILE;}
+
+    public boolean earthquake() {return false;}
 
     public boolean cave() {return false;}
 

@@ -15,8 +15,4 @@ public class Ice extends MoveCell {
         return new Loc[] {curLoc.add(curLoc.row() - prevLoc.row(), curLoc.col() - prevLoc.col())};
     }
 
-    @Override
-    public MoveCell duplicate() {
-        return new Ice();
-    }
 }

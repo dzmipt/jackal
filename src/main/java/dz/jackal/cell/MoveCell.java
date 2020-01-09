@@ -16,5 +16,4 @@ abstract public class MoveCell extends Cell {
         return true;
     }
 
-    abstract public MoveCell duplicate();
 }

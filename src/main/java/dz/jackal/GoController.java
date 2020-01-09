@@ -15,8 +15,6 @@ import java.util.stream.Stream;
 public class GoController extends GameController {
     private final static Logger log = LoggerFactory.getLogger(GoController.class);
 
-    private final static Random random = new Random();
-
     private Hero hero;
     private Hero selHero;
     private Loc oldLoc, newLoc;
@@ -35,6 +33,7 @@ public class GoController extends GameController {
         GoRequest request = (GoRequest) aRequest;
         animateRum = null;
         Loc viaLoc = null;
+        View.Adv adv = null;
         withGold = request.withGold;
         hero = game.getHero(request.getHeroId());
         oldLoc = hero.getLoc();
@@ -62,7 +61,7 @@ public class GoController extends GameController {
                 newCell.setTempIconLocation(Icon.RUM.getLocation() + rum);
                 if (hero.friday()) {
                     rum--;
-                    hero.die();
+                    die(hero);
                 }
                 if (hero.missioner()) {
                     rum--;
@@ -74,11 +73,11 @@ public class GoController extends GameController {
         }
 
         if (! canGo(hero, newCell, withGold) && !newCell.crocodile()) {
-            hero.die();
+            die(hero);
         }
 
         if (newCell.cannibal() && !hero.friday()) {
-            hero.die();
+            die(hero);
         }
 
         if (oldCell.ship() && newCell.sea()) { // sail the ship
@@ -119,7 +118,7 @@ public class GoController extends GameController {
 
             if (newCell.crocodile()) {
                 if (whereCanGo(hero,false).size() == 0) {
-                    hero.die();
+                    die(hero);
                 } else {
                     viaLoc = newLoc;
                     selHero = hero;
@@ -127,6 +126,12 @@ public class GoController extends GameController {
             }
 
             moveHero();
+
+            if (newCell.earthquake()) {
+                ((Earthquake)newCell).activate();
+                game.earthquake();
+                adv = View.Adv.Earthquake;
+            }
 
             if (newCell.cave() && !oldCell.cave()) {
                 boolean canGo = whereCanGoFromCave(hero, ((Cave)newCell).getExit()).size()>0;
@@ -156,7 +161,8 @@ public class GoController extends GameController {
 
         return getView(selHero)
                     .setAnimateRum(animateRum)
-                    .setViaLoc(hero.id(), viaLoc);
+                    .setViaLoc(hero.id(), viaLoc)
+                    .setAdv(adv);
     }
 
     private void sailShip() {
@@ -186,9 +192,7 @@ public class GoController extends GameController {
 
         if (newCell.move()) {
             if (isCycle()) {
-                hero.die();
-                int index = newCell.index(hero);
-                newCell.removeHero(index, hero);
+                die(hero);
             } else {
                 selHero = hero;
             }
@@ -230,8 +234,8 @@ public class GoController extends GameController {
             }
 
             if (missioner.missioner() && heroes.contains(missioner) && heroes.contains(friday)) {
-                friday.die();
-                missioner.die();
+                die(friday);
+                die(missioner);
             }
         }
     }
@@ -282,10 +286,10 @@ public class GoController extends GameController {
                                         .filter(hero -> hero.inCave())
                                         .collect(Collectors.toList());
         while (heroes.size()>0) {
-            Hero hero = heroes.remove(random.nextInt(heroes.size()));
+            Hero hero = heroes.remove(Game.random.nextInt(heroes.size()));
             List<Loc> steps = whereCanGoFromCave(hero, hero.getCaveExit());
             if (steps.size() > 0) {
-                Loc loc = steps.get(random.nextInt(steps.size()));
+                Loc loc = steps.get(Game.random.nextInt(steps.size()));
                 game.getCell(loc).addHero(0, hero);
                 hero.setLoc(loc);
                 hero.exitFromCave();

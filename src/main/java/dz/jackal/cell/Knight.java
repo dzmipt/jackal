@@ -24,8 +24,4 @@ public class Knight extends MoveCell {
         return locs;
     }
 
-    @Override
-    public MoveCell duplicate() {
-        return new Knight();
-    }
 }

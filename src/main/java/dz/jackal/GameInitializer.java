@@ -6,7 +6,6 @@ import java.util.*;
 
 public class GameInitializer {
 
-    private static Random random = new Random();
     private static Map<Loc,Cell> cells;
     private static List<Loc> locs;
 
@@ -16,13 +15,13 @@ public class GameInitializer {
         locs = new ArrayList<>(Loc.ALL);
         locs.removeAll(cells.keySet());
 
-        next(3, () -> new ArrowMoveCell(random, Move.N) );
-        next(3, () -> new ArrowMoveCell(random, Move.NE) );
-        next(3, () -> new ArrowMoveCell(random, Move.N, Move.S) );
-        next(3, () -> new ArrowMoveCell(random, Move.NE, Move.SW) );
-        next(3, () -> new ArrowMoveCell(random, Move.NW, Move.E, Move.S) );
-        next(3, () -> new ArrowMoveCell(random, Move.N, Move.E, Move.S, Move.W) );
-        next(3, () -> new ArrowMoveCell(random, Move.NE, Move.SE, Move.SW, Move.NW) );
+        next(3, () -> new ArrowMoveCell(Move.N) );
+        next(3, () -> new ArrowMoveCell(Move.NE) );
+        next(3, () -> new ArrowMoveCell(Move.N, Move.S) );
+        next(3, () -> new ArrowMoveCell(Move.NE, Move.SW) );
+        next(3, () -> new ArrowMoveCell(Move.NW, Move.E, Move.S) );
+        next(3, () -> new ArrowMoveCell(Move.N, Move.E, Move.S, Move.W) );
+        next(3, () -> new ArrowMoveCell(Move.NE, Move.SE, Move.SW, Move.NW) );
 
         next(2, Knight::new);
         next(6, Ice::new);
@@ -36,7 +35,7 @@ public class GameInitializer {
         next(2, () -> new Cell(Icon.FORT, 1));
         next(1, () -> new Cell(Icon.WOMAN, 1));
         next(2, () -> new Cell(Icon.BALLOON, 1));
-        next(2, () -> new Cannon(random));
+        next(2, Cannon::new);
         next( 3, () -> new Cell(Icon.TRAP,1));
         next( 4, () -> new Cell(Icon.CROCODILE,1));
 
@@ -57,7 +56,7 @@ public class GameInitializer {
         initHero(HeroId.MISSIONER_ID);
 
         for(Loc loc:locs) {
-            cells.put(loc, new Land(random));
+            cells.put(loc, new Land());
         }
 
         return cells;
@@ -91,7 +90,7 @@ public class GameInitializer {
     }
 
     private static Loc nextCell(Cell cell) {
-        int index = random.nextInt(locs.size());
+        int index = Game.random.nextInt(locs.size());
         Loc loc = locs.remove(index);
         cells.put(loc, cell);
         return loc;
@@ -145,7 +144,7 @@ public class GameInitializer {
     private static MoveCell[] moves = new MoveCell[] {
             /*new KnightCell(),
             new IceCell(),*/
-            new ArrowMoveCell(random, Move.N),
+            new ArrowMoveCell(Move.N),
             /*new ArrowMoveCell(random, Move.NW),
             new ArrowMoveCell(random, Move.E, Move.W),
             new ArrowMoveCell(random, Move.NW, Move.SE),
@@ -164,8 +163,8 @@ public class GameInitializer {
                     ((col == 0 || col == 12) && row == 6)) icon = Icon.SHIP;
             else if ((row == 0 || row == 12 || col == 0 || col == 12) ||
                     ((row == 1 || row == 11) && (col == 1 || col == 11))) icon = Icon.SEA;
-            else if (random.nextInt(10)>-6) icon = Icon.LAND;
-            else icon = Icon.MOVE; //icon = Icon.LAND; //Icon.MOUNTAIN;//Icon.LAND;
+            else /*if (random.nextInt(10)>-6)*/ icon = Icon.LAND;
+            //else icon = Icon.MOVE; //icon = Icon.LAND; //Icon.MOUNTAIN;//Icon.LAND;
             //else icon = Icon.MOUNTAIN;
 
             Cell cell;
@@ -174,13 +173,13 @@ public class GameInitializer {
                 cell.addGold(0);
                 cell.addGold(1);
             } else if (icon == Icon.LAND) {
-                cell = new Land(random);
-                int cnt = random.nextInt(6);
+                cell = new Land();
+                int cnt = Game.random.nextInt(6);
                 for (int i=0;i<cnt;i++) cell.addGold(0);
-                cell.setRum(random.nextInt(4));
-            } else if (icon == Icon.MOVE) {
+                cell.setRum(Game.random.nextInt(4));
+            } else /*if (icon == Icon.MOVE) {
                 cell = moves[random.nextInt(moves.length)].duplicate();
-            } else {
+            } else*/ {
                 cell = new Cell(icon);
                 cell.open();
             }
@@ -192,15 +191,15 @@ public class GameInitializer {
         cells.put(new Loc(2,4),new Cell(Icon.DESERT, 3));
         cells.put(new Loc(2,3),new Cell(Icon.JUNGLE2, 2));
 
-        ArrowMoveCell move4 = new ArrowMoveCell(random, Move.E);
+        ArrowMoveCell move4 = new ArrowMoveCell(Move.E);
         move4.setMoves(Move.E);
-        ArrowMoveCell move41 = new ArrowMoveCell(random, Move.E);
+        ArrowMoveCell move41 = new ArrowMoveCell(Move.E);
         move41.setMoves(Move.E);
-        ArrowMoveCell move8 = new ArrowMoveCell(random, Move.W);
+        ArrowMoveCell move8 = new ArrowMoveCell(Move.W);
         move8.setMoves(Move.W);
-        ArrowMoveCell move81 = new ArrowMoveCell(random, Move.W);
+        ArrowMoveCell move81 = new ArrowMoveCell(Move.W);
         move81.setMoves(Move.W);
-        ArrowMoveCell move82 = new ArrowMoveCell(random, Move.W);
+        ArrowMoveCell move82 = new ArrowMoveCell(Move.W);
         move82.setMoves(Move.W);
 
 
@@ -217,7 +216,7 @@ public class GameInitializer {
 
         cells.put(new Loc(7, 10), new Cell(Icon.TRAP, 1));
 
-        Cannon cannon = new Cannon(random);
+        Cannon cannon = new Cannon();
         cannon.setMove(Move.W);
         cells.put(new Loc (10, 5), cannon);
 
@@ -228,12 +227,12 @@ public class GameInitializer {
 
         cells.put(new Loc(1,5), new Cell(Icon.CROCODILE));
 
-        ArrowMoveCell move = new ArrowMoveCell(random, Move.NE, Move.SW);
+        ArrowMoveCell move = new ArrowMoveCell(Move.NE, Move.SW);
         move.setMoves(Move.NE, Move.SW);
         cells.put(new Loc(7,11), move);
         cells.put(new Loc(8,10), new Cell(Icon.CROCODILE));
 
-        move = new ArrowMoveCell(random, Move.W);
+        move = new ArrowMoveCell(Move.W);
         move.setMoves(Move.W);
         cells.put(new Loc(11,5), move);
         cells.put(new Loc(11,4), new Cell(Icon.CROCODILE));
@@ -242,6 +241,8 @@ public class GameInitializer {
         cells.put(new Loc(5,1), new Cave());
         cells.put(new Loc(4,8), new Cave());
         cells.put(new Loc(11,8), new Cave());
+
+        cells.put(new Loc(7, 2), new Earthquake());
 
         Loc[] ships = new Loc[] {new Loc(0,6), new Loc(6, 12),
                 new Loc(12,6), new Loc(6,0)};

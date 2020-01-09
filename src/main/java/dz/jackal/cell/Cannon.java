@@ -1,9 +1,8 @@
 package dz.jackal.cell;
 
+import dz.jackal.Game;
 import dz.jackal.Icon;
 import dz.jackal.Loc;
-
-import java.util.Random;
 
 public class Cannon extends Cell {
     private final static long serialVersionUID = 1;
@@ -11,11 +10,15 @@ public class Cannon extends Cell {
     private Move move;
     private String iconView;
 
-    public Cannon(Random random) {
+    public Cannon() {
         super(Icon.CANNON);
-
         move = Move.N;
-        int count = random.nextInt(4);
+        random();
+    }
+
+    @Override
+    public void random() {
+        int count = Game.random.nextInt(4);
         for (int i=0;i<=count;i++) move = move.rotate();
         initIconView();
     }

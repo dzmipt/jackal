@@ -24,7 +24,7 @@ public class DrinkController extends GameController {
         Hero selHero = null;
         Hero hero = game.getHero(request.getHeroId());
         if(hero.friday()) {
-            hero.die();
+            die(hero);
         } else if (hero.missioner()) {
             ((Missioner)hero).drinkToPirate();
             Cell cell = game.getCell(hero.getLoc());

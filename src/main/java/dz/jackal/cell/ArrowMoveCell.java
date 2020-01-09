@@ -1,9 +1,9 @@
 package dz.jackal.cell;
 
+import dz.jackal.Game;
 import dz.jackal.Icon;
 import dz.jackal.Loc;
 
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -12,16 +12,17 @@ public class ArrowMoveCell extends MoveCell {
 
     private Move[] moves;
     private String iconView;
-    private Random random;
 
-    public ArrowMoveCell(Random random, Move ... m ){
+    public ArrowMoveCell(Move ... m ){
         super(Icon.MOVE);
-        this.random = random;
+        moves = m;
+        random();
+    }
 
-        moves = new Move[m.length];
-        int count = random.nextInt(4);
-        for(int index=0; index<m.length; index++) {
-            moves[index] = m[index];
+    @Override
+    public void random() {
+        int count = Game.random.nextInt(4);
+        for(int index=0; index<moves.length; index++) {
             for (int i=0;i<=count;i++) {
                 moves[index] = moves[index].rotate();
             }
@@ -50,11 +51,6 @@ public class ArrowMoveCell extends MoveCell {
         else {
             return iconView;
         }
-    }
-
-    @Override
-    public MoveCell duplicate() {
-        return new ArrowMoveCell(random, moves);
     }
 
     @Override

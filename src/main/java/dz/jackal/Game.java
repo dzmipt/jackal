@@ -4,7 +4,6 @@ import dz.jackal.cell.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 
@@ -25,6 +24,8 @@ public class Game implements Serializable {
     private int turn = 0;
     private boolean startTurn = true;
 
+    public final static Random random = new Random();
+
     private Game(String id, String[] teamNames, int[] friends) {
         this.id = id;
         setTeamNames(teamNames);
@@ -32,7 +33,10 @@ public class Game implements Serializable {
 
 //        cells = GameInitializer.init();
         cells = GameInitializer.initTest();
+        afterCellsInit();
+    }
 
+    private void afterCellsInit() {
         caveLocs = new ArrayList<>();
         for(Map.Entry<Loc,Cell> entry: cells.entrySet()) {
             Loc loc = entry.getKey();
@@ -41,6 +45,7 @@ public class Game implements Serializable {
             for (int index=0; index<count; index++) {
                 for(Hero hero:cell.heroes(index)) {
                     heroes.put(hero.id(), hero);
+                    hero.setLoc(loc);
                 }
             }
             if (cell.ship()) {
@@ -187,6 +192,35 @@ public class Game implements Serializable {
         moveHero(h, newLoc,false);
     }
 
+    public void earthquake() {
+        List<Loc> locs = new ArrayList<>();
+        List<Cell> newCells = new ArrayList<>();
+        for (Map.Entry<Loc,Cell> entry: cells.entrySet()) {
+            Loc loc = entry.getKey();
+            Cell cell = entry.getValue();
+            if (!cell.land()) continue;
+            if (!cell.closed()) {
+                boolean take = true;
+                int count = cell.count();
+                for (int index=0; index<count; index++) {
+                    if (cell.gold(index)>0) take = false;
+                    if (cell.heroes(index).size()>0) take = false;
+                }
+                if (!take) continue;
+            }
+            locs.add(loc);
+            cell.random();
+            newCells.add(cell);
+        }
+
+        for(Loc loc:locs) {
+            Cell cell = newCells.remove(Game.random.nextInt(newCells.size()));
+            cells.put(loc,cell);
+        }
+
+        afterCellsInit();
+    }
+
     public String getId() {return id;}
     public String getTeamName(int team) {
         return teamNames[team];
@@ -202,7 +236,6 @@ public class Game implements Serializable {
     private static String generateId(int len) {
         StringBuilder builder = new StringBuilder(len);
         int count = 'z'-'a'+1;
-        Random random = new Random();
         for (int i= 0; i<len; i++) {
             builder.append((char) ('a' + random.nextInt(count)));
         }

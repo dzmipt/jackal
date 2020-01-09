@@ -220,6 +220,15 @@ function setView(view:any) {
     resetPanels(view);
     resetFieldHeroes();
     animateRum(view.animateRum);
+    if (view.adv != null) {
+        let adv = $("#adv");
+        adv.empty().append(view.adv);
+        adv.show().delay(3000).fadeOut();
+    }
+}
+
+function hideAdv() {
+    $("#adv").stop().hide();
 }
 
 function initGame() {
@@ -244,7 +253,7 @@ function initGame() {
 
     $("#prevTurn").click(prevTurn);
     $("#nextTurn").click(nextTurn);
-
+    $("#adv").click(hideAdv);
     addSubscription("view", setView);
     let id:string = new URLSearchParams(document.location.search.substring(1)).get("id");
     send("init",{id:id});

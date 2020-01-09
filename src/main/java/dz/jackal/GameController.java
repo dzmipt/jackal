@@ -60,10 +60,10 @@ abstract class GameController {
     }
 
     protected boolean canGo(Hero hero, Cell newCell) {
+        if (hero.trapped()) return false;
         if (newCell.closed()) return true;
 
         if (newCell.crocodile()) return false;
-        if (hero.trapped()) return false;
 
         List<Hero> heroes = newCell.heroes(0);
         if (hero.friday() && game.hasEnemy(hero.team(),heroes)) return false;
@@ -245,6 +245,14 @@ abstract class GameController {
         return fromLoc.distance(targetLoc) == 1 && targetIndex == 0;
     }
 
+    protected void die(Hero hero) {
+        Cell cell = game.getCell(hero.getLoc());
+        if (cell != null) {
+            int index = cell.index(hero);
+            cell.removeHero(index, hero);
+        }
+        hero.die();
+    }
     public static class Request {
         public String id;
 
