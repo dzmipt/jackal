@@ -253,6 +253,89 @@ abstract class GameController {
         }
         hero.die();
     }
+
+    private void checkCaves() {
+        List<Hero> heroes = HeroId.ALL.stream()
+                .map(id -> game.getHero(id))
+                .filter(hero -> hero.inCave())
+                .collect(Collectors.toList());
+        while (heroes.size()>0) {
+            Hero hero = heroes.remove(Game.random.nextInt(heroes.size()));
+            List<Loc> steps = whereCanGoFromCave(hero, hero.getCaveExit());
+            if (steps.size() > 0) {
+                Loc loc = steps.get(Game.random.nextInt(steps.size()));
+                game.getCell(loc).addHero(0, hero);
+                hero.setLoc(loc);
+                hero.exitFromCave();
+            }
+        }
+    }
+
+    private void checkWoman() {
+        Hero[] heroes = HeroId.ALL.stream()
+                .filter(id -> id.team() == game.getCurrentTeam()) // don't include additional heroes
+                .map(id -> game.getHero(id))
+                .toArray(Hero[]::new);
+
+        Hero body =  Stream.of(heroes).filter(Hero::dead).findFirst().orElse(null);
+        if (body == null) return;
+
+        Hero father = game.woman().heroes(0)
+                .stream()
+                .filter(h -> h.id().team() == game.getCurrentTeam())
+                .findFirst().orElse(null);
+
+        if (father == null) return;
+        body.birth(father.getLoc());
+        game.getCell(father.getLoc()).addHero(0, body);
+    }
+
+    private void moveBear() {
+        if (game.getCurrentTeam() != game.getBearTeamTurn()) return;
+
+
+        List<Hero> heroes = HeroId.ALL.stream()
+                .map(id -> game.getHero(id))
+                .filter(h -> !h.dead())
+                .filter(h -> !h.inCave())
+                .filter(h -> h.team() != -1)
+                .filter(h -> game.getCell(h.getLoc()).land())
+                .collect(Collectors.toList());
+        if (heroes.size() == 0) return;
+
+        Loc loc = game.getBearLoc();
+        int dist = heroes.stream()
+                .mapToInt(h -> h.getLoc().distance(loc))
+                .min().orElse(-1);
+        heroes = heroes.stream()
+                .filter(h -> h.getLoc().distance(loc) == dist)
+                .collect(Collectors.toList());
+        Hero hero = heroes.get(Game.random.nextInt(heroes.size()));
+        Loc newLoc = loc.stepTo(hero.getLoc());
+        game.setBearLoc(newLoc);
+        Cell cell = game.getCell(newLoc);
+        int count = cell.count();
+        for (int index=0; index<count; index++) {
+            cell.heroes(index).forEach(h -> game.returnToShip(h));
+        }
+    }
+
+    protected void nextTurn() {
+        checkCaves();
+        game.nextTurn();
+        for(HeroId id: HeroId.ALL) {
+            Hero hero = game.getHero(id);
+            hero.setDrunk(false);
+            hero.setInitStepLoc(null);
+        }
+        for(Loc loc:Loc.ALL) {
+            game.getCell(loc).nextStep();
+        }
+        checkWoman();
+        moveBear();
+    }
+
+
     public static class Request {
         public String id;
 

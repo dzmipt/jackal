@@ -152,4 +152,5 @@ div.team {
     text-shadow: 5px 5px lightblue;
     font-style: italic;
     font-family: fantasy, Georgia, "Times New Roman";
+    cursor: pointer;
 }

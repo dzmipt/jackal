@@ -121,7 +121,7 @@ function setBear(loc:Loc) {
 function refreshSelectableFieldCell() {
     $(".frontSelectable").removeClass("frontSelectable");
     for(let hero of Hero.heroes) {
-        if(! (hero.canGo()||hero.rumReady) )  continue;
+        if(! (hero.hasAction()) )  continue;
             let f = front(hero.loc);
             if (  !( f.hasClass("frontSelected") || f.hasClass("frontSelectedWithGold") )) {
                 f.addClass("frontSelectable");

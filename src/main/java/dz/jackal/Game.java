@@ -33,8 +33,8 @@ public class Game implements Serializable {
         setTeamNames(teamNames);
         setFriends(friends);
 
-        cells = GameInitializer.init();
-//        cells = GameInitializer.initTest();
+//        cells = GameInitializer.init();
+        cells = GameInitializer.initTest();
         afterCellsInit();
     }
 

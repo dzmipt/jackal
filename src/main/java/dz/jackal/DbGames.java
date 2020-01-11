@@ -61,22 +61,26 @@ public class DbGames {
         log.info("Game saved to " + path);
     }
 
-    public static void saveGame(Game game) throws IOException {
-        Path folder = root.resolve(game.getId());
-        Files.createDirectories(folder);
-
-        int turn = game.getTurn();
-        Path[] toDelete = Files.list(folder)
-                            .filter(path -> {
-                                Matcher matcher = PATTERN.matcher(path.getFileName().toString());
-                                if (!matcher.matches()) return false;
-                                return Integer.parseInt(matcher.group(1)) >= turn;
-                            }).toArray(Path[]::new);
+    public static void trimGames(String id, int turn) throws IOException {
+        Path[] toDelete = Files.list(root.resolve(id))
+                .filter(path -> {
+                    Matcher matcher = PATTERN.matcher(path.getFileName().toString());
+                    if (!matcher.matches()) return false;
+                    return Integer.parseInt(matcher.group(1)) > turn;
+                }).toArray(Path[]::new);
         for(Path f: toDelete) {
             log.warn("Deleting " + f + " because of re-writing");
             Files.delete(f);
         }
+    }
 
+    public static void saveGame(Game game) throws IOException {
+        String id = game.getId();
+        Path folder = root.resolve(id);
+        Files.createDirectories(folder);
+
+        int turn = game.getTurn();
+        trimGames(id, turn-1);
         saveGameInternal(game);
     }
 

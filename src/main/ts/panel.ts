@@ -117,7 +117,7 @@ function resetTop(teamName:string) {
             let src:string = hero.id.num<3 ? "team"+currentTeam : "hero"+hero.id.num;
             $("#hero"+num).attr("src","/img/" + src + "cell.png");
 
-            if ( ( hero.canGo() && hero.id.team == currentTeam) || hero.rumReady) h.removeClass("disabled");
+            if (hero.hasAction()) h.removeClass("disabled");
             else h.addClass("disabled");
          }
 

@@ -63,7 +63,7 @@ class Hero {
         this.count = count;
         this.rumReady = rumReady;
     }
-    canGo():boolean { return this.steps.length>0 || this.stepsWithGold.length>0}
+    hasAction():boolean { return this.steps.length>0 || this.stepsWithGold.length>0 || this.rumReady}
     equals(h:Hero) {return this.id.equals(h.id)}
     static heroes:Hero[];
     static get(id:HeroId):Hero {
@@ -184,7 +184,7 @@ function resetFieldHeroes() {
     selectableHeroes = [];
     for(let hero of Hero.heroes) {
         let zlevel = 1;
-        if (hero.canGo() || hero.rumReady) {
+        if (hero.hasAction()) {
             zlevel = 2;
             selectableHeroes.push(hero);
         }
@@ -205,6 +205,14 @@ function resetFieldHeroes() {
     }
 }
 
+function countHeroesActive() {
+    let count = 0;
+    for(let hero of Hero.heroes) {
+        if (hero.hasAction()) count++;
+    }
+    return count;
+}
+
 function setView(view:any) {
     id = view.id;
     if (currentTeam != view.currentTeam) unselectWithGold();
@@ -221,15 +229,23 @@ function setView(view:any) {
     resetPanels(view);
     resetFieldHeroes();
     animateRum(view.animateRum);
+    if (countHeroesActive() == 0) {
+        view.adv = "NoMove";
+    }
     if (view.adv != null) {
         let adv = $("#adv");
-        adv.empty().append(view.adv);
-        adv.show().delay(3000).fadeOut();
+        let text = "";
+        if (view.adv == "Earthquake") text = "Earthquake";
+        if (view.adv == "NoMove") text = "No moves. Next...";
+        adv.empty().append(text).show();
     }
 }
 
 function hideAdv() {
-    $("#adv").stop().hide();
+    $("#adv").fadeOut();
+    if (countHeroesActive() == 0) {
+        send("nextTeam",{id:id});
+    }
 }
 
 function initGame() {
@@ -261,10 +277,12 @@ function initGame() {
 }
 
 function prevTurn() {
+    $("#adv").hide();
     send("prevTurn", {id:id});
 }
 
 function nextTurn() {
+    $("#adv").hide();
     send("nextTurn", {id:id});
 }
 
