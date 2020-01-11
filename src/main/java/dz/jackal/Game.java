@@ -20,6 +20,8 @@ public class Game implements Serializable {
     private List<Loc> caveLocs;
     private Loc[] ships = new Loc[4];
     private Map<HeroId, Hero> heroes = new HashMap<>();
+    private Loc bearLoc = null;
+    private int bearTeamTurn = -1;
     private int currentTeam = 0;
     private int turn = 0;
     private boolean startTurn = true;
@@ -31,8 +33,8 @@ public class Game implements Serializable {
         setTeamNames(teamNames);
         setFriends(friends);
 
-//        cells = GameInitializer.init();
-        cells = GameInitializer.initTest();
+        cells = GameInitializer.init();
+//        cells = GameInitializer.initTest();
         afterCellsInit();
     }
 
@@ -73,6 +75,12 @@ public class Game implements Serializable {
     public List<Loc> caveLocs() {
         return caveLocs;
     }
+
+    public Loc getBearLoc() {return bearLoc;}
+    public void setBearLoc(Loc bearLoc) {this.bearLoc = bearLoc;}
+
+    public int getBearTeamTurn() { return bearTeamTurn;}
+    public void setBearTeamTurn(int bearTeamTurn) {this.bearTeamTurn = bearTeamTurn;}
 
     public Cell getCell(Loc loc) {return cells.get(loc);}
     public Hero getHero(HeroId heroId) {return heroes.get(heroId);}

@@ -213,6 +213,7 @@ function setView(view:any) {
     HeroId.Friday.team = view.fridayTeam;
     HeroId.Missioner.team = view.missionerTeam;
     setShips(getLocs(view.ship));
+    setBear(view.bear);
     resetGold();
     resetShipGold(view.gold);
     setCells(view.cells);

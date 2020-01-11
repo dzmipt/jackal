@@ -17,7 +17,7 @@ public class GoController extends GameController {
 
     private Hero hero;
     private Hero selHero;
-    private Loc oldLoc, newLoc;
+    private Loc oldLoc, newLoc, viaLoc;
     private Cell oldCell, newCell;
     private View.AnimateRum animateRum;
     private boolean withGold;
@@ -32,7 +32,7 @@ public class GoController extends GameController {
     protected View processAction(Request aRequest) {
         GoRequest request = (GoRequest) aRequest;
         animateRum = null;
-        Loc viaLoc = null;
+        viaLoc = null;
         View.Adv adv = null;
         withGold = request.withGold;
         hero = game.getHero(request.getHeroId());
@@ -80,6 +80,17 @@ public class GoController extends GameController {
             die(hero);
         }
 
+        if (newCell.den()) {
+            ((Den)newCell).activate();
+            game.setBearLoc(newLoc);
+            game.setBearTeamTurn(game.getCurrentTeam());
+            returnToShip(false);
+        }
+
+        if (newLoc.equals(game.getBearLoc())) {
+            returnToShip(false);
+        }
+
         if (oldCell.ship() && newCell.sea()) { // sail the ship
             sailShip();
         } else if (!hero.dead()) { // Friday can be dead here
@@ -91,9 +102,7 @@ public class GoController extends GameController {
                 }
             }
             if (newCell.balloon()) {
-                viaLoc = newLoc;
-                newCell = game.getTeamShip(hero.team());
-                newLoc = game.getTeamShipLoc(hero.team());
+                returnToShip(withGold);
             }
             if (newCell.cannon()) {
                 viaLoc = newLoc;
@@ -155,6 +164,7 @@ public class GoController extends GameController {
         if (selHero == null) {
             checkCaves();
             nextTurn();
+            moveBear();
         }
 
         checkWoman();
@@ -183,6 +193,13 @@ public class GoController extends GameController {
                 );
 
         game.moveShip(((Ship)oldCell).team(), newLoc);
+    }
+
+    private void returnToShip(boolean withGold) {
+        viaLoc = newLoc;
+        newCell = game.getTeamShip(hero.team());
+        newLoc = game.getTeamShipLoc(hero.team());
+        this.withGold = withGold;
     }
 
     private void moveHero() {
@@ -314,6 +331,36 @@ public class GoController extends GameController {
         if (father == null) return;
         body.birth(father.getLoc());
         game.getCell(father.getLoc()).addHero(0, body);
+    }
+
+    private void moveBear() {
+        if (game.getCurrentTeam() != game.getBearTeamTurn()) return;
+
+
+        List<Hero> heroes = HeroId.ALL.stream()
+                                .map(id -> game.getHero(id))
+                                .filter(h -> !h.dead())
+                                .filter(h -> !h.inCave())
+                                .filter(h -> h.team() != -1)
+                                .filter(h -> game.getCell(h.getLoc()).land())
+                                .collect(Collectors.toList());
+        if (heroes.size() == 0) return;
+
+        Loc loc = game.getBearLoc();
+        int dist = heroes.stream()
+                    .mapToInt(h -> h.getLoc().distance(loc))
+                    .min().orElse(-1);
+        heroes = heroes.stream()
+                    .filter(h -> h.getLoc().distance(loc) == dist)
+                    .collect(Collectors.toList());
+        Hero hero = heroes.get(Game.random.nextInt(heroes.size()));
+        Loc newLoc = loc.stepTo(hero.getLoc());
+        game.setBearLoc(newLoc);
+        Cell cell = game.getCell(newLoc);
+        int count = cell.count();
+        for (int index=0; index<count; index++) {
+            cell.heroes(index).forEach(h -> game.returnToShip(h));
+        }
     }
 
     private static class PairLoc {

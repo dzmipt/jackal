@@ -34,6 +34,13 @@ function initField() {
                 )
         );
     }
+
+    cells.append(
+        $("<img/>")
+            .attr({src:"/img/bear.png", id:"bear"})
+            .addClass("cell")
+            .hide()
+    );
     let svg = $("#svg");
 
     for (let i=0; i<maxGold; i++) {
@@ -102,6 +109,13 @@ function setShips(locs:Loc[]) {
     for(let team=0;team<4;team++){
         ship(team).animate(getCoordinate(locs[team]),500);
     }
+}
+
+function setBear(loc:Loc) {
+    if (loc == null) return;
+    $("#bear")
+        .show()
+        .animate(getCoordinate(loc),500);
 }
 
 function refreshSelectableFieldCell() {

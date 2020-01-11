@@ -35,9 +35,12 @@ public class Loc implements Serializable {
         return Stream.of(-1,1).flatMap(dr -> Stream.of(-1,1).map(dc -> add(dr, dc)));
     }
 
+    public Loc stepTo(Loc newLoc) {
+        return add(Integer.signum(newLoc.row-row),
+                    Integer.signum(newLoc.col-col));
+    }
     public Stream<Loc> path(Loc newLoc) {
-        return Stream.iterate(this, l-> l.add(Integer.signum(newLoc.row-l.row),
-                                                    Integer.signum(newLoc.col-l.col)))
+        return Stream.iterate(this, l-> l.stepTo(newLoc))
                         .skip(1)
                         .limit(distance(newLoc));
     }
@@ -55,6 +58,7 @@ public class Loc implements Serializable {
     @Override
     public boolean equals(Object obj) {
         Loc loc = (Loc) obj;
+        if (loc == null) return false;
         return loc.row == row && loc.col == col;
     }
 

@@ -91,6 +91,8 @@ public class Cell implements Serializable {
 
     public boolean earthquake() {return false;}
 
+    public boolean den() {return false;}
+
     public boolean cave() {return false;}
 
     public boolean cannon() {

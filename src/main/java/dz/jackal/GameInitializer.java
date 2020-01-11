@@ -40,6 +40,8 @@ public class GameInitializer {
         next( 4, () -> new Cell(Icon.CROCODILE,1));
 
         next(4, Cave::new);
+        next(1, Earthquake::new);
+        next(1, Den::new);
 
         next(5, () -> goldCell(1));
         next(5, () -> goldCell(2));
@@ -243,6 +245,7 @@ public class GameInitializer {
         cells.put(new Loc(11,8), new Cave());
 
         cells.put(new Loc(7, 2), new Earthquake());
+        cells.put(new Loc(7, 3), new Den());
 
         Loc[] ships = new Loc[] {new Loc(0,6), new Loc(6, 12),
                 new Loc(12,6), new Loc(6,0)};

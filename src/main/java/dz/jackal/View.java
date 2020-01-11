@@ -19,6 +19,7 @@ public class View {
     public int[] rum = new int[4];
     public int currentTeam;
     public int benGunnTeam, fridayTeam, missionerTeam;
+    public Loc bear;
     public Adv adv = null;
 
     public View(Game game, Map<HeroId,Loc[]> steps, Map<HeroId,Loc[]> stepsWithGold, Set<HeroId> rumReady) {
@@ -36,6 +37,7 @@ public class View {
         benGunnTeam = game.getHero(HeroId.BENGUNN_ID).team();
         fridayTeam = game.getHero(HeroId.FRIDAY_ID).team();
         missionerTeam = game.getHero(HeroId.MISSIONER_ID).team();
+        bear = game.getBearLoc();
     }
 
     private void initCellView(Game game) {

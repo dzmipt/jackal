@@ -21,6 +21,7 @@ public enum Icon {
     CROCODILE ("crocodile"),
     CAVE ("cave"),
     EARTHQUAKE ("earthquake"),
+    DEN ("den"),
 
     GOLD ("gold"),
     RUM ("rum"),
