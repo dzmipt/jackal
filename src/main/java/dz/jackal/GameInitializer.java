@@ -31,17 +31,18 @@ public class GameInitializer {
         next(2, () -> new Cell(Icon.SWAMP, 4));
         next(1, () -> new Cell(Icon.MOUNTAIN, 5));
 
-        next(1, () -> new Cell(Icon.CANNIBAL, 1));
-        next(2, () -> new Cell(Icon.FORT, 1));
-        next(1, () -> new Cell(Icon.WOMAN, 1));
-        next(2, () -> new Cell(Icon.BALLOON, 1));
+        next(1, () -> new Cell(Icon.CANNIBAL));
+        next(2, () -> new Cell(Icon.FORT));
+        next(1, () -> new Cell(Icon.WOMAN));
+        next(2, () -> new Cell(Icon.BALLOON));
         next(2, Cannon::new);
-        next( 3, () -> new Cell(Icon.TRAP,1));
-        next( 4, () -> new Cell(Icon.CROCODILE,1));
+        next( 3, () -> new Cell(Icon.TRAP));
+        next( 4, () -> new Cell(Icon.CROCODILE));
 
         next(4, Cave::new);
         next(1, Earthquake::new);
         next(1, Den::new);
+        next(2, TeeHee::new);
 
         next(5, () -> goldCell(1));
         next(5, () -> goldCell(2));
@@ -65,20 +66,20 @@ public class GameInitializer {
     }
 
     private static void initHero(HeroId id) {
-        Cell cell = new Cell(Icon.LAND, 1);
+        Cell cell = new Cell(Icon.LAND);
         Loc loc = nextCell(cell);
         Hero hero = id == HeroId.MISSIONER_ID ? new Missioner(loc) : new Hero(id, loc);
         cell.addHero(0, hero);
     }
 
     private static Cell rumCell(int count) {
-        Cell cell = new Cell(Icon.LAND, 1);
+        Cell cell = new Cell(Icon.LAND);
         cell.setRum(count);
         return cell;
     }
 
     private static Cell goldCell(int count) {
-        Cell cell = new Cell(Icon.LAND, 1);
+        Cell cell = new Cell(Icon.LAND);
         for (int i=0; i<count; i++){
             cell.addGold(0);
         }
@@ -246,6 +247,7 @@ public class GameInitializer {
 
         cells.put(new Loc(7, 2), new Earthquake());
         cells.put(new Loc(7, 3), new Den());
+        cells.put(new Loc(10, 7), new TeeHee());
 
         Loc[] ships = new Loc[] {new Loc(0,6), new Loc(6, 12),
                 new Loc(12,6), new Loc(6,0)};

@@ -21,10 +21,16 @@ public class View {
     public int benGunnTeam, fridayTeam, missionerTeam;
     public Loc bear;
     public Adv adv = null;
+    public boolean teeHee = false;
 
     public View(Game game, Map<HeroId,Loc[]> steps, Map<HeroId,Loc[]> stepsWithGold, Set<HeroId> rumReady) {
         id = game.getId();
-        teamName = game.getTeamName(game.getCurrentTeam());
+
+        int teamNameIndex = game.getCurrentTeam();
+        if (game.teeHee()) {
+            teamNameIndex = game.getTeeHeeHero(teamNameIndex);
+        }
+        teamName = game.getTeamName(teamNameIndex);
 
         initCellView(game);
         initPirateView(game, steps, stepsWithGold, rumReady);
@@ -38,6 +44,7 @@ public class View {
         fridayTeam = game.getHero(HeroId.FRIDAY_ID).team();
         missionerTeam = game.getHero(HeroId.MISSIONER_ID).team();
         bear = game.getBearLoc();
+        teeHee = game.teeHee();
     }
 
     private void initCellView(Game game) {

@@ -137,6 +137,11 @@ public class GoController extends GameController {
                 adv = View.Adv.Earthquake;
             }
 
+            if (newCell.teeHee()) {
+                ((TeeHee)newCell).activate();
+                game.setTeeHee();
+            }
+
             if (newCell.cave() && !oldCell.cave()) {
                 boolean canGo = whereCanGoFromCave(hero, ((Cave)newCell).getExit()).size()>0;
                 if (canGo) {

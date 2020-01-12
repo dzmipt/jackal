@@ -229,6 +229,11 @@ function setView(view:any) {
     resetPanels(view);
     resetFieldHeroes();
     animateRum(view.animateRum);
+    if (view.teeHee) {
+        $("#topLabel").addClass("teeHee");
+    } else {
+        $("#topLabel").removeClass("teeHee");
+    }
     if (countHeroesActive() == 0) {
         view.adv = "NoMove";
     }

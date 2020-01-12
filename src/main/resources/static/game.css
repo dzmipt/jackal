@@ -51,7 +51,6 @@
     top: 44px;
     font-size:12px;
     font-weight:bold;
-    /*line-height:10px;*/
     text-align:center;
     pointer-events: none;
 }
@@ -59,15 +58,22 @@
     display:inline-block;;
     position: absolute;
     left:630px;
-    height:50px;
+    height:70px;
     width:280px;
     font-size: 30px;
     vertical-align: middle;
-    padding: 10px;
+    padding: 10px 10px 0px 10px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    box-sizing: border-box;
 }
+.teeHee {
+    border: solid red 7px;
+    background-image: url(/img/background.png),url(/img/tee-hee.png);
+    background-blend-mode: soft-light;
+}
+
 .top {
     position: relative;
     background-image: url("/img/background.png");

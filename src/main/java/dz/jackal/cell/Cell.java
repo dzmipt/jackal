@@ -93,6 +93,8 @@ public class Cell implements Serializable {
 
     public boolean den() {return false;}
 
+    public boolean teeHee() {return false;}
+
     public boolean cave() {return false;}
 
     public boolean cannon() {

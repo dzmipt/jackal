@@ -198,6 +198,7 @@ abstract class GameController {
     }
 
     private boolean rumReady(Hero hero) {
+        if (game.teeHee()) return false;
         if (hero.dead() || hero.inCave() || hero.team() == -1) return false;
 
         int currentTeam = game.getCurrentTeam();

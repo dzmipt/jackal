@@ -14,6 +14,7 @@ public class Game implements Serializable {
     private String id;
     private String[] teamNames;
     private int[] friends;
+    private int[] teeHeeHero;
 
     private Map<Loc, Cell> cells = new HashMap<>();
     private Cell woman;
@@ -22,6 +23,7 @@ public class Game implements Serializable {
     private Map<HeroId, Hero> heroes = new HashMap<>();
     private Loc bearLoc = null;
     private int bearTeamTurn = -1;
+    private int teeHee = 0;
     private int currentTeam = 0;
     private int turn = 0;
     private boolean startTurn = true;
@@ -66,6 +68,33 @@ public class Game implements Serializable {
 
     void setFriends(int[] friends) {
         this.friends = friends;
+
+        int count = friends.length;
+        teeHeeHero = new int[count];
+        int[] counts = new int[count];
+        Arrays.fill(counts, 0);
+        for (int i=0;i<count;i++) {
+            int bestIndex = -1;
+            int bestCount = count + 1;
+            int j = i;
+            do {
+                j++;
+                if (j==count) j = 0;
+                if (friends[i] != friends[j]) {
+                    if (counts[j] < bestCount) {
+                        bestCount = counts[j];
+                        bestIndex = j;
+                    }
+                }
+            } while (j!=i);
+
+            if (bestIndex == -1) {
+                bestIndex = (i+1) % count;
+            }
+
+            counts[bestIndex]++;
+            teeHeeHero[i] = bestIndex;
+        }
     }
 
     public Cell woman() {
@@ -141,8 +170,17 @@ public class Game implements Serializable {
                 .anyMatch(h -> enemy(h,team));
     }
 
-
+    public void setTeeHee() {
+        teeHee = friends.length + 1;
+    }
+    public boolean teeHee() {
+        return teeHee>0;
+    }
+    public int getTeeHeeHero(int forTeam) {
+        return teeHeeHero[forTeam];
+    }
     public void nextTurn() {
+        if (teeHee>0) teeHee--;
         currentTeam = (currentTeam+1) % 4;
         turn++;
         startTurn = true;
