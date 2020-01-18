@@ -317,7 +317,10 @@ abstract class GameController {
         Cell cell = game.getCell(newLoc);
         int count = cell.count();
         for (int index=0; index<count; index++) {
-            cell.heroes(index).forEach(h -> game.returnToShip(h));
+            cell.heroes(index).forEach(h -> {
+                                        h.setTrapped(false);
+                                        game.returnToShip(h);
+                                       });
         }
     }
 

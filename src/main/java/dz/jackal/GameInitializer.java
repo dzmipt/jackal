@@ -218,6 +218,7 @@ public class GameInitializer {
         cells.put(new Loc(6,6), new Cell(Icon.BALLOON, 1));
 
         cells.put(new Loc(7, 10), new Cell(Icon.TRAP, 1));
+        cells.put(new Loc(7, 9), new Den());
 
         Cannon cannon = new Cannon();
         cannon.setMove(Move.W);
@@ -246,7 +247,7 @@ public class GameInitializer {
         cells.put(new Loc(11,8), new Cave());
 
         cells.put(new Loc(7, 2), new Earthquake());
-        cells.put(new Loc(7, 3), new Den());
+//        cells.put(new Loc(7, 3), new Den());
         cells.put(new Loc(10, 7), new TeeHee());
 
         Loc[] ships = new Loc[] {new Loc(0,6), new Loc(6, 12),
